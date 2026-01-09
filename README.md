@@ -260,7 +260,57 @@ MVPリリース時
   - 投稿者本人のみ削除可能
 
 
-### 未ログインでも閲覧または利用できるページ
+## ER図
+[![Image from Gyazo](https://i.gyazo.com/00404eec7d8c87015729b93c24c477f8.png)](https://gyazo.com/00404eec7d8c87015729b93c24c477f8)
+
+### テーブル詳細
+
+#### usersテーブル
+
+| カラム名               | 型        | 制約                | 説明               |
+| ------------------ | -------- | ----------------- | ---------------- |
+| id                 | bigint   | PK                | ユーザーを一意に識別するID   |
+| nickname           | varchar  | NOT NULL          | ユーザーの表示名（例：山田太郎） |
+| email              | varchar  | NOT NULL / UNIQUE | ログイン認証用のメールアドレス  |
+| encrypted_password | varchar  | NOT NULL          | パスワードを暗号化して保存    |
+| created_at         | datetime |                   | レコード作成日時         |
+| updated_at         | datetime |                   | レコード更新日時         |
+
+
+#### hobbies テーブル
+
+| カラム名       | 型        | 制約       | 説明                |
+| ---------- | -------- | -------- | ----------------- |
+| id         | bigint   | PK       | 趣味を一意に識別するID      |
+| name       | varchar  | NOT NULL | 趣味名（例：ゲーム、アニメ、漫画） |
+| created_at | datetime |          | レコード作成日時          |
+| updated_at | datetime |          | レコード更新日時          |
+
+#### user_hobbies テーブル（ユーザー × 趣味 中間テーブル）
+
+| カラム名       | 型        | 制約            | 説明             |
+| ---------- | -------- | ------------- | -------------- |
+| id         | bigint   | PK            | レコードを一意に識別するID |
+| user_id    | bigint   | NOT NULL / FK | users.id を参照   |
+| hobby_id   | bigint   | NOT NULL / FK | hobbies.id を参照 |
+| created_at | datetime |               | レコード作成日時       |
+
+補足
+- users ⇔ hobbies
+  - user_hobbies を介した 多対多
+
+#### friendships テーブル（友達関係）
+
+| カラム名       | 型        | 制約            | 説明             |
+| ---------- | -------- | ------------- | -------------- |
+| id         | bigint   | PK            | レコードを一意に識別するID |
+| user_id    | bigint   | NOT NULL / FK | 趣味を閲覧する側のユーザー  |
+| friend_id  | bigint   | NOT NULL / FK | 閲覧対象となるユーザー    |
+| created_at | datetime |               | レコード作成日時       |
+
+補足
+- users ⇔ users
+  - friendships による 自己参照（1対多）
 
 
 ---
