@@ -234,7 +234,7 @@ Apex, モンハン, 呪術廻戦
 
 ---
 
-画面遷移図
+## 画面遷移図
 
 Figma
 https://www.figma.com/design/KU2WJjAFhM8uxK2VB1VLfj/%E5%8D%92%E5%88%B6_%E7%94%BB%E9%9D%A2%E9%81%B7%E7%A7%BB%E5%9B%B3_MVP?node-id=0-1&t=3IPAdcGhFuWJiOvn-1
