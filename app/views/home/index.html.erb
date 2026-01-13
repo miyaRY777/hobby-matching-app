@@ -1,2 +1,22 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<section class="min-h-screen flex items-center justify-center bg-base-200">
+  <div class="text-center max-w-2xl">
+
+    <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
+      Discordの会話<br>
+      <span class="text-primary">「誰と何の話題が合うか」</span>
+      で迷っていませんか？
+    </h1>
+
+    <p class="text-lg md:text-xl text-base-content/80 mb-10">
+      共通の趣味を可視化して<br class="hidden md:block">
+      会話のきっかけを自然に見つける
+      <span class="font-semibold">補助ツール</span>
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= link_to "無料で始める", "#", class: "btn btn-primary btn-lg px-8" %>
+      <%= link_to "ログイン", "#", class: "btn btn-outline btn-lg px-8" %>
+    </div>
+
+  </div>
+</section>
