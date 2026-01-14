@@ -15,5 +15,5 @@ Rails.application.routes.draw do
   # トップページ
   root "home#index"
 
-  #resources :posts
+  # resources :posts
 end
