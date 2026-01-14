@@ -1,0 +1,21 @@
+<header class="w-full border-b bg-white">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    
+    <!-- ロゴ / アプリ名（左） -->
+    <div class="text-xl font-bold">
+      <%= link_to "MyApp", root_path, class: "hover:opacity-80" %>
+    </div>
+
+    <!-- ボタン群（右） -->
+    <div class="flex items-center gap-4">
+      <%= link_to "ログイン",
+                  "#",
+                  class: "px-4 py-2 text-sm font-medium border rounded hover:bg-gray-100" %>
+
+      <%= link_to "サインアップ",
+                  "#",
+                  class: "px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700" %>
+    </div>
+
+  </div>
+</header>
