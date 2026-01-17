@@ -60,3 +60,6 @@ group :test do
   gem "selenium-webdriver"
   gem "minitest", "~> 5.20"
 end
+
+# deviseを追加
+gem 'devise'
