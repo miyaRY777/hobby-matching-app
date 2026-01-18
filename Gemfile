@@ -62,4 +62,4 @@ group :test do
 end
 
 # deviseを追加
-gem 'devise'
+gem "devise"
