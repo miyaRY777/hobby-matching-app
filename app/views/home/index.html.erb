@@ -1,5 +1,5 @@
-<section class="min-h-screen flex items-center justify-center bg-base-200">
-  <div class="text-center max-w-2xl">
+<section class="py-20 bg-base-200 rounded-box">
+  <div class="text-center max-w-2xl mx-auto">
 
     <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
       Discordの会話<br>
@@ -14,9 +14,12 @@
     </p>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <%= link_to "無料で始める", "#", class: "btn btn-primary btn-lg px-8" %>
-      <%= link_to "ログイン", "#", class: "btn btn-outline btn-lg px-8" %>
+      <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-primary btn-lg px-8" %>
+      <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-lg px-8" %>
     </div>
 
   </div>
 </section>
+
+
+<%# TODO:TOPページのUIを調整 %>
