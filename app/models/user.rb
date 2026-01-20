@@ -4,5 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+has_one :profile, dependent: :destroy
+
 validates :nickname, presence: true, length: { maximum: 20 }
 end
