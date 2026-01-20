@@ -1,0 +1,51 @@
+<div class="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8">
+
+  <!-- タイトル -->
+  <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">
+    プロフィール作成
+  </h1>
+
+  <!-- ログイン中ユーザー名 -->
+  <p class="text-center text-gray-600 mb-8">
+    <span class="font-semibold text-gray-800">
+      <%= current_user.nickname.presence || current_user.email %>
+    </span>
+    さんのプロフィール
+  </p>
+
+  <%= form_with model: @profile, url: profile_path, class: "space-y-6" do |f| %>
+
+    <!-- エラーメッセージ -->
+    <% if @profile.errors.any? %>
+      <div class="rounded-lg border border-red-300 bg-red-50 p-4">
+        <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+          <% @profile.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- 自己紹介 -->
+    <div class="space-y-2">
+      <%= f.label :bio, "自己紹介",
+            class: "block text-sm font-semibold text-gray-700" %>
+
+      <%= f.text_area :bio,
+            rows: 6,
+            placeholder: "あなたの趣味や好きなことを書いてください",
+            class: "w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800
+                   focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                   focus:outline-none resize-none" %>
+    </div>
+
+    <!-- 送信 -->
+    <div class="pt-4">
+      <%= f.submit "作成する",
+            class: "w-full rounded-lg bg-blue-600 px-6 py-3
+                   text-white font-semibold text-base
+                   hover:bg-blue-700 transition-colors" %>
+    </div>
+
+  <% end %>
+</div>
