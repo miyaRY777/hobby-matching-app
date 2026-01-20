@@ -15,6 +15,12 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def index
+    @profiles = Profile.includes(:user)
+  end
+
+  # TODO のちにshowを追加
+
   private
 
   def profile_params
