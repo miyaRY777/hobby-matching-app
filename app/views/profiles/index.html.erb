@@ -1,0 +1,24 @@
+<div class="w-full max-w-3xl flex flex-col gap-6">
+
+  <h1 class="text-2xl font-semibold text-gray-800">
+    プロフィール一覧
+  </h1>
+
+  <% @profiles.each do |profile| %>
+    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+
+      <!-- ユーザー名（クリック可能） -->
+      <%= link_to profile_path(profile),
+            class: "inline-block text-sm font-medium text-indigo-600 hover:underline mb-2" do %>
+        <%= profile.user.nickname %>
+      <% end %>
+
+      <!-- 自己紹介 -->
+      <p class="text-gray-800 leading-relaxed whitespace-pre-line">
+        <%= profile.bio.presence || "自己紹介は未入力です" %>
+      </p>
+
+    </div>
+  <% end %>
+
+</div>

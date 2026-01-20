@@ -16,8 +16,8 @@ Rails.application.routes.draw do
   # トップページ
   root "home#index"
 
-  # 1ユーザー1件
+  # TODO のちにshowを追加
   resource :profile, only: %i[new create]
-
+  resources :profiles, only: %i[index]
   # resources :posts
 end
