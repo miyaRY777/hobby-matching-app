@@ -18,6 +18,6 @@ Rails.application.routes.draw do
 
   # TODO のちにshowを追加
   resource :profile, only: %i[new create]
-  resources :profiles, only: %i[index]
+  resources :profiles, only: %i[index show] # 他人用
   # resources :posts
 end
