@@ -7,17 +7,19 @@
   <% @profiles.each do |profile| %>
     <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
-      <!-- ユーザー名（クリック可能） -->
-      <%= link_to profile_path(profile),
-            class: "inline-block text-sm font-medium text-indigo-600 hover:underline mb-2" do %>
+      <!-- ユーザー名 -->
+      <p class="text-sm font-medium text-gray-600 mb-2">
         <%= profile.user.nickname %>
-      <% end %>
+      </p>
 
       <!-- 自己紹介 -->
       <p class="text-gray-800 leading-relaxed whitespace-pre-line">
         <%= profile.bio.presence || "自己紹介は未入力です" %>
       </p>
-
+      <%# のちにshowページに遷移できるようにする %>
+      <%= link_to "詳細を見る",
+                            profile_path(profile),
+                            class: "text-blue-600 hover:underline text-sm font-medium" %>
     </div>
   <% end %>
 
