@@ -1,0 +1,29 @@
+<div class="w-3/4 max-w-lg space-y-6">
+
+  <!-- タイトル -->
+  <h1 class="text-xl font-bold text-gray-700 border-b pb-2">
+    プロフィール詳細
+  </h1>
+
+  <!-- プロフィールカード -->
+  <div class="bg-white rounded-xl shadow p-6 space-y-4">
+
+    <!-- ユーザー名 -->
+    <div>
+      <p class="text-sm text-gray-500">ユーザー名</p>
+      <p class="text-base font-medium text-gray-800">
+        <%= @profile.user.nickname %>
+      </p>
+    </div>
+
+    <!-- 自己紹介 -->
+    <div>
+      <p class="text-sm text-gray-500 mb-1">自己紹介</p>
+      <p class="whitespace-pre-line text-gray-800">
+        <%= @profile.bio.presence || "自己紹介は未入力です" %>
+      </p>
+    </div>
+
+  </div>
+
+</div>
