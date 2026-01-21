@@ -19,7 +19,12 @@ class ProfilesController < ApplicationController
     @profiles = Profile.includes(:user)
   end
 
-  # TODO のちにshowを追加
+  def show
+    @profile = Profile.find_by(id: params[:id])
+    return if @profile
+
+    redirect_to profiles_path #alert: "プロフィールが見つかりません"
+  end
 
   private
 
