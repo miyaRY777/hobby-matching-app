@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 
   # ログイン後も同じ場所に飛ばしたい場合（任意）
   def after_sign_in_path_for(resource)
-    root_path
+    profiles_path
   end
 
   def configure_permitted_parameters
