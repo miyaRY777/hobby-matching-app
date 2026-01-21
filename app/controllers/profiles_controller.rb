@@ -23,7 +23,7 @@ class ProfilesController < ApplicationController
     @profile = Profile.find_by(id: params[:id])
     return if @profile
 
-    redirect_to profiles_path #alert: "プロフィールが見つかりません"
+    redirect_to profiles_path # alert: "プロフィールが見つかりません"
   end
 
   private

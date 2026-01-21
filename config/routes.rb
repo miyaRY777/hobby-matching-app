@@ -18,6 +18,6 @@ Rails.application.routes.draw do
 
   resources :profiles, only: %i[index show]
   resource :profile, only: %i[new create]
-  
+
   # resources :posts
 end
