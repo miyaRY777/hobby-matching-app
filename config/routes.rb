@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   root "home#index"
 
   resources :profiles, only: %i[index show]
-  resource :profile, only: %i[new create]
+  resource :profile, only: %i[new create edit update]
 
   # resources :posts
 end
