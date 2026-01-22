@@ -20,6 +20,11 @@
       <%= link_to "詳細を見る",
                             profile_path(profile),
                             class: "text-blue-600 hover:underline text-sm font-medium" %>
+      <!-- 編集ボタン（本人のみ） -->
+      <% if current_user.own?(profile) %>
+        <%= link_to "編集する", edit_my_profile_path, class: "text-blue-600 hover:underline" %>
+      <% end %>
+
     </div>
   <% end %>
 
