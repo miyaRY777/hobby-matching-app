@@ -1,0 +1,36 @@
+<%= form_with model: profile,
+              url: my_profile_path,
+              local: true,
+              class: "space-y-6" do |f| %>
+
+
+  <% if profile.errors.any? %>
+    <div class="rounded-lg border border-red-300 bg-red-50 p-4">
+      <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+        <% profile.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="space-y-2">
+    <%= f.label :bio, "自己紹介",
+          class: "block text-sm font-semibold text-gray-700" %>
+
+    <%= f.text_area :bio,
+          rows: 6,
+          placeholder: "あなたの趣味や好きなことを書いてください",
+          class: "w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800
+                 focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                 focus:outline-none resize-none" %>
+  </div>
+
+  <div class="pt-4">
+    <%= f.submit submit_label,
+          class: "w-full rounded-lg bg-blue-600 px-6 py-3
+                 text-white font-semibold text-base
+                 hover:bg-blue-700 transition-colors" %>
+  </div>
+
+<% end %>
