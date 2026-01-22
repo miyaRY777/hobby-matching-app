@@ -25,7 +25,7 @@ class ProfilesController < ApplicationController
     redirect_to profiles_path unless @profile
   end
 
-  def edit 
+  def edit
   end
 
   def update
