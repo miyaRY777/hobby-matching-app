@@ -16,8 +16,14 @@ Rails.application.routes.draw do
   # トップページ
   root "home#index"
 
-  resources :profiles, only: %i[index show]
-  resource :profile, only: %i[new create edit update]
+# 他人用（複数）
+resources :profiles, only: %i[index show]
+
+# 自分用（単数）
+resource :profile,
+         as: :my_profile,
+         controller: :profiles,
+         only: %i[new create edit update]
 
   # resources :posts
 end
