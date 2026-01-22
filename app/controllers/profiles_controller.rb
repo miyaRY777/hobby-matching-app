@@ -1,6 +1,7 @@
 class ProfilesController < ApplicationController
   before_action :authenticate_user!
   before_action :redirect_if_profile_exists, only: %i[new create]
+  before_action :set_profile, only: %i[edit update]
 
   def new
     @profile = current_user.build_profile
@@ -21,9 +22,18 @@ class ProfilesController < ApplicationController
 
   def show
     @profile = Profile.find_by(id: params[:id])
-    return if @profile
+    redirect_to profiles_path unless @profile
+  end
 
-    redirect_to profiles_path # alert: "プロフィールが見つかりません"
+  def edit
+  end
+
+  def update
+    if @profile.update(profile_params)
+      redirect_to profile_path(@profile)
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   private
@@ -34,5 +44,10 @@ class ProfilesController < ApplicationController
 
   def redirect_if_profile_exists
     redirect_to root_path, notice: "プロフィールは作成済みです" if current_user.profile
+  end
+
+  def set_profile
+    @profile = current_user.profile
+    redirect_to new_my_profile_path unless @profile
   end
 end

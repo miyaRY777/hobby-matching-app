@@ -7,4 +7,8 @@ class User < ApplicationRecord
 has_one :profile, dependent: :destroy
 
 validates :nickname, presence: true, length: { maximum: 20 }
+
+  def own?(record)
+    record.present? && record.user_id == id
+  end
 end
