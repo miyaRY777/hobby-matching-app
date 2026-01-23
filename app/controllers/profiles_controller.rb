@@ -10,8 +10,10 @@ class ProfilesController < ApplicationController
   def create
     @profile = current_user.build_profile(profile_params)
     if @profile.save
+      #TODO あとでroot_path → profiles_pathに変更
       redirect_to root_path, notice: "プロフィールを作成しました"
     else
+      flash.now[:alert] = "プロフィールを作成できませんでした"
       render :new, status: :unprocessable_entity
     end
   end
@@ -30,15 +32,16 @@ class ProfilesController < ApplicationController
 
   def update
     if @profile.update(profile_params)
-      redirect_to profile_path(@profile)
+      redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
     else
+      flash.now[:alert] = "プロフィールを更新できませんでした"
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
     @profile.destroy
-    redirect_to profiles_path
+    redirect_to profiles_path, alert: "プロフィールを削除しました"
   end
 
   private
@@ -53,6 +56,6 @@ class ProfilesController < ApplicationController
 
   def set_profile
     @profile = current_user.profile
-    redirect_to new_my_profile_path unless @profile
+    redirect_to new_my_profile_path,  alert: "プロフィールを作成してください" unless @profile
   end
 end
