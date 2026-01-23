@@ -23,7 +23,7 @@ resources :profiles, only: %i[index show]
 resource :profile,
          as: :my_profile,
          controller: :profiles,
-         only: %i[new create edit update]
+         only: %i[new create edit update destroy]
 
   # resources :posts
 end

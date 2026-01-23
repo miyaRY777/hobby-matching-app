@@ -1,7 +1,7 @@
 class ProfilesController < ApplicationController
-  before_action :authenticate_user!
-  before_action :redirect_if_profile_exists, only: %i[new create]
-  before_action :set_profile, only: %i[edit update]
+  before_action :authenticate_user! # 誰？
+  before_action :redirect_if_profile_exists, only: %i[new create] # 作れる？
+  before_action :set_profile, only: %i[edit update destroy] # どれ？
 
   def new
     @profile = current_user.build_profile
@@ -36,6 +36,11 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def destroy
+    @profile.destroy
+    redirect_to profiles_path
+  end
+
   private
 
   def profile_params
@@ -43,7 +48,7 @@ class ProfilesController < ApplicationController
   end
 
   def redirect_if_profile_exists
-    redirect_to root_path, notice: "プロフィールは作成済みです" if current_user.profile
+    redirect_to profiles_path, notice: "プロフィールは作成済みです" if current_user.profile
   end
 
   def set_profile
