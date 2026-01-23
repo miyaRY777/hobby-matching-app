@@ -11,7 +11,7 @@ class ProfilesController < ApplicationController
     @profile = current_user.build_profile(profile_params)
     if @profile.save
       #TODO あとでroot_path → profiles_pathに変更
-      redirect_to root_path, notice: "プロフィールを作成しました"
+      redirect_to profiles_path, notice: "プロフィールを作成しました"
     else
       flash.now[:alert] = "プロフィールを作成できませんでした"
       render :new, status: :unprocessable_entity
