@@ -10,7 +10,6 @@ class ProfilesController < ApplicationController
   def create
     @profile = current_user.build_profile(profile_params)
     if @profile.save
-      #TODO あとでroot_path → profiles_pathに変更
       redirect_to profiles_path, notice: "プロフィールを作成しました"
     else
       flash.now[:alert] = "プロフィールを作成できませんでした"
