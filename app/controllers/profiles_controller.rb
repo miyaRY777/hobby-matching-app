@@ -48,7 +48,7 @@ class ProfilesController < ApplicationController
   end
 
   def redirect_if_profile_exists
-    redirect_to root_path, notice: "プロフィールは作成済みです" if current_user.profile
+    redirect_to profiles_path, notice: "プロフィールは作成済みです" if current_user.profile
   end
 
   def set_profile
