@@ -14,5 +14,14 @@
   <%= render "form",
         profile: @profile,
         submit_label: "更新する" %>
+  
+  <hr>
 
+  <div class="mt-6 pt-4 border-t border-gray-200">
+    <%= button_to "プロフィールを削除する",
+      my_profile_path,
+      method: :delete,
+      data: { turbo_confirm: "本当に削除しますか？" },
+      class: "w-full bg-red-50 text-red-600 py-2 rounded-lg text-sm hover:bg-red-100 transition" %>
+  </div>
 </div>

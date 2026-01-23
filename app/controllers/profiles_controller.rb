@@ -1,7 +1,7 @@
 class ProfilesController < ApplicationController
   before_action :authenticate_user! # 誰？
   before_action :redirect_if_profile_exists, only: %i[new create] # 作れる？
-  before_action :set_profile, only: %i[edit update] # どれ？
+  before_action :set_profile, only: %i[edit update destroy] # どれ？
 
   def new
     @profile = current_user.build_profile
@@ -34,6 +34,11 @@ class ProfilesController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @profile.destroy
+    redirect_to profiles_path
   end
 
   private
