@@ -1,7 +1,7 @@
 class ProfilesController < ApplicationController
-  before_action :authenticate_user!
-  before_action :redirect_if_profile_exists, only: %i[new create]
-  before_action :set_profile, only: %i[edit update]
+  before_action :authenticate_user! # 誰？
+  before_action :redirect_if_profile_exists, only: %i[new create] # 作れる？
+  before_action :set_profile, only: %i[edit update] # どれ？
 
   def new
     @profile = current_user.build_profile
