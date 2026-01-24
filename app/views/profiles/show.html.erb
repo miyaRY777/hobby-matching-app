@@ -24,10 +24,15 @@
       </p>
     </div>
 
-    <% if current_user.own?(@profile) %>
-      <%= link_to "編集する", edit_my_profile_path, class: "text-blue-600 hover:underline" %>
-    <% end %>
+    <div class="mt-8 flex flex-col gap-3 items-center">
+      <% if current_user == @profile.user %>
+          <%= link_to "編集する", edit_my_profile_path, class: "w-full max-w-xs px-4 py-2 rounded bg-blue-600 text-white text-center hover:bg-blue-700" %>
+      <% end %>
 
+      <%= link_to "プロフィール一覧へ戻る",
+              profiles_path,
+              class: "text-sm text-gray-600 hover:underline" %>
+    </div>
   </div>
 
 </div>
