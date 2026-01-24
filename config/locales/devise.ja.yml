@@ -32,8 +32,9 @@ ja:
   devise:
     failure:
       invalid: "%{authentication_keys}またはパスワードが違います。"
-      unauthenticated: "ログインまたは新規登録してください"
+      unauthenticated: "ログインまたは新規登録してください。"
       not_found_in_database: "メールアドレスまたはパスワードが違います。"
+      already_authenticated: "すでにログインしています。"
     registrations:
       user:
         signed_up: ユーザー登録に成功しました。
