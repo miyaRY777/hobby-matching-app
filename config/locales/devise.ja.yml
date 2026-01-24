@@ -5,7 +5,7 @@ ja:
         user:
           attributes:
             email:
-              taken: "は既に使用されています。"
+              taken: "は使用できません。"
               blank: "が入力されていません。"
               invalid: "は有効でありません。"
             nickname:

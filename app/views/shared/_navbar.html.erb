@@ -1,9 +1,8 @@
 <nav class="bg-gray-800 px-4 py-2.5">
   <div class="container mx-auto flex items-center justify-between">
     <!-- ロゴ -->
-    <%= link_to "hobby-matching-app",
-                profiles_path,
-                class: "text-white text-xl font-semibold whitespace-nowrap" %>
+    <%= link_to "hobby-matching-app", user_signed_in? ? profiles_path : root_path, class: "text-white text-xl font-semibold whitespace-nowrap" %>
+
 
     <!-- 右側メニュー -->
     <div class="flex items-center gap-x-4">
