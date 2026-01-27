@@ -33,6 +33,6 @@ module Myapp
       g.helper false
       g.assets false
       g.test_framework nil
-    end 
+    end
   end
 end
