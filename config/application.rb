@@ -25,5 +25,14 @@ module Myapp
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.i18n.default_locale = :ja
+
+    # Don't generate system test files.
+    config.generators.system_tests = nil
+    config.generators do |g|
+      g.skip_routes true
+      g.helper false
+      g.assets false
+      g.test_framework nil
+    end 
   end
 end
