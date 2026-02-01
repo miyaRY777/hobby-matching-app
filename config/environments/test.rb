@@ -64,4 +64,7 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Spring（rspec高速化）のキャッシュを効かせすぎないため、テスト環境ではクラス再読み込みを有効化
+  config.cache_classes = false
 end
