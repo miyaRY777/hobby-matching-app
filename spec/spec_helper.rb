@@ -91,4 +91,6 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+
+  config.include FactoryBot::Syntax::Methods # ブロック内の最下段に追記
 end
