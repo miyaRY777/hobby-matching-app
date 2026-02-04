@@ -15,9 +15,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_04_120347) do
   enable_extension "plpgsql"
 
   create_table "hobbies", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_hobbies_on_name", unique: true
   end
 
   create_table "profiles", force: :cascade do |t|
