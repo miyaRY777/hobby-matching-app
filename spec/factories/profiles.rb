@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :profile do
     association :user
-    sequence(:nickname) { |n| "test#{n}" }
+    bio { "テスト用の自己紹介です" }
   end
 end
 
