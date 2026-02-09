@@ -1,14 +1,17 @@
+# frozen_string_literal: true
 require "rails_helper"
 
 RSpec.describe Hobby, type: :model do
-  it "name がないと無効" do
-    hobby = described_class.new(name: nil)
-    expect(hobby).not_to be_valid
-  end
+  describe "バリデーション" do
+    it "name が空だと無効になる" do
+      hobby = described_class.new(name: nil)
+      expect(hobby).to be_invalid
+    end
 
-  it "name はユニーク" do
-    described_class.create!(name: "rails")
-    dup = described_class.new(name: "rails")
-    expect(dup).not_to be_valid
+    it "同じ name は重複して保存できない" do
+      described_class.create!(name: "rails")
+      hobby = described_class.new(name: "rails")
+      expect(hobby).to be_invalid
+    end
   end
 end
