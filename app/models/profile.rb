@@ -6,6 +6,8 @@ class Profile < ApplicationRecord
   has_many :profile_hobbies, dependent: :destroy
   has_many :hobbies, through: :profile_hobbies
 
+  attr_accessor :hobbies_text
+
   def update_hobbies_from(str)
     names = HobbyNamesParser.call(str)
 
