@@ -35,6 +35,7 @@ class ProfilesController < ApplicationController
       @profile.update_hobbies_from(profile_params[:hobbies_text])
       redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
     else
+        @hobbies_text = profile_params[:hobbies_text]
       flash.now[:alert] = "プロフィールを更新できませんでした"
       render :edit, status: :unprocessable_entity
     end
