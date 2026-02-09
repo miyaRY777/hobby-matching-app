@@ -16,6 +16,14 @@
       </p>
     </div>
 
+    <!-- タグ -->
+    <div>
+      <% @profile.hobbies.each do |hobby| %>
+        <span><%= hobby.name %></span>
+      <% end %>
+    </div>
+
+
     <!-- 自己紹介 -->
     <div>
       <p class="text-sm text-gray-500 mb-1">自己紹介</p>
