@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Profile, type: :model do
@@ -30,7 +31,7 @@ RSpec.describe Profile, type: :model do
       expect { profile.update_hobbies_from("rails") }
         .not_to change(Hobby, :count)
 
-      expect(profile.hobbies.pluck(:name)).to eq(["rails"])
+      expect(profile.hobbies.pluck(:name)).to eq([ "rails" ])
     end
   end
 end

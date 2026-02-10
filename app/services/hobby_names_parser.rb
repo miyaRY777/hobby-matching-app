@@ -4,7 +4,7 @@ class HobbyNamesParser
        .split(",")
        .map(&:strip)
        .reject(&:blank?)
-       .map(&:downcase) 
+       .map(&:downcase)
        .uniq
   end
 end

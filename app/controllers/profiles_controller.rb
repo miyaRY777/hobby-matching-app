@@ -27,7 +27,7 @@ class ProfilesController < ApplicationController
   end
 
   def edit
-    @hobbies_text = @profile.hobbies.pluck(:name).join(',')
+    @hobbies_text = @profile.hobbies.pluck(:name).join(",")
   end
 
   def update
