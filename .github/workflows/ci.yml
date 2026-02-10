@@ -74,6 +74,12 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
         run: bin/rails db:test:prepare
+      
+      - name: Build assets (CSS/JS)
+        env:
+          RAILS_ENV: test
+          SECRET_KEY_BASE_DUMMY: "1"
+        run: bin/rails assets:precompile
 
       - name: Run RSpec
         env:
