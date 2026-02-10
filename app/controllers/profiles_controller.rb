@@ -27,12 +27,15 @@ class ProfilesController < ApplicationController
   end
 
   def edit
+    @hobbies_text = @profile.hobbies.pluck(:name).join(",")
   end
 
   def update
-    if @profile.update(profile_params)
+    if @profile.update(profile_params.except(:hobbies_text))
+      @profile.update_hobbies_from(profile_params[:hobbies_text])
       redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
     else
+        @hobbies_text = profile_params[:hobbies_text]
       flash.now[:alert] = "プロフィールを更新できませんでした"
       render :edit, status: :unprocessable_entity
     end
@@ -46,7 +49,7 @@ class ProfilesController < ApplicationController
   private
 
   def profile_params
-    params.require(:profile).permit(:bio)
+    params.require(:profile).permit(:bio, :hobbies_text)
   end
 
   def redirect_if_profile_exists

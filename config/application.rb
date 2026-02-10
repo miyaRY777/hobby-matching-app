@@ -32,7 +32,7 @@ module Myapp
       g.skip_routes true
       g.helper false
       g.assets false
-      g.test_framework nil
+      g.test_framework :rspec, fixture: false
     end
   end
 end

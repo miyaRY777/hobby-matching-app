@@ -71,4 +71,10 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include FactoryBot::Syntax::Methods # ブロック内の最下段に追記
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # JSなし system spec は rack_test（ブラウザ起動しない）
+  config.before(:each, type: :system) do
+    driven_by(:rack_test)
+  end
 end

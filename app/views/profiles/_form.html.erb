@@ -14,6 +14,14 @@
     </div>
   <% end %>
 
+  <div>
+    <%= f.label :hobbies_text, "タグ" %>
+    <br>
+    <%= f.text_field :hobbies_text,
+        placeholder: "例：アニメ, 野球, 料理",
+        value: @hobbies_text %>
+  </div>
+
   <div class="space-y-2">
     <%= f.label :bio, "自己紹介",
           class: "block text-sm font-semibold text-gray-700" %>
