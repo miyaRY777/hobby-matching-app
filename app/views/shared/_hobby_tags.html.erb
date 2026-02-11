@@ -1,11 +1,17 @@
-<%# locals: hobbies: Array (nil OK) %>
 <% hobby_list = Array(hobbies).compact %>
+<% limit = local_assigns.fetch(:limit, nil) %>
+<% visible = limit ? hobby_list.first(limit) : hobby_list %>
+<% hidden_count = limit ? [hobby_list.size - visible.size, 0].max : 0 %>
 
 <div class="tag-section">
   <% if hobby_list.any? %>
     <ul class="tag-list" aria-label="趣味タグ一覧">
-      <% hobby_list.each do |hobby| %>
+      <% visible.each do |hobby| %>
         <li class="tag-chip"><%= hobby.name %></li>
+      <% end %>
+
+      <% if hidden_count.positive? %>
+        <li class="tag-chip tag-chip-muted">+<%= hidden_count %></li>
       <% end %>
     </ul>
   <% else %>
