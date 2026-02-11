@@ -17,11 +17,10 @@
     </div>
 
     <!-- タグ -->
-    <div>
-      <% @profile.hobbies.each do |hobby| %>
-        <span><%= hobby.name %></span>
-      <% end %>
-    </div>
+    <section>
+      <p class="text-sm text-gray-500 mb-1">趣味</p>
+      <%= render "shared/hobby_tags", hobbies: @profile.hobbies %>
+    </section>
 
 
     <!-- 自己紹介 -->
