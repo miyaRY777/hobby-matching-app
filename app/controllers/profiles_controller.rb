@@ -18,7 +18,7 @@ class ProfilesController < ApplicationController
   end
 
   def index
-    @profiles = Profile.includes(:user)
+    @profiles = Profile.includes(:user, :hobbies).order(created_at: :desc)
   end
 
   def show
