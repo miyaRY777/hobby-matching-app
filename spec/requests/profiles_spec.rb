@@ -28,7 +28,5 @@ RSpec.describe "Profiles", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("未登録")
     end
-
-    
   end
 end
