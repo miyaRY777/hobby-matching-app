@@ -8,6 +8,7 @@ RSpec.describe "Profiles", type: :request do
       sign_in user
     end
 
+    # タグ関連のテスト
     it "profiles一覧でタグが表示される" do
       profile = create(:profile)
       rails = create(:hobby, name: "rails")
