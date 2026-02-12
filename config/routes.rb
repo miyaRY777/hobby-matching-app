@@ -20,10 +20,5 @@ Rails.application.routes.draw do
 resources :profiles, only: %i[index show]
 
 # 自分用（単数）
-resource :profile,
-         as: :my_profile,
-         controller: :profiles,
-         only: %i[new create edit update destroy]
-
-  # resources :posts
+resource :my_profile, only: %i[new create edit update destroy]
 end
