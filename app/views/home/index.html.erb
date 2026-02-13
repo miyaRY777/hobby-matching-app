@@ -13,11 +13,16 @@
       <span class="font-semibold">補助ツール</span>
     </p>
 
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-primary btn-lg px-8" %>
-      <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-lg px-8" %>
-    </div>
-
+    <% if user_signed_in? %>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to "プロフィール一覧へ", profiles_path, class: "btn btn-primary btn-lg px-8" %>
+      </div>
+    <% else %>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-primary btn-lg px-8" %>
+        <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-lg px-8" %>
+      </div>
+    <% end %>
   </div>
 </section>
 
