@@ -1,24 +1,35 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-
-  # devise 追加
   before_action :configure_permitted_parameters, if: :devise_controller?
+
+  # 追加：戻り先を保存
+  before_action :store_user_location!, if: :storable_location?
 
   protected
 
-  # 新規登録後のリダイレクト先
   def after_sign_up_path_for(resource)
     root_path
   end
 
-  # ログイン後も同じ場所に飛ばしたい場合（任意）
+  # 修正：保存したlocationがあればそこへ。なければprofilesへ
   def after_sign_in_path_for(resource)
-    profiles_path
+    stored_location_for(resource) || profiles_path
   end
 
   def configure_permitted_parameters
-    # 新規登録時
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :nickname ])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:nickname])
+  end
+
+  private
+
+  def storable_location?
+    request.get? &&
+      is_navigational_format? &&
+      !devise_controller? &&
+      !request.xhr?
+  end
+
+  def store_user_location!
+    store_location_for(:user, request.fullpath)
   end
 end
