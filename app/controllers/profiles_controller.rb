@@ -8,5 +8,12 @@ class ProfilesController < ApplicationController
   def show
     @profile = Profile.find_by(id: params[:id])
     redirect_to profiles_path, alert: "プロフィールが見つかりません" unless @profile
+
+    @shared_hobbies =
+      if current_user
+        current_user.profile.hobbies & @profile.hobbies
+      else
+        []
+      end
   end
 end

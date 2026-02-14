@@ -22,6 +22,6 @@ RSpec.describe "Profiles#show shared hobbies", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("共通の趣味")
-    expect(response.body).to include("rails")
+    expect(response.body).to match(/共通の趣味.*rails/m)
   end
 end
