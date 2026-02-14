@@ -17,8 +17,8 @@ RSpec.describe "Login guard", type: :request do
     get edit_my_profile_path
     expect(response).to redirect_to(new_user_session_path)
 
-    post user_session_path, params:{
-      user: { email: user.email, password: user.password}
+    post user_session_path, params: {
+      user: { email: user.email, password: user.password }
     }
 
     # 元のページへリダイレクトされることを確認
