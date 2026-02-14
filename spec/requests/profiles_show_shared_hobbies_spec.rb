@@ -24,4 +24,15 @@ RSpec.describe "Profiles#show shared hobbies", type: :request do
     expect(response.body).to include("共通の趣味")
     expect(response.body).to match(/共通の趣味.*rails/m)
   end
+
+  it "自分のプロフィール詳細では共通の趣味セクションを表示しない" do
+    my_user = create(:user)
+    my_profile = create(:profile, user: my_user)
+
+    sign_in my_user
+    get profile_path(my_profile)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("共通の趣味")
+  end
 end
