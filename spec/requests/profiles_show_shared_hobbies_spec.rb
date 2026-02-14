@@ -35,4 +35,18 @@ RSpec.describe "Profiles#show shared hobbies", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).not_to include("共通の趣味")
   end
+
+  it "共通の０件の場合、メッセージが表示される" do
+    my_user = create(:user)
+    my_profile = create(:profile, user: my_user)
+
+    other_user = create(:user)
+    other_profile = create(:profile, user: other_user)
+
+    sign_in my_user
+    get profile_path(other_profile)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("共通の趣味はまだありません")
+  end
 end
