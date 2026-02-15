@@ -17,4 +17,8 @@ class Profile < ApplicationRecord
 
     self.hobbies = hobbies
   end
+
+  def shared_hobbies_with(other_profile)
+    hobbies.to_a & other_profile.hobbies.to_a
+  end
 end

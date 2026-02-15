@@ -22,6 +22,17 @@
       <%= render "shared/hobby_tags", hobbies: @profile.hobbies %>
     </section>
 
+    <% if current_user != @profile.user %>
+      <section>
+        <p class="text-sm text-gray-500 mb-1">共通の趣味</p>
+
+        <% if @shared_hobbies.any? %>
+          <%= render "shared/hobby_tags", hobbies: @shared_hobbies %>
+        <% else %>
+          <p class="text-sm text-gray-600">共通の趣味はまだありません</p>
+        <% end %>
+      </section>
+    <% end %>
 
     <!-- 自己紹介 -->
     <div>

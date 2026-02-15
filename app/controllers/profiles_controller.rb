@@ -6,7 +6,10 @@ class ProfilesController < ApplicationController
   end
 
   def show
-    @profile = Profile.find_by(id: params[:id])
-    redirect_to profiles_path, alert: "プロフィールが見つかりません" unless @profile
+    @profile = Profile.includes(:user, :hobbies).find_by(id: params[:id])
+    return redirect_to profiles_path, alert: "プロフィールが見つかりません" unless @profile
+
+    my_profile = current_user.profile
+    @shared_hobbies = my_profile ? my_profile.shared_hobbies_with(@profile) : []
   end
 end
