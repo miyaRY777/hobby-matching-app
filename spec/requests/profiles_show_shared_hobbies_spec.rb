@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe "Profiles#show shared hobbies", type: :request do
   it "ログイン済みで他人プロフィール詳細を聞くと、共通hobbiesが表示される" do
-
     # ログインユーザー
     my_user = create(:user)
     my_profile = create(:profile, user: my_user)

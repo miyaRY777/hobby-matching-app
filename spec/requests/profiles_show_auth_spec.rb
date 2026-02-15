@@ -6,6 +6,5 @@ RSpec.describe "Profiles#show authentication", type: :request do
 
     get profile_path(profile)
     expect(response).to redirect_to(new_user_session_path)
-
   end
 end
