@@ -49,4 +49,19 @@ RSpec.describe "Profiles#show shared hobbies", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("共通の趣味はまだありません")
   end
+
+  it "ログイン済みでもプロフィール未作成なら、共通hobbyは0件扱いで表示される" do
+    my_user = create(:user)
+    # わざと profile を作らない
+
+    other_user = create(:user)
+    other_profile = create(:profile, user: other_user)
+
+    sign_in my_user
+    get profile_path(other_profile)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("共通の趣味")
+    expect(response.body).to include("共通の趣味はまだありません")
+  end
 end
