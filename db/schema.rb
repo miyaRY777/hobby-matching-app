@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_17_004659) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_17_062327) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,6 +47,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_17_004659) do
     t.index ["issuer_profile_id"], name: "index_rooms_on_issuer_profile_id"
   end
 
+  create_table "share_links", force: :cascade do |t|
+    t.bigint "room_id", null: false
+    t.string "token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["room_id"], name: "index_share_links_on_room_id"
+    t.index ["token"], name: "index_share_links_on_token", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -64,4 +74,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_17_004659) do
   add_foreign_key "profile_hobbies", "profiles"
   add_foreign_key "profiles", "users"
   add_foreign_key "rooms", "profiles", column: "issuer_profile_id"
+  add_foreign_key "share_links", "rooms"
 end
