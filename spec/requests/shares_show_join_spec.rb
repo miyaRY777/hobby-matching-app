@@ -18,7 +18,7 @@ RSpec.describe "Shares#show", type: :request do
       get share_path(share_link.token)
     }.to change(RoomMembership, :count).by(1)
 
-    membership = RoomMembership.order(:create_at).last
+    membership = RoomMembership.order(:created_at).last
     expect(membership.room).to eq(room)
     expect(membership.profile).to eq(viewer_profile)
   end
