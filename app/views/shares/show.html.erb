@@ -1,3 +1,5 @@
+<h1><%= @room.label.presence || "名無しの部屋" %></h1>
+
 <% unless @viewer_profile %>
   プロフィール未登録です
   <%= link_to "プロフィール作成", new_my_profile_path %>
