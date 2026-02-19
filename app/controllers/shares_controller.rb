@@ -3,6 +3,7 @@ class SharesController < ApplicationController
 
   def show
     share_link = ShareLink.find_by!(token: params[:token])
+    return head :gone
 
     room = share_link.room
     viewer_profile = current_user.profile
