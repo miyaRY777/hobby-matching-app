@@ -1,2 +1,4 @@
-<h1>Shares#show</h1>
-<p>Find me in app/views/shares/show.html.erb</p>
+<% unless @viewer_profile %>
+  プロフィール未登録です
+  <%= link_to "プロフィール作成", new_my_profile_path %>
+<% end %>

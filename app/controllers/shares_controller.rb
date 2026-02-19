@@ -9,6 +9,6 @@ class SharesController < ApplicationController
     viewer_profile = current_user.profile
 
     RoomMembership.find_or_create_by!(room: room, profile: viewer_profile) if viewer_profile
-    head :ok
+
   end
 end
