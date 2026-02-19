@@ -2,3 +2,9 @@
   プロフィール未登録です
   <%= link_to "プロフィール作成", new_my_profile_path %>
 <% end %>
+
+<ul>
+  <% @memberships.each do |membership| %>
+    <li><%= membership.profile.user.nickname %></li>
+  <% end %>
+</ul>
