@@ -3,7 +3,7 @@ class SharesController < ApplicationController
 
   def show
     share_link = ShareLink.find_by!(token: params[:token])
-    return head :gone
+    return head :gone if share_link.expires_at <= Time.current
 
     room = share_link.room
     viewer_profile = current_user.profile
