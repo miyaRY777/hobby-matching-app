@@ -1,2 +1,98 @@
-<h1>My::ShareLinks#index</h1>
-<p>Find me in app/views/my/share_links/index.html.erb</p>
+<!-- app/views/my/share_links/index.html.erb -->
+
+<div class="max-w-6xl mx-auto px-6 py-10">
+
+  <h1 class="text-3xl font-bold mb-8">
+    🏠 発行者ダッシュボード
+  </h1>
+
+  <!-- 作成フォーム -->
+  <div class="bg-white shadow-md rounded-xl p-6 mb-10">
+    <h2 class="text-xl font-semibold mb-4">
+      ＋ 新しい共有リンクを作る
+    </h2>
+
+    <%= form_with model: Room.new, url: my_share_links_path, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :label, "部屋名（任意）", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :label,
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" %>
+      </div>
+
+      <%= f.submit "共有リンクを作成",
+            class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow" %>
+    <% end %>
+  </div>
+
+  <!-- 部屋一覧 -->
+  <% if @rooms.any? %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <% @rooms.each do |room| %>
+        <% link = room.share_link %>
+
+        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+
+          <!-- 部屋名 -->
+          <h3 class="text-lg font-semibold mb-3">
+            ■ <%= room.label.presence || "名無しの部屋" %>
+          </h3>
+
+          <% if link.present? %>
+
+            <!-- URL -->
+            <p class="text-sm text-gray-600 break-all mb-2">
+              共有URL:<br>
+              <%= link_to share_url(link.token),
+                          share_path(link.token),
+                          target: "_blank",
+                          class: "text-indigo-600 hover:underline" %>
+            </p>
+
+            <!-- 有効期限 -->
+            <p class="text-sm mb-2">
+              有効期限:
+              <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
+
+
+              <% if link.expires_at <= Time.current %>
+                <span class="ml-2 inline-block bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
+                  期限切れ
+                </span>
+              <% else %>
+                <span class="ml-2 inline-block bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                  有効
+                </span>
+              <% end %>
+            </p>
+
+          <% end %>
+
+          <!-- 参加人数 -->
+          <p class="text-sm text-gray-600 mb-4">
+            参加人数: <%= room.room_memberships.count %> 人
+          </p>
+
+          <!-- 操作 -->
+          <div class="flex justify-between text-sm">
+            <%= link_to "編集",
+                        "#",
+                        class: "text-blue-600 hover:underline" %>
+
+            <%= link_to "削除",
+                        "#",
+                        data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
+                        class: "text-red-600 hover:underline" %>
+          </div>
+
+        </div>
+      <% end %>
+
+    </div>
+
+  <% else %>
+    <p class="text-gray-500">まだ部屋は作成されていません。</p>
+  <% end %>
+
+</div>

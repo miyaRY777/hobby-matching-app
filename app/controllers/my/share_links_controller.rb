@@ -2,6 +2,8 @@ class My::ShareLinksController < ApplicationController
   before_action :authenticate_user!
 
   def index
+    profile = current_user.profile
+    @rooms = profile ? profile.issued_rooms.includes(:share_link) : Room.none
   end
 
   # あとで、Service Objectに切り出す
