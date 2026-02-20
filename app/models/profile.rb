@@ -7,7 +7,7 @@ class Profile < ApplicationRecord
   has_many :hobbies, through: :profile_hobbies
   has_many :room_memberships, dependent: :destroy
   has_many :joined_rooms, through: :room_memberships, source: :room
-  has_many :issued_rooms, class_name: "Room", foreign_key: :issuer_profile_id, inverse_of: :issuer_profile, dependent: :nullify
+  has_many :issued_rooms, class_name: "Room", foreign_key: :issuer_profile_id, inverse_of: :issuer_profile, dependent: :destroy
 
   attr_accessor :hobbies_text
 
