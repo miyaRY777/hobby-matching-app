@@ -72,6 +72,8 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods # ブロック内の最下段に追記
   config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Warden::Test::Helpers, type: :system
+  config.after(type: :system) { Warden.test_reset! }
 
   # JSなし system spec は rack_test（ブラウザ起動しない）
   config.before(:each, type: :system) do
