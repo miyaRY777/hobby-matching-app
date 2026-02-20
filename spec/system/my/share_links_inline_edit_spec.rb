@@ -17,6 +17,7 @@ RSpec.describe "My::ShareLinks inline edit", type: :system do
     expect(page).to have_content("名無しの部屋")
 
     click_on "編集"
+    expect(page).to have_current_path(my_share_links_path, ignore_query: true)
     fill_in "room_label", with: "グループ1"
     click_on "更新"
 
