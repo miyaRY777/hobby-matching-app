@@ -1,0 +1,10 @@
+<h1 class="text-xl font-semibold mb-4">部屋名の編集</h1>
+
+<%= form_with model: @room, url: my_share_link_path(@room), method: :patch do |f| %>
+  <div class="mb-4">
+    <%= f.label :label, "部屋名", class: "block text-sm font-medium mb-1" %>
+    <%= f.text_field :label, id: "room_label", class: "border rounded px-3 py-2 w-full" %>
+  </div>
+
+  <%= f.submit "更新", class: "bg-blue-600 text-white px-4 py-2 rounded" %>
+<% end %>
