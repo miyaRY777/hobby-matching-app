@@ -9,7 +9,7 @@ RSpec.describe "shares#show", type: :request do
 
     # 閲覧者のプロフィールを作成
     viewer = create(:user)
-    create(:profile, user:viewer)
+    create(:profile, user: viewer)
 
     # ログイン
     sign_in viewer

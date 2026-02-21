@@ -11,7 +11,7 @@ RSpec.describe "shares#show", type: :request do
     # 発行者をJOINさせる（初期メンバー）
     create(:room_membership, room: room, profile: issuer_profile)
 
-     # 参加者B, C, D を作成する
+    # 参加者B, C, D を作成する
     b_user = create(:user, nickname: "tana_B")
     b = create(:profile, user: b_user)
     c_user = create(:user, nickname: "tana_C")

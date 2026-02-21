@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe "Shares#show", type: :request do
   it "共有リンクが有効で、閲覧者にプロフィールがあるとき、room に参加する" do
-
     # 共有リンクを用意
     issuer = create(:profile)
     room = create(:room, issuer_profile: issuer)

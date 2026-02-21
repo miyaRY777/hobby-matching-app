@@ -9,7 +9,7 @@ RSpec.describe Room, type: :model do
 
   it "has associations" do
     room = described_class.reflect_on_association(:issuer_profile)
-    
+
     expect(room.macro).to eq(:belongs_to)
     expect(described_class.reflect_on_association(:room_memberships).macro).to eq(:has_many)
     expect(described_class.reflect_on_association(:profiles).macro).to eq(:has_many)
