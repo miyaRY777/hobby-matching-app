@@ -1,0 +1,58 @@
+        <%= turbo_frame_tag dom_id(room) do %>
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+
+            <!-- 部屋名 -->
+            <h3 class="text-lg font-semibold mb-3">
+              ■ <%= room.label.presence || "名無しの部屋" %>
+            </h3>
+
+            <% if link.present? %>
+
+              <!-- URL -->
+              <p class="text-sm text-gray-600 break-all mb-2">
+                共有URL:<br>
+                <%= link_to share_url(link.token),
+                            share_path(link.token),
+                            target: "_blank",
+                            class: "text-indigo-600 hover:underline" %>
+              </p>
+
+              <!-- 有効期限 -->
+              <p class="text-sm mb-2">
+                有効期限:
+                <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
+
+
+                <% if link.expires_at <= Time.current %>
+                  <span class="ml-2 inline-block bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
+                    期限切れ
+                  </span>
+                <% else %>
+                  <span class="ml-2 inline-block bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                    有効
+                  </span>
+                <% end %>
+              </p>
+
+            <% end %>
+
+            <!-- 参加人数 -->
+            <p class="text-sm text-gray-600 mb-4">
+              参加人数: <%= room.room_memberships.count %> 人
+            </p>
+
+            <!-- 操作 -->
+            <div class="flex justify-between text-sm">
+              <%= link_to "編集",
+                          edit_my_share_link_path(room),
+                          data: { turbo_frame: dom_id(room) },
+                          class: "text-blue-600 hover:underline" %>
+
+              <%= link_to "削除",
+                          "#",
+                          data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
+                          class: "text-red-600 hover:underline" %>
+            </div>
+
+          </div>
+        <% end %>

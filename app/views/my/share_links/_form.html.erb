@@ -1,0 +1,63 @@
+<%= turbo_frame_tag dom_id(room) do %>
+  <% link = room.share_link %>
+
+  <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+    <%= form_with model: room, url: my_share_link_path(room), method: :patch do |f| %>
+
+      <!-- 部屋名（編集） -->
+      <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+        <span>■</span>
+        <%= f.label :label, "部屋名", class: "sr-only" %>
+        <%= f.text_field :label,
+              placeholder: "名無しの部屋",
+              class: "w-64 max-w-full border rounded-md px-2 py-1 text-sm" %>
+      </h3>
+
+      <% if link.present? %>
+        <!-- URL（表示と同じ） -->
+        <p class="text-sm text-gray-600 break-all mb-2">
+          共有URL:<br>
+          <%= link_to share_url(link.token),
+                      share_path(link.token),
+                      target: "_blank",
+                      class: "text-indigo-600 hover:underline" %>
+        </p>
+
+        <!-- 有効期限（表示と同じ） -->
+        <p class="text-sm mb-2">
+          有効期限:
+          <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
+
+          <% if link.expires_at.present? %>
+            <% if link.expires_at <= Time.current %>
+              <span class="ml-2 inline-block bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
+                期限切れ
+              </span>
+            <% else %>
+              <span class="ml-2 inline-block bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                有効
+              </span>
+            <% end %>
+          <% end %>
+        </p>
+      <% end %>
+
+      <!-- 参加人数（表示と同じ） -->
+      <p class="text-sm text-gray-600 mb-4">
+        参加人数: <%= room.room_memberships.count %> 人
+      </p>
+
+      <!-- 操作（更新/キャンセル） -->
+      <div class="flex justify-between text-sm">
+        <span></span>
+        <div class="flex gap-4">
+          <%= f.submit "更新", class: "text-blue-600 hover:underline" %>
+          <%= link_to "キャンセル",
+                      my_share_links_path,
+                      class: "text-gray-600 hover:underline" %>
+        </div>
+      </div>
+
+    <% end %>
+  </div>
+<% end %>

@@ -19,7 +19,9 @@
 
   <body>
     <%= render "shared/navbar" %>
-    <%= render 'shared/flash' %>
+    <div id="flash">
+        <%= render 'shared/flash' %>
+    </div>
     <main class="container mx-auto mt-20 py-8 px-5 flex items-center justify-center">
       <%= yield %>
     </main>

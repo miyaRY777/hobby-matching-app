@@ -28,8 +28,17 @@ class My::ShareLinksController < ApplicationController
   end
 
   def update
-    @room.update!(room_params)
-    redirect_to my_share_links_path, notice: "部屋名を更新しました"
+    if @room.update(room_params)
+      respond_to do |format|
+        format.turbo_stream { flash.now[:notice] = "部屋名を更新しました" } # update.turbo_stream.erb が描画される
+        format.html { redirect_to my_share_links_path, notice: "部屋名を更新しました" }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_entity }
+      end
+    end
   end
 
   private
