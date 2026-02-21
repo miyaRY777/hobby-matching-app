@@ -25,6 +25,6 @@ Rails.application.routes.draw do
   get "/share/:token", to: "shares#show", as: :share
 
   namespace :my do
-    resources :share_links, only: %i[index create update edit]
+    resources :share_links, only: %i[index create update edit destroy]
   end
 end
