@@ -1,6 +1,6 @@
 class My::ShareLinksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_room, only: %i[edit update]
+  before_action :set_room, only: %i[edit update destroy]
 
   def index
     profile = current_user.profile
@@ -38,6 +38,14 @@ class My::ShareLinksController < ApplicationController
         format.turbo_stream { render :edit, status: :unprocessable_entity }
         format.html { render :edit, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def destroy
+    @room.destroy!
+    respond_to do |format|
+      format.turbo_stream { flash.now[:notice] = "部屋を削除しました" }
+      format.html { redirect_to my_share_links_path, notice: "部屋を削除しました" }
     end
   end
 
