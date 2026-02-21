@@ -16,9 +16,15 @@ Rails.application.routes.draw do
   # トップページ
   root "home#index"
 
-# 他人用（複数）
-resources :profiles, only: %i[index show]
+  # 他人用（複数）
+  resources :profiles, only: %i[index show]
 
-# 自分用（単数）
-resource :my_profile, only: %i[new create edit update destroy]
+  # 自分用（単数）
+  resource :my_profile, only: %i[new create edit update destroy]
+
+  get "/share/:token", to: "shares#show", as: :share
+
+  namespace :my do
+    resources :share_links, only: %i[index create update edit destroy]
+  end
 end

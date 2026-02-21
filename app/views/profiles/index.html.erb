@@ -3,6 +3,8 @@
   <h1 class="text-2xl font-semibold text-gray-800">
     プロフィール一覧
   </h1>
+  <%= link_to "共有リンク管理", my_share_links_path, class: "text-blue-600 hover:underline text-sm font-medium" %>
+
   <% @profiles.each do |profile| %>
     <%= render "profile_card", profile: profile %>
   <% end %>

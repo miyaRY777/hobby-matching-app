@@ -1,0 +1,42 @@
+<!-- app/views/my/share_links/index.html.erb -->
+
+<div class="max-w-6xl mx-auto px-6 py-10">
+
+  <h1 class="text-3xl font-bold mb-8">
+    🏠 発行者ダッシュボード
+  </h1>
+
+  <!-- 作成フォーム -->
+  <div class="bg-white shadow-md rounded-xl p-6 mb-10">
+    <h2 class="text-xl font-semibold mb-4">
+      ＋ 新しい共有リンクを作る
+    </h2>
+
+    <%= form_with model: Room.new, url: my_share_links_path, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :label, "部屋名（任意）", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :label,
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" %>
+      </div>
+
+      <%= f.submit "共有リンクを作成",
+            class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow" %>
+    <% end %>
+  </div>
+
+  <!-- 部屋一覧 -->
+  <% if @rooms.any? %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <% @rooms.each do |room| %>
+        <%= render "room", room: room, link: room.share_link %>
+      <% end %>
+
+    </div>
+
+  <% else %>
+    <p class="text-gray-500">まだ部屋は作成されていません。</p>
+  <% end %>
+
+</div>
