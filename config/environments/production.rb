@@ -102,4 +102,8 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # ホワイトリストに追加
+  config.hosts << "example.com"      # 独自ドメイン
+  config.hosts << "www.example.com"  # サブドメイン
 end
