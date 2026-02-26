@@ -106,4 +106,5 @@ Rails.application.configure do
   # ホワイトリストに追加
   config.hosts << "hobby-matching-app.com"      # 独自ドメイン
   config.hosts << "www.hobby-matching-app.com"  # サブドメイン
+  config.hosts << "hobby-matching-app.onrender.com" # 許可
 end
