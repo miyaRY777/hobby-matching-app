@@ -104,6 +104,6 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # ホワイトリストに追加
-  config.hosts << "example.com"      # 独自ドメイン
-  config.hosts << "www.example.com"  # サブドメイン
+  config.hosts << "hobby-matching-app.com"      # 独自ドメイン
+  config.hosts << "www.hobby-matching-app.com"  # サブドメイン
 end
