@@ -1,4 +1,4 @@
-<!-- app/views/my/share_links/index.html.erb -->
+<!-- app/views/my/rooms/index.html.erb -->
 
 <div class="max-w-6xl mx-auto px-6 py-10">
 
@@ -12,7 +12,7 @@
       ＋ 新しい共有リンクを作る
     </h2>
 
-    <%= form_with model: Room.new, url: my_share_links_path, class: "space-y-4" do |f| %>
+    <%= form_with model: Room.new, url: my_rooms_path, class: "space-y-4" do |f| %>
       <div>
         <%= f.label :label, "部屋名（任意）", class: "block text-sm font-medium text-gray-700" %>
         <%= f.text_field :label,

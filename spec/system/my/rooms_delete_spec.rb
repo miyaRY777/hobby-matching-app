@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "My::ShareLinks delete", type: :system, js: true do
+RSpec.describe "My::Rooms delete", type: :system, js: true do
   it "部屋をその場で削除できる" do
     user = create(:user)
     profile = create(:profile, user: user)
@@ -9,7 +9,7 @@ RSpec.describe "My::ShareLinks delete", type: :system, js: true do
     create(:share_link, room: room, expires_at: 1.hour.from_now)
 
     login_as(user, scope: :user)
-    visit my_share_links_path
+    visit my_rooms_path
 
     # まず表示されている
     expect(page).to have_selector("#room_#{room.id}")

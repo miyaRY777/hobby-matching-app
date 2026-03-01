@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "My::ShareLinks inline edit", type: :system, js: true do
+RSpec.describe "My::Rooms inline edit", type: :system, js: true do
   it "部屋名をその場で編集・更新する" do
     # 発行者（=ログインユーザー）を用意
     user = create(:user)
@@ -13,7 +13,7 @@ RSpec.describe "My::ShareLinks inline edit", type: :system, js: true do
     # system spec のログイン（Devise sign_in ではなく Warden）
     login_as(user, scope: :user)
 
-    visit my_share_links_path
+    visit my_rooms_path
     expect(page).to have_content("名無しの部屋")
 
     within("#room_#{room.id}") do
