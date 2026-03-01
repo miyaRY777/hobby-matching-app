@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "My::ShareLinks#create", type: :request do
+RSpec.describe "My::Rooms#create", type: :request do
   it "creates room, issuer membership, and share_link" do
     user = create(:user)
     profile = create(:profile, user: user)
@@ -8,7 +8,7 @@ RSpec.describe "My::ShareLinks#create", type: :request do
     sign_in user
 
     expect {
-      post my_share_links_path, params: { room: { label: "" } }
+      post my_rooms_path, params: { room: { label: "" } }
     }.to change(Room, :count).by(1)
      .and change(RoomMembership, :count).by(1)
      .and change(ShareLink, :count).by(1)

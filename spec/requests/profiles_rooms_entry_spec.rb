@@ -10,6 +10,6 @@ RSpec.describe "Profiles", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("共有リンク管理")
-    expect(response.body).to include(my_share_links_path)
+    expect(response.body).to include(my_rooms_path)
   end
 end

@@ -1,4 +1,4 @@
-<%= turbo_stream.replace @room, partial: "my/share_links/room",
+<%= turbo_stream.replace @room, partial: "my/rooms/room",
     locals: { room: @room, link: @room.share_link } %>
 
 <%= turbo_stream.update "flash", partial: "shared/flash" %>

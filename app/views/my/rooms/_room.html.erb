@@ -44,12 +44,12 @@
             <!-- 操作 -->
             <div class="flex justify-between text-sm">
               <%= link_to "編集",
-                          edit_my_share_link_path(room),
+                          edit_my_room_path(room),
                           data: { turbo_frame: dom_id(room) },
                           class: "text-blue-600 hover:underline" %>
 
               <%= link_to "削除",
-                          my_share_link_path(room),
+                          my_room_path(room),
                           data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
                           class: "text-red-600 hover:underline" %>
             </div>

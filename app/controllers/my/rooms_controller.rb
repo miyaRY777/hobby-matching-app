@@ -1,4 +1,4 @@
-class My::ShareLinksController < ApplicationController
+class My::RoomsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_room, only: %i[edit update destroy]
 
@@ -24,14 +24,14 @@ class My::ShareLinksController < ApplicationController
       ShareLink.create!(room: room)
     end
 
-    redirect_to my_share_links_path
+    redirect_to my_rooms_path
   end
 
   def update
     if @room.update(room_params)
       respond_to do |format|
         format.turbo_stream { flash.now[:notice] = "部屋名を更新しました" } # update.turbo_stream.erb が描画される
-        format.html { redirect_to my_share_links_path, notice: "部屋名を更新しました" }
+        format.html { redirect_to my_rooms_path, notice: "部屋名を更新しました" }
       end
     else
       respond_to do |format|
@@ -45,7 +45,7 @@ class My::ShareLinksController < ApplicationController
     @room.destroy!
     respond_to do |format|
       format.turbo_stream { flash.now[:notice] = "部屋を削除しました" }
-      format.html { redirect_to my_share_links_path, notice: "部屋を削除しました" }
+      format.html { redirect_to my_rooms_path, notice: "部屋を削除しました" }
     end
   end
 
