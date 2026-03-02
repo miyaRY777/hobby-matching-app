@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_17_130019) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_02_113759) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,7 +63,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_17_130019) do
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["room_id"], name: "index_share_links_on_room_id"
+    t.index ["room_id"], name: "index_share_links_on_room_id", unique: true
     t.index ["token"], name: "index_share_links_on_token", unique: true
   end
 

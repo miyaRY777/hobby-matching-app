@@ -1,6 +1,8 @@
 class ShareLink < ApplicationRecord
   belongs_to :room
 
+  validates :room_id, uniqueness: true
+
   before_validation :set_token, on: :create
   before_validation :set_expires_at, on: :create
 
