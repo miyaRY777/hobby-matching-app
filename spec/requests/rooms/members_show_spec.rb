@@ -46,7 +46,7 @@ RSpec.describe "Rooms::Members#show", type: :request do
       hobby_a = create(:hobby, name: "登山")
       hobby_b = create(:hobby, name: "読書")
 
-      issuer_profile.hobbies << [hobby_a, hobby_b]
+      issuer_profile.hobbies << [ hobby_a, hobby_b ]
       viewer_profile.hobbies << hobby_a
 
       # viewer視点で issuer の詳細ページを閲覧
