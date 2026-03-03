@@ -24,6 +24,8 @@ Rails.application.routes.draw do
 
   get "/share/:token", to: "shares#show", as: :share
 
+  get "/rooms/:room_id/members/:id", to: "rooms/members#show", as: :room_member
+
   namespace :my do
     resources :rooms, only: %i[index create update edit destroy]
   end
