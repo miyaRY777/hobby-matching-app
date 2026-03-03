@@ -1,0 +1,26 @@
+<turbo-frame id="member_detail">
+  <div class="p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">
+      <%= @profile.user.nickname.presence || "no-name" %>
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-2">この部屋での趣味</p>
+    <% if @shared_hobbies.any? %>
+      <ul class="flex flex-wrap gap-2">
+        <% @shared_hobbies.each do |hobby| %>
+          <li class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+            <%= hobby.name %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-400 text-sm">趣味が登録されていません</p>
+    <% end %>
+
+    <div class="mt-4">
+      <%= link_to "プロフィール詳細を見る", profile_path(@profile),
+                  class: "text-blue-600 hover:underline text-sm",
+                  data: { turbo_frame: "_top" } %>
+    </div>
+  </div>
+</turbo-frame>
