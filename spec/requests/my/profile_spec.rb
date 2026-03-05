@@ -1,13 +1,13 @@
 require 'rails_helper'
 
-RSpec.describe "MyProfiles", type: :request do
+RSpec.describe "My::Profile", type: :request do
   let(:user) { create(:user) }
 
   before do
     sign_in user
   end
 
-  describe "GET /my_profile/edit" do
+  describe "GET /my/profile/edit" do
     it "未作成なら、newへリダイレクトしalertが出る" do
       get edit_my_profile_path
 
@@ -18,7 +18,7 @@ RSpec.describe "MyProfiles", type: :request do
     end
   end
 
-  describe "GET /my_profile/new" do
+  describe "GET /my/profile/new" do
     it "作成済みなら一覧へリダイレクトしnoticeが出る" do
       create(:profile, user:)
 
