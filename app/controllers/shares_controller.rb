@@ -34,7 +34,7 @@ class SharesController < ApplicationController
     # includes により N+1 クエリを防止
     # --------------------------------------------------
     @memberships = @room.room_memberships
-                        .includes(profile: [:user, :hobbies])
+                        .includes(profile: [ :user, :hobbies ])
                         .order(created_at: :asc)
 
     # --------------------------------------------------
@@ -56,7 +56,6 @@ class SharesController < ApplicationController
   # クリック時に Turbo Frame で右ペインを更新できるようにする
   # --------------------------------------------------
   def build_jsmind_data(room, memberships)
-
     # --------------------------------------------------
     # 趣味 => その趣味を持つプロフィール一覧
     # --------------------------------------------------
@@ -75,7 +74,6 @@ class SharesController < ApplicationController
     # - プロフィールID順
     # --------------------------------------------------
     hobby_nodes = hobby_to_profiles.sort_by { |hobby, _| hobby.name }.map do |hobby, profiles|
-
       profile_nodes = profiles.sort_by(&:id).map do |profile|
         {
           # jsMind ノードIDはツリー内で一意である必要がある
