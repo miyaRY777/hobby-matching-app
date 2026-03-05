@@ -1,60 +1,99 @@
-# 共有リンク（token）で部屋に入るページを表示するために、必要なデータを集めてビューに渡すのが目的
+# 共有リンク（token）から部屋ページを表示するコントローラ
+# - トークン検証
+# - 部屋参加処理
+# - マインドマップ表示用データの準備
 class SharesController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    # token から共有リンクを取得（存在しなければ404）
+    # --------------------------------------------------
+    # 1. 共有リンク取得（存在しない場合は 404）
+    # --------------------------------------------------
     share_link = ShareLink.find_by!(token: params[:token])
 
-    # 期限切れは「もう使えない共有リンク」として 410 Gone を返す
+    # --------------------------------------------------
+    # 2. 有効期限チェック
+    # 期限切れの場合は「410 Gone」を返す
+    # --------------------------------------------------
     return head :gone if share_link.expires_at <= Time.current
 
-    # 表示対象の部屋 と 閲覧者のプロフィール
+    # --------------------------------------------------
+    # 3. 表示対象の部屋と閲覧ユーザーのプロフィール取得
+    # --------------------------------------------------
     @room = share_link.room
     @viewer_profile = current_user.profile
 
-    # 共有リンク閲覧を「部屋参加」として扱い、未参加ならメンバーシップを作成
+    # --------------------------------------------------
+    # 4. 共有リンク閲覧を「部屋参加」として扱う
+    # 未参加の場合のみ RoomMembership を作成
+    # --------------------------------------------------
     RoomMembership.find_or_create_by!(room: @room, profile: @viewer_profile) if @viewer_profile
 
-    # マインドマップ表示に必要な情報をまとめて取得（N+1回避）
+    # --------------------------------------------------
+    # 5. マインドマップ表示用データ取得
+    # includes により N+1 クエリを防止
+    # --------------------------------------------------
     @memberships = @room.room_memberships
-                        .includes(profile: [ :user, :hobbies ])
+                        .includes(profile: [:user, :hobbies])
                         .order(created_at: :asc)
 
-    # jsMind 用の node_tree データを生成してビューへ渡す
+    # --------------------------------------------------
+    # 6. jsMind 用データ生成
+    # --------------------------------------------------
     @jsmind_data = build_jsmind_data(@room, @memberships)
   end
 
   private
 
-  # jsMind の "node_tree" 形式に合わせて「趣味（親）→ユーザー（子）」のツリーを組み立てる
-  # クリック時に右ペインを更新できるよう、ユーザーノードに member 詳細URL を data.url として埋め込む
+  # --------------------------------------------------
+  # jsMind 用の node_tree 形式データを生成
+  #
+  # 構造
+  #   趣味（親ノード）
+  #      └ ユーザー（子ノード）
+  #
+  # ユーザーノードには member 詳細ページのURLを持たせ、
+  # クリック時に Turbo Frame で右ペインを更新できるようにする
+  # --------------------------------------------------
   def build_jsmind_data(room, memberships)
-    # 趣味 => その趣味を持つプロフィール一覧 を集計
-    hobby_to_profiles = {}
-    memberships.each do |membership|
 
-      # 見た目を安定させるため、趣味名で並べ替えてから集計
+    # --------------------------------------------------
+    # 趣味 => その趣味を持つプロフィール一覧
+    # --------------------------------------------------
+    hobby_to_profiles = {}
+
+    memberships.each do |membership|
+      # 表示順を安定させるため趣味名でソート
       membership.profile.hobbies.sort_by(&:name).each do |hobby|
         (hobby_to_profiles[hobby] ||= []) << membership.profile
       end
     end
 
-    # 画面の差分を安定させるため、趣味名→プロフィールIDの順で並べてノード化
+    # --------------------------------------------------
+    # jsMind ノード生成
+    # - 趣味名順
+    # - プロフィールID順
+    # --------------------------------------------------
     hobby_nodes = hobby_to_profiles.sort_by { |hobby, _| hobby.name }.map do |hobby, profiles|
+
       profile_nodes = profiles.sort_by(&:id).map do |profile|
         {
-          # jsMindノードIDはツリー内で一意になる必要があるため、profile と hobby を組み合わせる
+          # jsMind ノードIDはツリー内で一意である必要がある
           id: "p_#{profile.id}_h_#{hobby.id}",
           topic: profile.user.nickname.presence || "no-name",
+
+          # ノードクリック時に呼び出すメンバー詳細URL
           data: { url: room_member_path(room_id: room.id, id: profile.id) }
         }
       end
-      # ノードクリック時に叩くURL（Turbo Frameで詳細表示する想定）
+
+      # 趣味ノード（親）
       { id: "hobby_#{hobby.id}", topic: hobby.name, children: profile_nodes }
     end
 
-    # jsMindが期待するルート付きツリー（format: node_tree）
+    # --------------------------------------------------
+    # jsMind が期待するルート付きツリー構造
+    # --------------------------------------------------
     {
       meta: { name: "room-map", version: "0.2" },
       format: "node_tree",
