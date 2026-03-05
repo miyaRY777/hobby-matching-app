@@ -19,14 +19,13 @@ Rails.application.routes.draw do
   # 他人用（複数）
   resources :profiles, only: %i[index show]
 
-  # 自分用（単数）
-  resource :my_profile, only: %i[new create edit update destroy]
-
   get "/share/:token", to: "shares#show", as: :share
 
   get "/rooms/:room_id/members/:id", to: "rooms/members#show", as: :room_member
 
   namespace :my do
+    # 自分用（単数）
+    resource :profile, only: %i[new create edit update destroy]
     resources :rooms, only: %i[index create update edit destroy]
   end
 end
