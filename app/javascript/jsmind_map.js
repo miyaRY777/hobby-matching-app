@@ -18,8 +18,11 @@ document.addEventListener("turbo:load", () => {
 
   jm.add_event_listener((type, data) => {
     if (type !== jsMind.event_type.select) return;
-    const node = jm.get_node(data.node);
-    const url = node && node.data && node.data.data && node.data.data.url;
+
+    const nodeId = data.node;
+    const node = jm.get_node(nodeId);
+
+    const url = node?.data?.data?.url;
     if (!url) return;
 
     document.getElementById("member_detail").src = url;
