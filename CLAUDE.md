@@ -73,6 +73,25 @@
 
 ---
 
+# コミット粒度ルール
+
+コミットは **責務単位** で分割する。1つのPRに複数コミットを持たせてよい。
+
+## 分割の基準（例）
+
+| コミット | 対象 |
+|---------|------|
+| Query / Service オブジェクト追加 | `app/queries/`, `app/services/` + そのspec |
+| Controller・ビューへの組み込み | `app/controllers/`, `app/views/` + request spec |
+| マイグレーション | `db/migrate/`, `db/schema.rb` のみ |
+| モデル変更 | `app/models/` + model spec |
+
+* 1コミットに詰め込みすぎない
+* 「何を変えたか」が1行で言えない場合は分割を検討する
+* コミット前に必ずユーザーに分割案を提示し、確認を得る
+
+---
+
 # 禁止事項
 
 * Issueなしで実装開始
