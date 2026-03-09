@@ -1,4 +1,17 @@
-<%= form_with url: profiles_path, method: :get, local: true, class: "flex flex-col gap-4" do |f| %>
+<%= form_with url: profiles_path,
+      method: :get,
+      local: false,
+      data: {
+        controller: "profile-search",
+        profile_search_target: "form",
+        turbo_frame: "profile_list"
+      },
+      class: "flex flex-col gap-4" do |f| %>
+
+  <!-- AND/OR hidden フィールド -->
+  <% current_mode = params[:mode] == "or" ? "or" : "and" %>
+  <%= hidden_field_tag :mode, current_mode, data: { profile_search_target: "mode" } %>
+
   <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
 
     <!-- 検索ワード入力 -->
@@ -7,20 +20,26 @@
       <%= f.text_field :q,
             value: params[:q],
             placeholder: "例：ゲーム, 釣り",
+            data: { action: "input->profile-search#search" },
             class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" %>
     </div>
 
     <!-- AND/OR トグル -->
     <div class="flex items-center gap-2">
       <span class="text-sm font-medium text-gray-700">検索モード：</span>
-      <% current_mode = params[:mode] == "or" ? "or" : "and" %>
 
-      <%= link_to "AND",
-            profiles_path(q: params[:q], mode: "and"),
-            class: "px-3 py-1.5 rounded-l-lg border text-sm font-medium #{current_mode == 'and' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}" %>
-      <%= link_to "OR",
-            profiles_path(q: params[:q], mode: "or"),
-            class: "px-3 py-1.5 rounded-r-lg border-t border-b border-r text-sm font-medium #{current_mode == 'or' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}" %>
+      <button type="button"
+              data-action="click->profile-search#setMode"
+              data-profile-search-mode-param="and"
+              class="px-3 py-1.5 rounded-l-lg border text-sm font-medium <%= current_mode == 'and' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' %>">
+        AND
+      </button>
+      <button type="button"
+              data-action="click->profile-search#setMode"
+              data-profile-search-mode-param="or"
+              class="px-3 py-1.5 rounded-r-lg border-t border-b border-r text-sm font-medium <%= current_mode == 'or' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' %>">
+        OR
+      </button>
     </div>
 
     <!-- 検索ボタン -->
