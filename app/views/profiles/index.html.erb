@@ -8,9 +8,5 @@
   </div>
 
   <!-- カードグリッド：4列 -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <% @profiles.each do |profile| %>
-      <%= render "profile_card", profile: profile %>
-    <% end %>
-  </div>
+  <%= render "profile_list", profiles: @profiles %>
 </div>
