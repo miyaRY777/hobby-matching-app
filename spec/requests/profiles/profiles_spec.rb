@@ -29,6 +29,16 @@ RSpec.describe "Profiles", type: :request do
       expect(response.body).to include("未登録")
     end
 
+    context "Turbo Frame リクエストの場合" do
+      it "turbo-frame id='profile_list' のみを含むレスポンスを返す" do
+        get profiles_path, headers: { "Turbo-Frame" => "profile_list" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="profile_list"')
+        expect(response.body).not_to include("プロフィール一覧")
+      end
+    end
+
     context "検索クエリがある場合" do
       let(:target_user) { create(:user, nickname: "たろう") }
       let(:other_user)  { create(:user, nickname: "はなこ") }
