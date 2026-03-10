@@ -19,11 +19,13 @@
   <div class="mt-4 flex items-center gap-4">
     <%= link_to "詳細を見る",
                 profile_path(profile),
+                data: { turbo_frame: "_top" },
                 class: "text-blue-600 hover:underline text-sm font-medium" %>
 
     <% if current_user.own?(profile) %>
       <%= link_to "編集する",
                   edit_my_profile_path,
+                  data: { turbo_frame: "_top" },
                   class: "text-blue-600 hover:underline text-sm font-medium" %>
     <% end %>
   </div>
