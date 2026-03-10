@@ -1,22 +1,35 @@
-<%= form_with scope: resource, as: resource_name, url: session_path(resource_name), class: "space-y-6 w-3/4 max-w-lg bg-white p-6 rounded-lg shadow", local: true do |f| %>
- 
+<div class="flex flex-col w-3/4 max-w-lg bg-white p-6 rounded-lg shadow space-y-6">
   <label class="block text-xl font-bold text-gray-700">ログイン</label>
- 
-  <div class="mt-1">
-    <label class="text-gray-700 text-md">
-      メールアドレス
-    </label>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 py-1 px-2 block w-full sm:text-sm placeholder-gray-400 border border-gray-300 rounded-md", placeholder: "test@example.com" %>
+
+  <%= form_with scope: resource, as: resource_name, url: session_path(resource_name), class: "space-y-6", local: true do |f| %>
+    <div>
+      <label class="text-gray-700 text-md">メールアドレス</label>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 py-1 px-2 block w-full sm:text-sm placeholder-gray-400 border border-gray-300 rounded-md", placeholder: "test@example.com" %>
+    </div>
+
+    <div>
+      <label class="text-gray-700 text-md">パスワード</label>
+      <%= f.password_field :password, autocomplete: "password", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 py-1 px-2 block w-full sm:text-sm placeholder-gray-400 border border-gray-300 rounded-md", placeholder: "pass1234" %>
+    </div>
+
+    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:cursor-pointer">
+      ログイン
+    </button>
+  <% end %>
+
+  <div class="relative flex items-center">
+    <div class="flex-grow border-t border-gray-300"></div>
+    <span class="mx-3 text-sm text-gray-500"></span>
+    <div class="flex-grow border-t border-gray-300"></div>
   </div>
- 
-  <div class="mt-1">
-    <label class="text-gray-700 text-md">
-      パスワード
-    </label>
-    <%= f.password_field :password, autocomplete: "password", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 py-1 px-2 block w-full sm:text-sm placeholder-gray-400 border border-gray-300 rounded-md", placeholder: "pass1234" %>
-  </div>
- 
-  <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:cursor-pointer">
-    <%= f.submit "ログイン" %>
-  </button>
-<% end %>
+
+  <%= button_to user_google_oauth2_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "w-full flex items-center justify-center gap-3 py-2 px-4 border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:cursor-pointer" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" style="min-width:20px">
+      <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.86l6.09-6.09C34.46 3.11 29.5 1 24 1 14.82 1 7.07 6.48 3.64 14.22l7.08 5.5C12.4 13.72 17.73 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.22-.42-4.75H24v9h12.7c-.55 2.98-2.2 5.5-4.67 7.2l7.17 5.57C43.26 37.27 46.5 31.36 46.5 24.5z"/>
+      <path fill="#FBBC05" d="M10.72 28.28A14.6 14.6 0 0 1 9.5 24c0-1.49.26-2.94.72-4.28l-7.08-5.5A23.94 23.94 0 0 0 0 24c0 3.86.92 7.5 2.55 10.72l8.17-6.44z"/>
+      <path fill="#34A853" d="M24 47c5.5 0 10.12-1.82 13.5-4.93l-7.17-5.57C28.6 38.1 26.42 39 24 39c-6.27 0-11.6-4.22-13.28-9.72l-8.17 6.44C6.07 43.52 14.45 47 24 47z"/>
+    </svg>
+    <span class="text-sm font-medium text-gray-700">Sign in with Google</span>
+  <% end %>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_02_113759) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_10_125228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -67,6 +67,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_113759) do
     t.index ["token"], name: "index_share_links_on_token", unique: true
   end
 
+  create_table "social_accounts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "provider", null: false
+    t.string "uid", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider", "uid"], name: "index_social_accounts_on_provider_and_uid", unique: true
+    t.index ["user_id", "provider"], name: "index_social_accounts_on_user_id_and_provider", unique: true
+    t.index ["user_id"], name: "index_social_accounts_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -87,4 +98,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_113759) do
   add_foreign_key "room_memberships", "rooms"
   add_foreign_key "rooms", "profiles", column: "issuer_profile_id"
   add_foreign_key "share_links", "rooms"
+  add_foreign_key "social_accounts", "users"
 end

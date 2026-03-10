@@ -71,3 +71,7 @@ end
 
 # deviseを追加
 gem "devise"
+
+# OmniAuth Google OAuth2
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
