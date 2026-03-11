@@ -1,6 +1,6 @@
 ## 最重要ルール（絶対遵守）
 
-* **Phase 1 設計合意後に Issue + 作業ブランチを作成**してから実装開始（GitHub Project「hobby-matching-app」に作成）
+* **Phase 1 設計合意後に Issue + 作業ブランチを作成**してから実装開始（GitHub Project「Hobby Matching」に作成）
 * **RED → GREEN → REFACTOR** → PR
 * すべてのコマンドは `docker compose exec web` 経由
 * PR前に **RSpec / RuboCop 全通過**
