@@ -1,16 +1,16 @@
         <%= turbo_frame_tag dom_id(room) do %>
-          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col">
 
             <!-- 部屋名 -->
             <h3 class="text-lg font-semibold mb-3">
-              ■ <%= room.label.presence || "名無しの部屋" %>
+              🏠 <%= room.label.presence || "名無しの部屋" %>
             </h3>
 
             <% if link.present? %>
 
               <!-- URL -->
-              <p class="text-sm text-gray-600 break-all mb-2">
-                共有URL:<br>
+              <p class="text-sm break-all mb-2">
+                <span class="text-gray-500 font-medium">共有URL</span><br>
                 <%= link_to share_url(link.token),
                             share_path(link.token),
                             target: "_blank",
@@ -19,7 +19,7 @@
 
               <!-- 有効期限 -->
               <p class="text-sm mb-2">
-                有効期限:
+                <span class="text-gray-500 font-medium">有効期限</span>
                 <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
 
 
@@ -42,7 +42,7 @@
             </p>
 
             <!-- 操作 -->
-            <div class="flex justify-between text-sm">
+            <div class="flex justify-end gap-4 text-sm w-full">
               <%= link_to "編集",
                           edit_my_room_path(room),
                           data: { turbo_frame: dom_id(room) },

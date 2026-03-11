@@ -1,7 +1,7 @@
 ## 最重要ルール（絶対遵守）
 
-* **Issueを作成してから**作業開始（GitHub Project「hobby-matching-app」に作成）
-* ブランチ作成 → **RED → GREEN → REFACTOR** → PR
+* **Phase 1 設計合意後に Issue + 作業ブランチを作成**してから実装開始（GitHub Project「hobby-matching-app」に作成）
+* **RED → GREEN → REFACTOR** → PR
 * すべてのコマンドは `docker compose exec web` 経由
 * PR前に **RSpec / RuboCop 全通過**
 * 不明点が1つでもある場合、必ず質問する（推測で実装しない）
@@ -29,6 +29,11 @@
 * 複数案がある場合は 案A / 案B / 推奨案 / トレードオフ を提示する
 
 合意が取れるまで次へ進まない。
+
+### 設計合意後
+
+1. `/issue` で GitHub Issue + 作業ブランチを作成する
+2. Issue / ブランチが揃ってから Phase 2 へ進む
 
 ---
 
