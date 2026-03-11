@@ -10,7 +10,7 @@
   <!-- 作成フォーム -->
   <div class="bg-white shadow-md rounded-xl p-6 mb-10">
     <h2 class="text-xl font-semibold mb-4">
-      ＋ 新しい共有リンクを作る
+      ＋ 部屋を新規作成
     </h2>
 
     <%= form_with model: Room.new, url: my_rooms_path, class: "space-y-4" do |f| %>
@@ -20,7 +20,7 @@
               class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" %>
       </div>
 
-      <%= f.submit "共有リンクを作成",
+      <%= f.submit "部屋を作成",
             class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow" %>
     <% end %>
   </div>
