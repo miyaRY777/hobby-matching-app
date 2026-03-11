@@ -23,11 +23,12 @@ class My::ProfilesController < ApplicationController
   end
 
   def update
+    @profile.hobbies_text = profile_params[:hobbies_text]
     if @profile.update(profile_params.except(:hobbies_text))
-      @profile.update_hobbies_from(profile_params[:hobbies_text])
+      @profile.update_hobbies_from(@profile.hobbies_text)
       redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
     else
-      @hobbies_text = profile_params[:hobbies_text]
+      @hobbies_text = @profile.hobbies_text
       flash.now[:alert] = "プロフィールを更新できませんでした"
       render :edit, status: :unprocessable_entity
     end
