@@ -19,6 +19,12 @@ Rails.application.routes.draw do
   # 他人用（複数）
   resources :profiles, only: %i[index show]
 
+  resources :hobbies, only: [] do
+    collection do
+      get :autocomplete
+    end
+  end
+
   get "/share/:token", to: "shares#show", as: :share
 
   get "/rooms/:room_id/members/:id", to: "rooms/members#show", as: :room_member
