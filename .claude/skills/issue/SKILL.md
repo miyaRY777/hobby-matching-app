@@ -1,14 +1,14 @@
 ---
 name: issue
-description: GitHub Issueを作成する。Phase 0の整理結果を基に、GitHub Projectに紐づくIssueを作成する。
+description: GitHub Issueと作業ブランチを作成する。Phase 1の設計合意後に実行する。
 user-invocable: true
 disable-model-invocation: false
 allowed-tools: Bash, AskUserQuestion
 ---
 
-# Issue作成
+# Issue + 作業ブランチ作成
 
-GitHub Issueを作成します。CLAUDE.mdの「Issueを作成してから作業開始」ルールに対応します。
+Phase 1（設計合意）完了後に、GitHub Issue と作業ブランチを作成します。
 
 ## 依頼内容
 
@@ -18,7 +18,7 @@ $ARGUMENTS
 
 ### 1. Issue内容の確認
 
-Phase 0（インテイク）の結果がある場合はそれを基にする。
+Phase 0〜1 の合意内容を基にする。
 ない場合は $ARGUMENTS からIssue内容を整理する。
 
 以下をAskUserQuestionで確認する：
@@ -45,12 +45,25 @@ EOF
 )" --project "hobby-matching-app"
 ```
 
-### 3. 完了報告
-- Issue URLを表示する
-- 対応するブランチ名を提案する（例：`feature/search-profiles-123`）
+### 3. 作業ブランチ作成
+
+Issue番号を含むブランチを main から作成する：
+
+```bash
+git checkout main && git pull origin main && git checkout -b feature/<Issue番号>-<短い説明>
+```
+
+ブランチ名の例：`feature/114-dashboard-ui-consistency`
+
+### 4. 完了報告
+
+- Issue URL を表示する
+- 作成したブランチ名を表示する
 
 ## ルール
 
 - Issueタイトルは簡潔に（50文字以内目安）
 - 受入条件はチェックリスト形式にする
 - GitHub Project「hobby-matching-app」に紐づける
+- ブランチ名はIssue番号を含める（例: `feature/123-xxx`）
+- main から最新を pull してからブランチを切る
