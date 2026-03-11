@@ -1,19 +1,17 @@
 require "rails_helper"
 
-RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system do
+RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true do
   it "ログインして、プロフィール編集でタグを更新し、詳細に表示させる" do
     user = create(:user)
     create(:profile, user: user)
 
-    visit new_user_session_path
-    fill_in "user_email", with: user.email
-    fill_in "user_password", with: user.password
-    click_button "ログイン"
-
-    profile = user.profile
+    login_as(user, scope: :user)
     visit edit_my_profile_path
 
-    fill_in "タグ", with: "rails, ruby"
+    fill_in "tag-input", with: "rails"
+    find("[data-testid='tag-input']").send_keys(:return)
+    fill_in "tag-input", with: "ruby"
+    find("[data-testid='tag-input']").send_keys(:return)
     click_button "更新する"
 
     expect(page).to have_content("rails")

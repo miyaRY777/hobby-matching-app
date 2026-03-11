@@ -31,7 +31,7 @@ RSpec.describe "Hobbies", type: :request do
         create(:hobby, name: "アウトドア")
         create(:hobby, name: "野球")
         get autocomplete_hobbies_path, params: { q: "アニ" }
-        expect(JSON.parse(response.body)).to eq(["アニメ"])
+        expect(JSON.parse(response.body)).to eq([ "アニメ" ])
       end
 
       it "最大10件まで返す" do

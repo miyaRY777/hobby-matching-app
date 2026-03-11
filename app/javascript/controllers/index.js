@@ -9,3 +9,6 @@ application.register("hello", HelloController)
 
 import ProfileSearchController from "./profile_search_controller"
 application.register("profile-search", ProfileSearchController)
+
+import TagAutocompleteController from "./tag_autocomplete_controller"
+application.register("tag-autocomplete", TagAutocompleteController)
