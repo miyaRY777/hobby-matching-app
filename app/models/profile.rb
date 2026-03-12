@@ -1,7 +1,7 @@
 class Profile < ApplicationRecord
   belongs_to :user
   validates :user_id, uniqueness: true
-  validates :bio, presence: true, length: { maximum: 500 }
+  validates :bio, length: { maximum: 500 }, allow_blank: true
 
   has_many :profile_hobbies, dependent: :destroy
   has_many :hobbies, through: :profile_hobbies
@@ -13,16 +13,13 @@ class Profile < ApplicationRecord
 
   MAX_HOBBIES = 10
 
-  validate :hobbies_text_count_within_limit, if: -> { hobbies_text.present? }
+  validate :hobbies_json_count_within_limit, if: -> { hobbies_text.present? }
 
-  def update_hobbies_from(str)
-    names = HobbyNamesParser.call(str)
-
-    hobbies = names.map do |name|
-      Hobby.find_or_create_by!(name: name)
-    end
-
-    self.hobbies = hobbies
+  def update_hobbies_from_json(json_str)
+    tag_data = JSON.parse(json_str).map(&:symbolize_keys)
+    ProfileHobbiesUpdater.call(self, tag_data)
+  rescue JSON::ParserError
+    # パース失敗時は何もしない
   end
 
   def shared_hobbies_with(other_profile)
@@ -31,10 +28,12 @@ class Profile < ApplicationRecord
 
   private
 
-  def hobbies_text_count_within_limit
-    names = HobbyNamesParser.call(hobbies_text)
-    return if names.size <= MAX_HOBBIES
+  def hobbies_json_count_within_limit
+    tags = JSON.parse(hobbies_text)
+    return if tags.size <= MAX_HOBBIES
 
     errors.add(:hobbies_text, "は#{MAX_HOBBIES}個以下にしてください")
+  rescue JSON::ParserError
+    nil
   end
 end

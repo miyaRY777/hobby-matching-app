@@ -8,9 +8,11 @@ class My::ProfilesController < ApplicationController
   end
 
   def create
-    @profile = current_user.build_profile(profile_params)
+    @profile = current_user.build_profile(profile_params.except(:hobbies_text))
+    @profile.hobbies_text = profile_params[:hobbies_text]
 
     if @profile.save
+      @profile.update_hobbies_from_json(@profile.hobbies_text)
       redirect_to profile_path(@profile), notice: "プロフィールを作成しました"
     else
       flash.now[:alert] = "プロフィールを作成できませんでした"
@@ -19,13 +21,15 @@ class My::ProfilesController < ApplicationController
   end
 
   def edit
-    @hobbies_text = @profile.hobbies.pluck(:name).join(",")
+    @hobbies_text = @profile.profile_hobbies.includes(:hobby).map do |ph|
+      { name: ph.hobby.name, description: ph.description.to_s }
+    end.to_json
   end
 
   def update
     @profile.hobbies_text = profile_params[:hobbies_text]
     if @profile.update(profile_params.except(:hobbies_text))
-      @profile.update_hobbies_from(@profile.hobbies_text)
+      @profile.update_hobbies_from_json(@profile.hobbies_text)
       redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
     else
       @hobbies_text = @profile.hobbies_text
