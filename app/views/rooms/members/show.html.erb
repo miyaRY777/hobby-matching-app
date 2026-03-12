@@ -7,25 +7,33 @@
     <p class="text-sm text-gray-500 mb-2">この部屋での趣味</p>
     <% if @shared_hobbies.any? %>
       <div data-controller="tag-toggle">
+        <%# 説明文データ（非表示） %>
+        <% @shared_hobbies.each do |hobby| %>
+          <% ph = @profile_hobby_map[hobby.id] %>
+          <span class="hidden"
+                data-tag-toggle-target="description"
+                data-name="<%= hobby.name %>"><%= ph&.description.presence || "未入力" %></span>
+        <% end %>
+
         <ul class="flex flex-wrap gap-2">
           <% @shared_hobbies.each do |hobby| %>
-            <% ph = @profile_hobby_map[hobby.id] %>
             <li>
               <button type="button"
                       data-testid="toggle-tag"
+                      data-tag-toggle-target="tag"
                       data-action="click->tag-toggle#toggle"
                       data-name="<%= hobby.name %>"
-                      class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full cursor-pointer hover:bg-blue-200">
+                      data-active="false"
+                      class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full cursor-pointer hover:bg-blue-200 transition-colors">
                 <%= hobby.name %>
               </button>
-              <p data-tag-toggle-target="description"
-                 data-name="<%= hobby.name %>"
-                 class="hidden text-sm text-gray-600 mt-1">
-                <%= ph&.description.presence || "未入力" %>
-              </p>
             </li>
           <% end %>
         </ul>
+
+        <div data-tag-toggle-target="panel"
+             class="hidden mt-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 whitespace-pre-line">
+        </div>
       </div>
     <% else %>
       <p class="text-gray-400 text-sm">趣味が登録されていません</p>

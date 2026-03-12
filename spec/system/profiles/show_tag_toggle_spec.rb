@@ -12,16 +12,23 @@ RSpec.describe "プロフィール詳細タグ切り替え", type: :system, js: 
     visit profile_path(owner_profile)
   end
 
-  it "タグをクリックすると説明文が表示される" do
-    expect(page).not_to have_text("毎日やってます")
+  it "ページを開くと最初のタグの説明文が自動表示される" do
+    expect(page).to have_text("毎日やってます")
+  end
+
+  it "アクティブなタグを再クリックしても説明文が表示されたままになる" do
+    expect(page).to have_text("毎日やってます")
     find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
   end
 
-  it "もう一度クリックすると説明文が非表示になる" do
-    find("[data-testid='toggle-tag']", text: "ゲーム").click
-    expect(page).to have_text("毎日やってます")
-    find("[data-testid='toggle-tag']", text: "ゲーム").click
+  it "別のタグをクリックすると説明文が切り替わる" do
+    hobby2 = create(:hobby, name: "釣り")
+    create(:profile_hobby, profile: owner_profile, hobby: hobby2, description: "週末に行きます")
+    visit profile_path(owner_profile)
+
+    find("[data-testid='toggle-tag']", text: "釣り").click
+    expect(page).to have_text("週末に行きます")
     expect(page).not_to have_text("毎日やってます")
   end
 

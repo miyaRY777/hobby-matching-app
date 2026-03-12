@@ -20,8 +20,11 @@ RSpec.describe "部屋メンバー詳細タグ切り替え", type: :system, js: 
     expect(page).not_to have_link("プロフィール詳細を見る")
   end
 
-  it "タグをクリックすると説明文が表示される" do
-    expect(page).not_to have_text("毎日やってます")
+  it "ページを開くと最初のタグの説明文が自動表示される" do
+    expect(page).to have_text("毎日やってます")
+  end
+
+  it "アクティブなタグを再クリックしても説明文が表示されたままになる" do
     find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
   end
