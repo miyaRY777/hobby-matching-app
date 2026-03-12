@@ -18,6 +18,26 @@ RSpec.describe "My::Profile", type: :request do
     end
   end
 
+  describe "PATCH /my/profile" do
+    let!(:profile) { create(:profile, user:) }
+
+    it "11個のタグで更新するとバリデーションエラーになる" do
+      hobbies_text = (1..11).map { |i| "タグ#{i}" }.join(",")
+
+      patch my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "10個以下のタグで更新すると成功する" do
+      hobbies_text = (1..10).map { |i| "タグ#{i}" }.join(",")
+
+      patch my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+
+      expect(response).to have_http_status(:found)
+    end
+  end
+
   describe "GET /my/profile/new" do
     it "作成済みなら一覧へリダイレクトしnoticeが出る" do
       create(:profile, user:)

@@ -14,12 +14,39 @@
     </div>
   <% end %>
 
-  <div>
-    <%= f.label :hobbies_text, "タグ" %>
-    <br>
-    <%= f.text_field :hobbies_text,
-        placeholder: "例：アニメ, 野球, 料理",
-        value: @hobbies_text %>
+  <div class="relative"
+       data-controller="tag-autocomplete"
+       data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
+       data-tag-autocomplete-max-value="10">
+
+    <%= f.label :hobbies_text, "タグ",
+          class: "block text-sm font-semibold text-gray-700" %>
+
+    <%# hidden field: サーバーに送信される値 %>
+    <input type="hidden"
+           name="profile[hobbies_text]"
+           value="<%= @hobbies_text %>"
+           data-tag-autocomplete-target="hiddenField">
+
+    <%# チップ表示エリア %>
+    <div class="flex flex-wrap gap-2 mb-2 mt-1"
+         data-tag-autocomplete-target="chipList"></div>
+
+    <%# テキスト入力 %>
+    <input type="text"
+           id="tag-input"
+           placeholder="タグを入力（2文字以上で候補表示）"
+           autocomplete="off"
+           data-testid="tag-input"
+           data-tag-autocomplete-target="input"
+           data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
+           class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800
+                  focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none">
+
+    <%# オートコンプリート候補ドロップダウン %>
+    <ul data-tag-autocomplete-target="dropdown"
+        class="hidden absolute z-10 mt-1 w-full rounded-lg border border-gray-200
+               bg-white shadow-lg max-h-60 overflow-auto"></ul>
   </div>
 
   <div class="space-y-2">

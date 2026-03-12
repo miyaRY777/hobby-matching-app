@@ -11,6 +11,10 @@ class Profile < ApplicationRecord
 
   attr_accessor :hobbies_text
 
+  MAX_HOBBIES = 10
+
+  validate :hobbies_text_count_within_limit, if: -> { hobbies_text.present? }
+
   def update_hobbies_from(str)
     names = HobbyNamesParser.call(str)
 
@@ -23,5 +27,14 @@ class Profile < ApplicationRecord
 
   def shared_hobbies_with(other_profile)
     hobbies.to_a & other_profile.hobbies.to_a
+  end
+
+  private
+
+  def hobbies_text_count_within_limit
+    names = HobbyNamesParser.call(hobbies_text)
+    return if names.size <= MAX_HOBBIES
+
+    errors.add(:hobbies_text, "は#{MAX_HOBBIES}個以下にしてください")
   end
 end

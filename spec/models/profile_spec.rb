@@ -7,6 +7,26 @@ RSpec.describe Profile, type: :model do
     expect(described_class.reflect_on_association(:issued_rooms).macro).to eq(:has_many)
   end
 
+  describe "hobbies_text バリデーション" do
+    let(:profile) { build(:profile) }
+
+    it "10個以下のタグは有効" do
+      profile.hobbies_text = (1..10).map { |i| "タグ#{i}" }.join(",")
+      expect(profile).to be_valid
+    end
+
+    it "11個以上のタグは無効" do
+      profile.hobbies_text = (1..11).map { |i| "タグ#{i}" }.join(",")
+      expect(profile).not_to be_valid
+      expect(profile.errors[:hobbies_text]).to be_present
+    end
+
+    it "hobbies_textが未設定の場合はバリデーションをスキップする" do
+      profile.hobbies_text = nil
+      expect(profile).to be_valid
+    end
+  end
+
   describe "#update_hobbies_from" do
     it "カンマ区切り入力から hobby を作成/取得し、profile の紐付けを全置換する" do
       profile = create(:profile)
