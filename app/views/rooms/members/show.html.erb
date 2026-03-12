@@ -6,21 +6,29 @@
 
     <p class="text-sm text-gray-500 mb-2">この部屋での趣味</p>
     <% if @shared_hobbies.any? %>
-      <ul class="flex flex-wrap gap-2">
-        <% @shared_hobbies.each do |hobby| %>
-          <li class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
-            <%= hobby.name %>
-          </li>
-        <% end %>
-      </ul>
+      <div data-controller="tag-toggle">
+        <ul class="flex flex-wrap gap-2">
+          <% @shared_hobbies.each do |hobby| %>
+            <% ph = @profile_hobby_map[hobby.id] %>
+            <li>
+              <button type="button"
+                      data-testid="toggle-tag"
+                      data-action="click->tag-toggle#toggle"
+                      data-name="<%= hobby.name %>"
+                      class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full cursor-pointer hover:bg-blue-200">
+                <%= hobby.name %>
+              </button>
+              <p data-tag-toggle-target="description"
+                 data-name="<%= hobby.name %>"
+                 class="hidden text-sm text-gray-600 mt-1">
+                <%= ph&.description.presence || "未入力" %>
+              </p>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     <% else %>
       <p class="text-gray-400 text-sm">趣味が登録されていません</p>
     <% end %>
-
-    <div class="mt-4">
-      <%= link_to "プロフィール詳細を見る", profile_path(@profile),
-                  class: "text-blue-600 hover:underline text-sm",
-                  data: { turbo_frame: "_top" } %>
-    </div>
   </div>
 </turbo-frame>

@@ -19,7 +19,30 @@
     <!-- タグ -->
     <section>
       <p class="text-sm text-gray-500 mb-1">趣味</p>
-      <%= render "shared/hobby_tags", hobbies: @profile.hobbies %>
+      <% if @profile.hobbies.any? %>
+        <div data-controller="tag-toggle">
+          <ul class="tag-list" aria-label="趣味タグ一覧">
+            <% @profile.profile_hobbies.each do |ph| %>
+              <li>
+                <button type="button"
+                        data-testid="toggle-tag"
+                        data-action="click->tag-toggle#toggle"
+                        data-name="<%= ph.hobby.name %>"
+                        class="tag-chip cursor-pointer">
+                  <%= ph.hobby.name %>
+                </button>
+                <p data-tag-toggle-target="description"
+                   data-name="<%= ph.hobby.name %>"
+                   class="hidden text-sm text-gray-600 mt-1">
+                  <%= ph.description.presence || "未入力" %>
+                </p>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% else %>
+        <p class="tag-empty">未登録</p>
+      <% end %>
     </section>
 
     <% if current_user != @profile.user %>
