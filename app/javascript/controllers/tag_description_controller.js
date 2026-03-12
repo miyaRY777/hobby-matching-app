@@ -26,19 +26,20 @@ export default class extends Controller {
       return
     }
     this.containerTarget.innerHTML = chips.map(chip => `
-      <div class="mt-2">
-        <label class="block text-xs font-medium text-gray-500 mb-1">
-          ${this.#escapeHtml(chip.name)} の説明（任意・200字以内）
+      <div class="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+        <label class="block text-sm font-semibold text-blue-700 mb-1">
+          # ${this.#escapeHtml(chip.name)}
+          <span class="ml-1 text-xs font-normal text-gray-400">の説明（任意・200字以内）</span>
         </label>
-        <input type="text"
-               data-testid="description-input"
-               data-name="${this.#escapeHtml(chip.name)}"
-               data-action="input->tag-description#onDescriptionInput"
-               value="${this.#escapeHtml(chip.description || "")}"
-               placeholder="例：毎日プレイしています"
-               maxlength="200"
-               class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800
-                      focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none">
+        <textarea data-testid="description-input"
+                  data-name="${this.#escapeHtml(chip.name)}"
+                  data-action="input->tag-description#onDescriptionInput"
+                  placeholder="例：毎日プレイしています"
+                  maxlength="200"
+                  rows="3"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800
+                         focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
+                         resize-none bg-white">${this.#escapeHtml(chip.description || "")}</textarea>
       </div>
     `).join("")
   }
