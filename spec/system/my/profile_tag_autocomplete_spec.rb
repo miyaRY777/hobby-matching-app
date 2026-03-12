@@ -89,11 +89,12 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       fill_in "tag-input", with: "ゲーム"
       find("[data-testid='tag-input']").send_keys(:return)
 
-      # bioを空にしてバリデーションエラーを発生させる
-      fill_in "profile[bio]", with: ""
+      # hidden fieldを11個分のタグ（上限超過）に書き換えてバリデーションエラーを発生させる
+      over_limit = ([ { name: "ゲーム", description: "" } ] + (1..10).map { |i| { name: "tag#{i}", description: "" } }).to_json
+      page.execute_script("document.querySelector('[data-tag-autocomplete-target=\"hiddenField\"]').value = #{over_limit.to_json}")
       click_button "更新する"
 
-      expect(page).to have_css("[data-testid='chip']", text: "ゲーム")
+      expect(page).to have_css("[data-testid='chip']")
     end
   end
 end

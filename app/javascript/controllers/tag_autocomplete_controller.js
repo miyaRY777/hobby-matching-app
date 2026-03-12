@@ -8,15 +8,19 @@ export default class extends Controller {
   }
 
   #debounceTimer = null
+  // chips: [{ name: String, description: String }]
   #chips = []
   #activeIndex = -1
 
   connect() {
     const existing = this.hiddenFieldTarget.value
     if (existing) {
-      existing.split(",").map(s => s.trim()).filter(Boolean).forEach(name => {
-        this.#addChip(name)
-      })
+      try {
+        const parsed = JSON.parse(existing)
+        parsed.forEach(tag => this.#addChip(tag.name, tag.description || ""))
+      } catch {
+        // JSON でない場合は無視
+      }
     }
   }
 
@@ -48,13 +52,13 @@ export default class extends Controller {
       event.preventDefault()
       if (isOpen && this.#activeIndex >= 0) {
         const name = items[this.#activeIndex].dataset.name
-        this.#addChip(name)
+        this.#addChip(name, "")
         this.inputTarget.value = ""
         this.#closeDropdown()
       } else {
         const q = this.inputTarget.value.trim()
         if (q) {
-          this.#addChip(q)
+          this.#addChip(q, "")
           this.inputTarget.value = ""
           this.#closeDropdown()
         }
@@ -66,51 +70,70 @@ export default class extends Controller {
 
   selectSuggestion(event) {
     const name = event.currentTarget.dataset.name
-    this.#addChip(name)
+    this.#addChip(name, "")
     this.inputTarget.value = ""
     this.#closeDropdown()
   }
 
   removeChip(event) {
     const name = event.currentTarget.dataset.name
-    this.#chips = this.#chips.filter(c => c !== name)
+    this.#chips = this.#chips.filter(c => c.name !== name)
     this.#renderChips()
     this.#syncHiddenField()
+    this.#dispatchChipsChanged()
     if (this.#chips.length < this.maxValue) {
       this.inputTarget.disabled = false
     }
   }
 
+  // tag-description コントローラから説明文更新を受け取る
+  updateDescription(event) {
+    const { name, description } = event.detail
+    const chip = this.#chips.find(c => c.name === name)
+    if (chip) {
+      chip.description = description
+      this.#syncHiddenField()
+    }
+  }
+
   // private
 
-  #addChip(name) {
+  #addChip(name, description = "") {
     const normalized = name.toLowerCase()
-    if (this.#chips.includes(normalized)) return
+    if (this.#chips.find(c => c.name === normalized)) return
     if (this.#chips.length >= this.maxValue) return
-    this.#chips.push(normalized)
+    this.#chips.push({ name: normalized, description })
     this.#renderChips()
     this.#syncHiddenField()
+    this.#dispatchChipsChanged()
     if (this.#chips.length >= this.maxValue) {
       this.inputTarget.disabled = true
     }
   }
 
   #renderChips() {
-    this.chipListTarget.innerHTML = this.#chips.map(name => `
+    this.chipListTarget.innerHTML = this.#chips.map(chip => `
       <span data-testid="chip"
             class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
-        ${this.#escapeHtml(name)}
+        ${this.#escapeHtml(chip.name)}
         <button type="button"
                 data-action="click->tag-autocomplete#removeChip"
-                data-name="${this.#escapeHtml(name)}"
+                data-name="${this.#escapeHtml(chip.name)}"
                 class="ml-1 text-blue-500 hover:text-blue-700 leading-none"
-                aria-label="${this.#escapeHtml(name)}を削除">×</button>
+                aria-label="${this.#escapeHtml(chip.name)}を削除">×</button>
       </span>
     `).join("")
   }
 
   #syncHiddenField() {
-    this.hiddenFieldTarget.value = this.#chips.join(",")
+    this.hiddenFieldTarget.value = JSON.stringify(this.#chips)
+  }
+
+  #dispatchChipsChanged() {
+    this.element.dispatchEvent(new CustomEvent("chips-changed", {
+      bubbles: true,
+      detail: { chips: [...this.#chips] }
+    }))
   }
 
   async #fetchSuggestions(q) {

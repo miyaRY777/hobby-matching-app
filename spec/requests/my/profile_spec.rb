@@ -22,7 +22,7 @@ RSpec.describe "My::Profile", type: :request do
     let!(:profile) { create(:profile, user:) }
 
     it "11個のタグで更新するとバリデーションエラーになる" do
-      hobbies_text = (1..11).map { |i| "タグ#{i}" }.join(",")
+      hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
 
       patch my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
 
@@ -30,7 +30,7 @@ RSpec.describe "My::Profile", type: :request do
     end
 
     it "10個以下のタグで更新すると成功する" do
-      hobbies_text = (1..10).map { |i| "タグ#{i}" }.join(",")
+      hobbies_text = (1..10).map { |i| { name: "タグ#{i}", description: "" } }.to_json
 
       patch my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
 
