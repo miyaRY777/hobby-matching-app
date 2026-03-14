@@ -22,7 +22,7 @@
     <div id="flash">
         <%= render 'shared/flash' %>
     </div>
-    <main class="container mx-auto mt-20 py-8 px-5 <%= content_for?(:no_center) ? '' : 'flex items-center justify-center' %>">
+    <main class="<%= content_for?(:full_width) ? 'mt-20 py-8 px-4' : "container mx-auto mt-20 py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>">
       <%= yield %>
     </main>
   </body>

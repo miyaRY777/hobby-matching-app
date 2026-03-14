@@ -1,10 +1,13 @@
 <turbo-frame id="member_detail">
-  <div class="p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">
-      <%= @profile.user.nickname.presence || "no-name" %>
-    </h2>
+  <div class="bg-white rounded-xl shadow p-6 space-y-4">
+    <div>
+      <p class="text-sm text-gray-500">ユーザー名</p>
+      <p class="text-base font-medium text-gray-800">
+        <%= @profile.user.nickname.presence || "no-name" %>
+      </p>
+    </div>
 
-    <p class="text-sm text-gray-500 mb-2">この部屋での趣味</p>
+    <p class="text-sm text-gray-500 mb-1">この部屋での趣味</p>
     <% if @shared_hobbies.any? %>
       <div data-controller="tag-toggle">
         <%# 説明文データ（非表示） %>
@@ -32,7 +35,7 @@
         </ul>
 
         <div data-tag-toggle-target="panel"
-             class="hidden mt-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 whitespace-pre-line">
+             class="hidden mt-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 whitespace-pre-line break-words">
         </div>
       </div>
     <% else %>
