@@ -3,10 +3,12 @@
   <%= javascript_include_tag "jsmind_map", "data-turbo-track": "reload", type: "module" %>
 <% end %>
 
-<div class="w-full px-6 py-10">
+<% content_for :full_width, true %>
+
+<div class="w-full">
 
   <!-- 部屋名 -->
-  <h1 class="text-3xl font-bold mb-8 text-center">
+  <h1 class="text-3xl font-bold mb-8">
     <%= @room.label.presence || "名無しの部屋" %>
   </h1>
 
@@ -21,21 +23,21 @@
   <% end %>
 
   <!-- 2カラムレイアウト -->
-  <div class="flex flex-col md:flex-row gap-6">
+  <div class="flex flex-col md:flex-row gap-8">
 
     <!-- 左ペイン：jsMind マインドマップ -->
-    <div class="md:w-1/2">
+    <div class="md:w-[60%]">
       <div
         id="jsmind_container"
         data-jsmind="<%= @jsmind_data.to_json %>"
-        style="width: 100%; height: 500px; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;"
+        style="width: 100%; height: 600px; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;"
       ></div>
     </div>
 
     <!-- 右ペイン：メンバー詳細（Turbo Frame） -->
-    <div class="md:w-1/2">
+    <div class="md:w-[40%]">
       <turbo-frame id="member_detail">
-        <div class="p-6 bg-gray-50 rounded-2xl border border-gray-200 text-gray-400 text-sm flex items-center justify-center h-full">
+        <div class="bg-gray-50 rounded-xl shadow p-6 text-gray-400 text-sm flex items-center justify-center h-full">
           左のマインドマップからメンバーを選択してください
         </div>
       </turbo-frame>
