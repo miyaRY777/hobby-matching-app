@@ -59,9 +59,16 @@ class SocialAuthService
   end
 
   def email_verified?
-    verified = @auth.dig("extra", "id_info", "email_verified")
-    verified = @auth.dig("extra", "raw_info", "email_verified") if verified.nil?
-    ActiveModel::Type::Boolean.new.cast(verified)
+    case @auth.provider
+    when "google_oauth2"
+      verified = @auth.dig("extra", "id_info", "email_verified")
+      verified = @auth.dig("extra", "raw_info", "email_verified") if verified.nil?
+      ActiveModel::Type::Boolean.new.cast(verified)
+    when "discord"
+      @auth.extra&.raw_info&.verified == true
+    else
+      false
+    end
   end
 
   def create_user_with_social_account

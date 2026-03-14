@@ -155,6 +155,55 @@ RSpec.describe SocialAuthService, type: :service do
       end
     end
 
+    context "with Discord provider" do
+      let(:discord_auth) do
+        OmniAuth::AuthHash.new(
+          provider: "discord",
+          uid: "discord_789",
+          info: {
+            email: "discord@example.com",
+            name: "DiscordUser"
+          },
+          extra: {
+            raw_info: {
+              verified: true
+            }
+          }
+        )
+      end
+
+      context "when email is verified" do
+        it "creates a new user successfully" do
+          result = described_class.call(discord_auth)
+
+          expect(result).to be_success
+          expect(result.user.email).to eq("discord@example.com")
+          expect(result.user.nickname).to eq("DiscordUser")
+        end
+      end
+
+      context "when email is not verified" do
+        it "returns failure" do
+          discord_auth.extra.raw_info.verified = false
+
+          result = described_class.call(discord_auth)
+
+          expect(result).not_to be_success
+          expect(result.error_message).to be_present
+        end
+      end
+
+      context "when verified is nil" do
+        it "returns failure" do
+          discord_auth.extra.raw_info.verified = nil
+
+          result = described_class.call(discord_auth)
+
+          expect(result).not_to be_success
+        end
+      end
+    end
+
     context "when RecordNotUnique is raised (race condition)" do
       it "retries and returns the existing SocialAccount user" do
         user = create(:user, email: "oauth@example.com")
