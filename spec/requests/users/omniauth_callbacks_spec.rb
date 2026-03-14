@@ -82,4 +82,57 @@ RSpec.describe "Users::OmniauthCallbacks", type: :request do
       end
     end
   end
+
+  describe "GET /users/auth/discord/callback" do
+    before do
+      OmniAuth.config.mock_auth[:discord] = OmniAuth::AuthHash.new(
+        provider: "discord",
+        uid: "discord_789",
+        info: {
+          email: "discord@example.com",
+          name: "DiscordUser"
+        },
+        extra: {
+          raw_info: { verified: true }
+        }
+      )
+    end
+
+    after do
+      OmniAuth.config.mock_auth[:discord] = nil
+    end
+
+    context "when authentication succeeds" do
+      it "signs in and redirects" do
+        get "/users/auth/discord/callback"
+
+        expect(response).to redirect_to(profiles_path)
+        expect(controller.current_user).to be_present
+      end
+
+      it "creates a new user for first-time OAuth login" do
+        expect { get "/users/auth/discord/callback" }
+          .to change(User, :count).by(1)
+          .and change(SocialAccount, :count).by(1)
+      end
+    end
+
+    context "when email is not verified" do
+      before do
+        OmniAuth.config.mock_auth[:discord] = OmniAuth::AuthHash.new(
+          provider: "discord",
+          uid: "discord_789",
+          info: { email: "discord@example.com", name: "DiscordUser" },
+          extra: { raw_info: { verified: false } }
+        )
+      end
+
+      it "redirects to sign in page with error message" do
+        get "/users/auth/discord/callback"
+
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
 end
