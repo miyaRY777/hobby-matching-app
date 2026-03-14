@@ -310,6 +310,11 @@ Devise.setup do |config|
                   ENV["GOOGLE_CLIENT_ID"],
                   ENV["GOOGLE_CLIENT_SECRET"]
 
+  config.omniauth :discord,
+                  ENV["DISCORD_CLIENT_ID"],
+                  ENV["DISCORD_CLIENT_SECRET"],
+                  scope: "identify email"
+
   # ==> Configuration for :registerable
 
   # When set to false, does not sign a user in automatically after their password is

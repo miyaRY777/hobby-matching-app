@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: %i[google_oauth2]
+         :omniauthable, omniauth_providers: %i[google_oauth2 discord]
 
 has_one :profile, dependent: :destroy
   has_many :social_accounts, dependent: :destroy
