@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "nickname" do %>
+  <div data-controller="inline-edit">
+    <div data-inline-edit-target="display" class="hidden"></div>
+
+    <div data-inline-edit-target="form">
+      <%= form_with model: current_user, url: mypage_dashboard_path, method: :patch, class: "flex items-center gap-3" do |f| %>
+        <div>
+          <%= f.text_field :nickname,
+                value: current_user.nickname,
+                class: "text-2xl font-bold border border-red-300 rounded-md px-2 py-1 focus:ring-red-500 focus:border-red-500",
+                maxlength: 20 %>
+          <% if current_user.errors[:nickname].any? %>
+            <p class="text-red-500 text-sm mt-1"><%= current_user.errors[:nickname].join(", ") %></p>
+          <% end %>
+        </div>
+        <%= f.submit "保存",
+              class: "bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-1 rounded-md cursor-pointer" %>
+        <button type="button"
+                data-action="inline-edit#cancel"
+                class="text-gray-500 hover:text-gray-700 text-sm">
+          キャンセル
+        </button>
+      <% end %>
+    </div>
+  </div>
+<% end %>

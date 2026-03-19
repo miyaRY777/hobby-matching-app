@@ -18,3 +18,6 @@ application.register("tag-description", TagDescriptionController)
 
 import TagToggleController from "./tag_toggle_controller"
 application.register("tag-toggle", TagToggleController)
+
+import InlineEditController from "./inline_edit_controller"
+application.register("inline-edit", InlineEditController)
