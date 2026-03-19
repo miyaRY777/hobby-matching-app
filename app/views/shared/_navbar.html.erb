@@ -8,6 +8,10 @@
     <div class="flex items-center gap-x-4">
       <% if current_user %>
 
+        <%= link_to "マイページ",
+                    mypage_root_path,
+                    class: "text-gray-300 text-sm hover:text-white transition" %>
+
         <% unless current_user.profile %>
           <%= link_to "プロフィール作成",
                       new_my_profile_path,
