@@ -34,4 +34,15 @@ Rails.application.routes.draw do
     resource :profile, only: %i[new create edit update destroy]
     resources :rooms, only: %i[index create update edit destroy]
   end
+
+  namespace :mypage do
+    root to: "dashboards#show"
+    resource :dashboard, only: [ :update ]
+    resources :rooms, only: %i[index create edit update destroy]
+  end
+
+  devise_scope :user do
+    get "mypage/settings", to: "users/registrations#edit", as: :mypage_settings
+    patch "mypage/settings", to: "users/registrations#update"
+  end
 end
