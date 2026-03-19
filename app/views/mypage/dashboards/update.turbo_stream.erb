@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "nickname" do %>
+  <%= render "mypage/dashboards/nickname" %>
+<% end %>
+
+<%= turbo_stream.update "flash", partial: "shared/flash" %>
