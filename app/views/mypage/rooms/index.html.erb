@@ -1,0 +1,31 @@
+<% content_for :no_center, true %>
+
+<div class="max-w-6xl mx-auto px-6 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-bold">部屋管理</h1>
+    <%= link_to "マイページに戻る", mypage_root_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+  </div>
+
+  <%# 作成フォーム %>
+  <div class="bg-white shadow-md rounded-xl p-6 mb-10">
+    <h2 class="text-xl font-semibold mb-4">+ 部屋を新規作成</h2>
+
+    <%= form_with model: Room.new, url: mypage_rooms_path, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :label, "部屋名（任意）", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :label,
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" %>
+      </div>
+
+      <%= f.submit "部屋を作成",
+            class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <%# 部屋一覧 %>
+  <div id="rooms_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @rooms.each do |room| %>
+      <%= render "mypage/rooms/room", room: room, link: room.share_link %>
+    <% end %>
+  </div>
+</div>

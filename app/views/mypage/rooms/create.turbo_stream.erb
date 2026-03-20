@@ -1,0 +1,5 @@
+<%= turbo_stream.prepend "rooms_list" do %>
+  <%= render "mypage/rooms/room", room: @room, link: @room.share_link %>
+<% end %>
+
+<%= turbo_stream.update "flash", partial: "shared/flash" %>
