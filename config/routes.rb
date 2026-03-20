@@ -32,7 +32,6 @@ Rails.application.routes.draw do
   namespace :my do
     # 自分用（単数）
     resource :profile, only: %i[new create edit update destroy]
-    resources :rooms, only: %i[index create update edit destroy]
   end
 
   namespace :mypage do
