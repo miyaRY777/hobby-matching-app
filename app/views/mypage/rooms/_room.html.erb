@@ -7,20 +7,20 @@
 
     <% if link.present? %>
       <%# 共有URL %>
-      <div class="text-sm break-all mb-2" data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
-        <span class="text-gray-500 font-medium">共有URL</span><br>
-        <div class="flex items-center gap-2">
-          <%= link_to share_url(link.token),
-                      share_path(link.token),
-                      target: "_blank",
-                      class: "text-indigo-600 hover:underline" %>
+      <div class="text-base break-all mb-2" data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-gray-500 font-medium text-sm">共有URL</span>
           <button type="button"
                   data-clipboard-target="button"
                   data-action="click->clipboard#copy"
-                  class="inline-flex items-center px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded hover:bg-indigo-100 transition-colors">
+                  class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded hover:bg-indigo-100 transition-colors">
             Copy
           </button>
         </div>
+        <%= link_to share_url(link.token),
+                    share_path(link.token),
+                    target: "_blank",
+                    class: "text-indigo-600 hover:underline" %>
       </div>
 
       <%# 有効期限 %>
