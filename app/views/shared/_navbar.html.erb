@@ -8,21 +8,21 @@
     <div class="flex items-center gap-x-4">
       <% if current_user %>
 
-        <%= link_to "マイページ",
-                    mypage_root_path,
-                    class: "text-gray-300 text-sm hover:text-white transition" %>
-
         <% unless current_user.profile %>
           <%= link_to "プロフィール作成",
                       new_my_profile_path,
                       class: "px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition" %>
         <% end %>
 
+        <%= link_to "マイページ",
+                    mypage_root_path,
+                    class: "text-gray-300 text-sm hover:text-white transition" %>
+
         <%= button_to "ログアウト",
                       destroy_user_session_path,
                       method: :delete,
-                      class: "text-gray-300 text-sm hover:text-white transition",
-                      form_class: "m-0" %>
+                      class: "text-gray-300 text-sm hover:text-white transition leading-none",
+                      form_class: "m-0 flex items-center" %>
 
       <% else %>
 
