@@ -21,3 +21,6 @@ application.register("tag-toggle", TagToggleController)
 
 import InlineEditController from "./inline_edit_controller"
 application.register("inline-edit", InlineEditController)
+
+import ClipboardController from "./clipboard_controller"
+application.register("clipboard", ClipboardController)
