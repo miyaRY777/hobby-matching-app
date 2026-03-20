@@ -92,5 +92,4 @@ RSpec.describe "Mypage::Settings", type: :request do
       end
     end
   end
-
 end
