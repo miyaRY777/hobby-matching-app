@@ -5,7 +5,7 @@
 
 <% content_for :full_width, true %>
 
-<div class="w-full">
+<div class="container mx-auto">
 
   <!-- 部屋名 -->
   <h1 class="text-3xl font-bold mb-8">
@@ -26,7 +26,7 @@
   <div class="flex flex-col md:flex-row gap-8">
 
     <!-- 左ペイン：jsMind マインドマップ -->
-    <div class="md:w-[60%]">
+    <div class="md:w-[58%]">
       <div
         id="jsmind_container"
         data-jsmind="<%= @jsmind_data.to_json %>"
@@ -35,7 +35,7 @@
     </div>
 
     <!-- 右ペイン：メンバー詳細（Turbo Frame） -->
-    <div class="md:w-[40%]">
+    <div class="md:w-[42%]">
       <turbo-frame id="member_detail">
         <div class="bg-gray-50 rounded-xl shadow p-6 text-gray-400 text-sm flex items-center justify-center h-full">
           左のマインドマップからメンバーを選択してください
