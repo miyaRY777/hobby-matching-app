@@ -15,6 +15,7 @@ class My::ProfilesController < ApplicationController
       @profile.update_hobbies_from_json(@profile.hobbies_text)
       redirect_to profile_path(@profile), notice: "プロフィールを作成しました"
     else
+      @hobbies_text = @profile.hobbies_text
       flash.now[:alert] = "プロフィールを作成できませんでした"
       render :new, status: :unprocessable_entity
     end

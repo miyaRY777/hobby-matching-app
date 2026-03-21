@@ -38,6 +38,17 @@ RSpec.describe "My::Profile", type: :request do
     end
   end
 
+  describe "POST /my/profile" do
+    it "11個のタグで作成するとバリデーションエラーになりタグデータが保持される" do
+      hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
+
+      post my_profile_path, params: { profile: { hobbies_text: } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("タグ1")
+    end
+  end
+
   describe "GET /my/profile/new" do
     it "作成済みなら一覧へリダイレクトしnoticeが出る" do
       create(:profile, user:)
