@@ -36,7 +36,7 @@ export default class extends Controller {
                   data-action="input->tag-description#onDescriptionInput"
                   placeholder="例：\nマイクラ歴3年で、建築メインで遊んでいます！最近はサバイバルモードにハマっています。"
                   maxlength="200"
-                  rows="3"
+                  rows="10"
                   style="width: 100%; border-radius: 0.5rem; border: 1px solid rgba(55, 65, 81, 0.6); background: rgba(255,255,255,0.05); color: #ffffff; padding: 0.5rem 0.75rem; font-size: 0.875rem; outline: none; resize: none; box-sizing: border-box;">${this.#escapeHtml(chip.description || "")}</textarea>
       </div>
     `).join("")
