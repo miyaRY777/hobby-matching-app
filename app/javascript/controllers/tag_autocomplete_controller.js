@@ -114,12 +114,12 @@ export default class extends Controller {
   #renderChips() {
     this.chipListTarget.innerHTML = this.#chips.map(chip => `
       <span data-testid="chip"
-            class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
+            style="display: inline-flex; align-items: center; gap: 0.25rem; border-radius: 9999px; background: rgba(96, 165, 250, 0.15); padding: 0.25rem 0.75rem; font-size: 0.875rem; color: #60a5fa;">
         ${this.#escapeHtml(chip.name)}
         <button type="button"
                 data-action="click->tag-autocomplete#removeChip"
                 data-name="${this.#escapeHtml(chip.name)}"
-                class="ml-1 text-blue-500 hover:text-blue-700 leading-none"
+                style="margin-left: 0.25rem; color: #60a5fa; background: none; border: none; cursor: pointer; line-height: 1;"
                 aria-label="${this.#escapeHtml(chip.name)}を削除">×</button>
       </span>
     `).join("")
@@ -158,7 +158,9 @@ export default class extends Controller {
       <li data-testid="autocomplete-item"
           data-name="${this.#escapeHtml(name)}"
           data-action="click->tag-autocomplete#selectSuggestion"
-          class="cursor-pointer px-4 py-2 hover:bg-blue-50 text-sm text-gray-800">
+          style="cursor: pointer; padding: 0.5rem 1rem; font-size: 0.875rem; color: #d1d5db; transition: background 0.15s;"
+          onmouseenter="this.style.background='rgba(96, 165, 250, 0.15)'"
+          onmouseleave="this.style.background='transparent'">
         ${this.#escapeHtml(name)}
       </li>
     `).join("")
@@ -174,11 +176,9 @@ export default class extends Controller {
   #updateActiveItem(items) {
     items.forEach((item, i) => {
       if (i === this.#activeIndex) {
-        item.classList.add("bg-blue-100")
-        item.classList.remove("hover:bg-blue-50")
+        item.style.background = "rgba(96, 165, 250, 0.15)"
       } else {
-        item.classList.remove("bg-blue-100")
-        item.classList.add("hover:bg-blue-50")
+        item.style.background = "transparent"
       }
     })
   }

@@ -19,8 +19,8 @@ export default class extends Controller {
     // 一旦、全タグを非アクティブに戻す
     this.tagTargets.forEach(tag => {
       tag.dataset.active = "false"
-      tag.classList.remove("bg-blue-600", "text-white")
-      tag.classList.add("bg-blue-100", "text-blue-800")
+      tag.style.background = "rgba(96, 165, 250, 0.15)"
+      tag.style.color = "#60a5fa"
     })
 
     // 同じタグを再クリックしたかで分岐する
@@ -39,8 +39,8 @@ export default class extends Controller {
   #openTag(tagEl) {
     const name = tagEl.dataset.name
     tagEl.dataset.active = "true"
-    tagEl.classList.remove("bg-blue-100", "text-blue-800")
-    tagEl.classList.add("bg-blue-600", "text-white")
+    tagEl.style.background = "linear-gradient(135deg, #2563eb, #1d4ed8)"
+    tagEl.style.color = "#ffffff"
 
     const desc = this.descriptionTargets.find(el => el.dataset.name === name)
     this.panelTarget.textContent = desc ? desc.textContent.trim() : ""

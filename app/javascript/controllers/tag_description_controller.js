@@ -26,10 +26,10 @@ export default class extends Controller {
       return
     }
     this.containerTarget.innerHTML = chips.map(chip => `
-      <div class="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-        <label class="block text-sm font-semibold text-blue-700 mb-1">
+      <div style="margin-top: 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(55, 65, 81, 0.6); background: rgba(255,255,255,0.05); padding: 0.75rem 1rem;">
+        <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #60a5fa; margin-bottom: 0.25rem;">
           # ${this.#escapeHtml(chip.name)}
-          <span class="ml-1 text-xs font-normal text-gray-400">の説明（任意・200字以内）</span>
+          <span style="margin-left: 0.25rem; font-size: 0.75rem; font-weight: 400; color: #6b7280;">の説明（任意・200字以内）</span>
         </label>
         <textarea data-testid="description-input"
                   data-name="${this.#escapeHtml(chip.name)}"
@@ -37,9 +37,7 @@ export default class extends Controller {
                   placeholder="例：\nマイクラ歴3年で、建築メインで遊んでいます！最近はサバイバルモードにハマっています。"
                   maxlength="200"
                   rows="3"
-                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800
-                         focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
-                         resize-none bg-white">${this.#escapeHtml(chip.description || "")}</textarea>
+                  style="width: 100%; border-radius: 0.5rem; border: 1px solid rgba(55, 65, 81, 0.6); background: rgba(255,255,255,0.05); color: #ffffff; padding: 0.5rem 0.75rem; font-size: 0.875rem; outline: none; resize: none; box-sizing: border-box;">${this.#escapeHtml(chip.description || "")}</textarea>
       </div>
     `).join("")
   }
