@@ -34,7 +34,7 @@ export default class extends Controller {
         <textarea data-testid="description-input"
                   data-name="${this.#escapeHtml(chip.name)}"
                   data-action="input->tag-description#onDescriptionInput"
-                  placeholder="例：毎日プレイしています"
+                  placeholder="例）週末はよくフットサルをしています！好きなチームはバルセロナで..."
                   maxlength="200"
                   rows="3"
                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800
