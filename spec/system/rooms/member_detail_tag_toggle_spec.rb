@@ -4,7 +4,7 @@ RSpec.describe "部屋メンバー詳細タグ切り替え", type: :system, js: 
   let(:viewer_user) { create(:user) }
   let(:member_user) { create(:user) }
   let!(:viewer_profile) { create(:profile, user: viewer_user) }
-  let!(:member_profile) { create(:profile, user: member_user) }
+  let!(:member_profile) { create(:profile, user: member_user, bio: "メンバー自己紹介です") }
   let!(:room) { create(:room, issuer_profile: viewer_profile) }
   let!(:hobby) { create(:hobby, name: "ゲーム") }
 
@@ -20,13 +20,22 @@ RSpec.describe "部屋メンバー詳細タグ切り替え", type: :system, js: 
     expect(page).not_to have_link("プロフィール詳細を見る")
   end
 
-  it "ページを開くと最初のタグの説明文が自動表示される" do
+  it "ページを開くと自己紹介が表示される" do
+    expect(page).to have_text("メンバー自己紹介です")
+  end
+
+  it "タグをクリックすると説明文が表示される" do
+    find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
   end
 
-  it "アクティブなタグを再クリックしても説明文が表示されたままになる" do
+  it "アクティブなタグを再クリックすると自己紹介に戻る" do
     find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
+
+    find("[data-testid='toggle-tag']", text: "ゲーム").click
+    expect(page).to have_text("メンバー自己紹介です")
+    expect(page).not_to have_text("毎日やってます")
   end
 
   it "説明文が未入力の場合は「未入力」と表示される" do

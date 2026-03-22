@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "プロフィール詳細タグ切り替え", type: :system, js: true do
   let(:owner) { create(:user) }
   let(:viewer) { create(:user) }
-  let!(:owner_profile) { create(:profile, user: owner) }
+  let!(:owner_profile) { create(:profile, user: owner, bio: "自己紹介テストです") }
   let!(:hobby) { create(:hobby, name: "ゲーム") }
 
   before do
@@ -12,14 +12,22 @@ RSpec.describe "プロフィール詳細タグ切り替え", type: :system, js: 
     visit profile_path(owner_profile)
   end
 
-  it "ページを開くと最初のタグの説明文が自動表示される" do
+  it "ページを開くと自己紹介が表示される" do
+    expect(page).to have_text("自己紹介テストです")
+  end
+
+  it "タグをクリックすると説明文が表示される" do
+    find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
   end
 
-  it "アクティブなタグを再クリックしても説明文が表示されたままになる" do
-    expect(page).to have_text("毎日やってます")
+  it "アクティブなタグを再クリックすると自己紹介に戻る" do
     find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
+
+    find("[data-testid='toggle-tag']", text: "ゲーム").click
+    expect(page).to have_text("自己紹介テストです")
+    expect(page).not_to have_text("毎日やってます")
   end
 
   it "別のタグをクリックすると説明文が切り替わる" do
@@ -38,5 +46,13 @@ RSpec.describe "プロフィール詳細タグ切り替え", type: :system, js: 
     visit profile_path(owner_profile)
     find("[data-testid='toggle-tag']", text: "釣り").click
     expect(page).to have_text("未入力")
+  end
+
+  context "bioが未入力の場合" do
+    let!(:owner_profile) { create(:profile, user: owner, bio: nil) }
+
+    it "「未入力」と表示される" do
+      expect(page).to have_text("未入力")
+    end
   end
 end
