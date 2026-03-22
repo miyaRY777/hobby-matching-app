@@ -38,6 +38,8 @@ ja:
     registrations:
       user:
         signed_up: ユーザー登録に成功しました。
+    omniauth_callbacks:
+      signed_in: ログインしました。
     sessions:
       new:
         sign_in: ログイン

@@ -1,8 +1,11 @@
-<nav class="bg-gray-800 px-4 py-2.5">
+<nav style="background: linear-gradient(to right, #0f172a, #1e293b, #0f172a); padding: 0.625rem 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 50; border-bottom: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+  <!-- 装飾ライン -->
+  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(96, 165, 250, 0.2), transparent);"></div>
+
   <div class="container mx-auto flex items-center justify-between">
     <!-- ロゴ -->
-    <%= link_to "Hobby Matching", user_signed_in? ? profiles_path : root_path, class: "text-white text-xl font-semibold whitespace-nowrap" %>
-
+    <%= link_to "Hobby Matching", user_signed_in? ? profiles_path : root_path,
+        style: "color: #ffffff; font-size: 1.25rem; font-weight: 700; white-space: nowrap; text-decoration: none; text-shadow: 0 0 20px rgba(96, 165, 250, 0.2);" %>
 
     <!-- 右側メニュー -->
     <div class="flex items-center gap-x-4">
@@ -11,28 +14,28 @@
         <% unless current_user.profile %>
           <%= link_to "プロフィール作成",
                       new_my_profile_path,
-                      class: "px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition" %>
+                      style: "padding: 0.5rem 1rem; border-radius: 0.375rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
         <% end %>
 
         <%= link_to "マイページ",
                     mypage_root_path,
-                    class: "text-gray-300 text-sm hover:text-white transition" %>
+                    style: "color: #d1d5db; font-size: 0.875rem; text-decoration: none; transition: color 0.2s;" %>
 
         <%= button_to "ログアウト",
                       destroy_user_session_path,
                       method: :delete,
-                      class: "text-gray-300 text-sm hover:text-white transition leading-none",
+                      style: "color: #d1d5db; font-size: 0.875rem; background: none; border: none; cursor: pointer; transition: color 0.2s; line-height: 1;",
                       form_class: "m-0 flex items-center" %>
 
       <% else %>
 
         <%= link_to "ユーザー登録",
                     new_user_registration_path,
-                    class: "text-gray-300 text-sm hover:text-white transition" %>
+                    style: "color: #d1d5db; font-size: 0.875rem; text-decoration: none; transition: color 0.2s;" %>
 
         <%= link_to "ログイン",
                     new_user_session_path,
-                    class: "text-gray-300 text-sm hover:text-white transition" %>
+                    style: "color: #d1d5db; font-size: 0.875rem; text-decoration: none; transition: color 0.2s;" %>
 
       <% end %>
     </div>
