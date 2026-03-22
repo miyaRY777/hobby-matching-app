@@ -14,6 +14,17 @@
     </div>
   <% end %>
 
+  <div>
+    <%= f.label :bio, "自己紹介",
+          class: "block text-sm font-semibold text-gray-700" %>
+    <%= f.text_area :bio,
+          rows: 5,
+          placeholder: "例：\nインドア派で、ゲームやアニメが好きです！\n同じ趣味の人と気軽に話したいです。",
+          class: "w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-800
+                 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
+                 resize-none" %>
+  </div>
+
   <div class="relative"
        data-controller="tag-description tag-autocomplete"
        data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"

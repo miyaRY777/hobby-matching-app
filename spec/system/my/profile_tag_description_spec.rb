@@ -68,9 +68,24 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     end
   end
 
-  describe "bio欄の非表示" do
-    it "bio入力欄が表示されない" do
-      expect(page).not_to have_field("profile[bio]")
+  describe "bio入力欄" do
+    it "bio入力欄が表示される" do
+      expect(page).to have_field("profile[bio]")
+    end
+
+    it "プレースホルダーに例文が表示される" do
+      bio_field = find_field("profile[bio]")
+      expect(bio_field["placeholder"]).to include("インドア派")
+    end
+
+    it "bioを入力して保存できる" do
+      fill_in "profile[bio]", with: "テスト自己紹介です"
+      fill_in "tag-input", with: "ゲーム"
+      find("[data-testid='tag-input']").send_keys(:return)
+      click_button "更新する"
+
+      expect(page).to have_text("プロフィールを更新しました")
+      expect(profile.reload.bio).to eq("テスト自己紹介です")
     end
   end
 end

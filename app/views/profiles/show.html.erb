@@ -20,7 +20,8 @@
     <section>
       <p class="text-sm text-gray-500 mb-1">趣味</p>
       <% if @profile.profile_hobbies.any? %>
-        <div data-controller="tag-toggle">
+        <div data-controller="tag-toggle"
+             data-tag-toggle-bio-value="<%= @profile.bio.presence || '未入力' %>">
           <%# 説明文データ（非表示） %>
           <% @profile.profile_hobbies.each do |ph| %>
             <span class="hidden"

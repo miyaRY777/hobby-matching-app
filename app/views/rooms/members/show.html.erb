@@ -9,7 +9,8 @@
 
     <p class="text-sm text-gray-500 mb-1">この部屋での趣味</p>
     <% if @shared_hobbies.any? %>
-      <div data-controller="tag-toggle">
+      <div data-controller="tag-toggle"
+           data-tag-toggle-bio-value="<%= @profile.bio.presence || '未入力' %>">
         <%# 説明文データ（非表示） %>
         <% @shared_hobbies.each do |hobby| %>
           <% ph = @profile_hobby_map[hobby.id] %>

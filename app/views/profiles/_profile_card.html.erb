@@ -11,10 +11,9 @@
   </div>
 
 
-  <!-- 最初のタグの説明文 -->
-  <% first_description = profile.profile_hobbies.first&.description&.presence %>
+  <!-- 自己紹介 -->
   <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line line-clamp-3 mt-2">
-    <%= first_description || "説明文は未入力です" %>
+    <%= profile.bio.presence || "説明文は未入力です" %>
   </p>
 
   <div class="mt-4 flex items-center gap-4">
