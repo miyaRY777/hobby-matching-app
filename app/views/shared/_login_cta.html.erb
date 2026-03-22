@@ -1,13 +1,13 @@
-<div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
-  <p class="text-sm text-gray-700">
+<div style="border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); padding: 1rem;">
+  <p style="font-size: 0.875rem; color: #d1d5db;">
     共通の趣味の表示や「趣味追加」などの機能は、ログイン後に利用できます。
   </p>
 
-  <div class="mt-3 flex flex-col sm:flex-row gap-2">
+  <div class="flex flex-col sm:flex-row gap-2" style="margin-top: 0.75rem;">
     <%= link_to "ログイン", new_user_session_path,
-          class: "inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white" %>
+          style: "display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 1px solid rgba(55, 65, 81, 0.6); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; color: #d1d5db; text-decoration: none;" %>
 
     <%= link_to "新規登録", new_user_registration_path,
-          class: "inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+          style: "display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; color: #ffffff; text-decoration: none;" %>
   </div>
 </div>
