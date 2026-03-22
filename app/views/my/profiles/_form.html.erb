@@ -1,28 +1,25 @@
 <%= form_with model: profile,
-              url: my_profile_path,
-
-              class: "space-y-6" do |f| %>
-
+              url: my_profile_path do |f| %>
 
   <% if profile.errors.any? %>
-    <div class="rounded-lg border border-red-300 bg-red-50 p-4">
-      <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+    <div style="margin-bottom: 1.25rem; padding: 1rem; border-radius: 0.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+      <ul style="list-style: none; padding: 0; margin: 0;">
         <% profile.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
+          <li style="font-size: 0.875rem; color: #fca5a5; line-height: 1.5; padding-left: 0.75rem; position: relative;">
+            <span style="position: absolute; left: 0;">・</span><%= msg %>
+          </li>
         <% end %>
       </ul>
     </div>
   <% end %>
 
-  <div>
+  <div style="margin-bottom: 1.5rem;">
     <%= f.label :bio, "自己紹介",
-          class: "block text-sm font-semibold text-gray-700" %>
+          style: "display: block; font-size: 0.875rem; font-weight: 600; color: #d1d5db; margin-bottom: 0.375rem;" %>
     <%= f.text_area :bio,
           rows: 5,
           placeholder: "例：\nインドア派で、ゲームやアニメが好きです！\n同じ趣味の人と気軽に話したいです。",
-          class: "w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-800
-                 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
-                 resize-none" %>
+          style: "width: 100%; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; padding: 0.5rem 1rem; font-size: 0.875rem; outline: none; resize: none; box-sizing: border-box;" %>
   </div>
 
   <div class="relative"
@@ -32,7 +29,7 @@
        data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription">
 
     <%= f.label :hobbies_text, "タグ",
-          class: "block text-sm font-semibold text-gray-700" %>
+          style: "display: block; font-size: 0.875rem; font-weight: 600; color: #d1d5db; margin-bottom: 0.375rem;" %>
 
     <%# hidden field: サーバーに送信される値 %>
     <input type="hidden"
@@ -52,23 +49,20 @@
            data-testid="tag-input"
            data-tag-autocomplete-target="input"
            data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
-           class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800
-                  focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none">
+           style="width: 100%; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; padding: 0.5rem 1rem; font-size: 0.875rem; outline: none; box-sizing: border-box;">
 
     <%# オートコンプリート候補ドロップダウン %>
     <ul data-tag-autocomplete-target="dropdown"
-        class="hidden absolute z-10 mt-1 w-full rounded-lg border border-gray-200
-               bg-white shadow-lg max-h-60 overflow-auto"></ul>
+        class="hidden absolute z-10 mt-1 w-full rounded-lg max-h-60 overflow-auto"
+        style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
 
     <%# 説明文入力エリア（tag-descriptionコントローラが管理）%>
     <div data-tag-description-target="container"></div>
   </div>
 
-  <div class="pt-4">
+  <div style="padding-top: 1rem;">
     <%= f.submit submit_label,
-          class: "w-full rounded-lg bg-blue-600 px-6 py-3
-                 text-white font-semibold text-base
-                 hover:bg-blue-700 transition-colors",
+          style: "width: 100%; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);",
           data: { turbo_submits_with: "送信中..." } %>
   </div>
 
