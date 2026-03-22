@@ -22,7 +22,15 @@
     <div id="flash" style="position: fixed; top: 3rem; left: 0; right: 0; z-index: 40; padding: 0.5rem 1rem;">
         <%= render 'shared/flash' %>
     </div>
-    <main class="<%= content_for?(:landing) ? '' : content_for?(:full_width) ? 'py-8 px-4' : "container mx-auto py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>" style="<%= content_for?(:landing) ? '' : 'margin-top: 7rem;' %>">
+    <main class="<%= content_for?(:landing) ? '' : content_for?(:full_width) ? 'py-8 px-4' : "container mx-auto py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>" style="<%= content_for?(:landing) ? '' : 'margin-top: 7rem; position: relative; overflow: hidden; min-height: calc(100vh - 7rem);' %>">
+      <% unless content_for?(:landing) %>
+        <%# 背景の装飾 %>
+        <div style="position: absolute; inset: 0; opacity: 0.15; pointer-events: none; z-index: 0;">
+          <div style="position: absolute; top: 10%; left: 5%; width: 20rem; height: 20rem; background: #3b82f6; border-radius: 9999px; filter: blur(128px);"></div>
+          <div style="position: absolute; bottom: 10%; right: 5%; width: 28rem; height: 28rem; background: #6366f1; border-radius: 9999px; filter: blur(128px);"></div>
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40rem; height: 40rem; background: #1e40af; border-radius: 9999px; filter: blur(200px); opacity: 0.3;"></div>
+        </div>
+      <% end %>
       <%= yield %>
     </main>
   </body>
