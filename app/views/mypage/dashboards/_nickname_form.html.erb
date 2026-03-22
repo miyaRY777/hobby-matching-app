@@ -3,21 +3,21 @@
     <div data-inline-edit-target="display" class="hidden"></div>
 
     <div data-inline-edit-target="form">
-      <%= form_with model: current_user, url: mypage_dashboard_path, method: :patch, class: "flex items-center gap-3" do |f| %>
+      <%= form_with model: current_user, url: mypage_dashboard_path, method: :patch, style: "display: flex; align-items: center; gap: 0.75rem;" do |f| %>
         <div>
           <%= f.text_field :nickname,
                 value: current_user.nickname,
-                class: "text-2xl font-bold border border-red-300 rounded-md px-2 py-1 focus:ring-red-500 focus:border-red-500",
+                style: "font-size: 1.5rem; font-weight: 700; color: #ffffff; background: rgba(255,255,255,0.05); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 0.375rem; padding: 0.25rem 0.5rem; outline: none;",
                 maxlength: 20 %>
           <% if current_user.errors[:nickname].any? %>
-            <p class="text-red-500 text-sm mt-1"><%= current_user.errors[:nickname].join(", ") %></p>
+            <p style="color: #fca5a5; font-size: 0.875rem; margin-top: 0.25rem;"><%= current_user.errors[:nickname].join(", ") %></p>
           <% end %>
         </div>
         <%= f.submit "保存",
-              class: "bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-1 rounded-md cursor-pointer" %>
+              style: "background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; cursor: pointer;" %>
         <button type="button"
                 data-action="inline-edit#cancel"
-                class="text-gray-500 hover:text-gray-700 text-sm">
+                style="color: #6b7280; font-size: 0.875rem; background: none; border: none; cursor: pointer;">
           キャンセル
         </button>
       <% end %>
