@@ -75,7 +75,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
 
     it "プレースホルダーに例文が表示される" do
       bio_field = find_field("profile[bio]")
-      expect(bio_field["placeholder"]).to include("RUNTEQ")
+      expect(bio_field["placeholder"]).to include("インドア派")
     end
 
     it "bioを入力して保存できる" do
