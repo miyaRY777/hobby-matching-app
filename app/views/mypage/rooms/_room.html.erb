@@ -1,39 +1,39 @@
 <%= turbo_frame_tag dom_id(room) do %>
-  <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col">
+  <div style="padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column;">
     <%# 部屋名 %>
-    <h3 class="text-lg font-semibold mb-3">
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin-bottom: 0.75rem;">
       <%= room.label.presence || "名無しの部屋" %>
     </h3>
 
     <% if link.present? %>
       <%# 共有URL %>
-      <div class="text-base break-all mb-2" data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-gray-500 font-medium text-sm">共有URL</span>
+      <div style="word-break: break-all; margin-bottom: 0.5rem;" data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+          <span style="color: #6b7280; font-weight: 500; font-size: 0.875rem;">共有URL</span>
           <button type="button"
                   data-clipboard-target="button"
                   data-action="click->clipboard#copy"
-                  class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded hover:bg-indigo-100 transition-colors">
+                  style="display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; font-size: 0.75rem; font-weight: 500; color: #60a5fa; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 0.25rem; cursor: pointer;">
             Copy
           </button>
         </div>
         <%= link_to share_url(link.token),
                     share_path(link.token),
                     target: "_blank",
-                    class: "text-indigo-600 hover:underline" %>
+                    style: "color: #60a5fa; text-decoration: none; font-size: 0.875rem;" %>
       </div>
 
       <%# 有効期限 %>
-      <p class="text-sm mb-2">
-        <span class="text-gray-500 font-medium">有効期限</span>
+      <p style="font-size: 0.875rem; color: #d1d5db; margin-bottom: 0.5rem;">
+        <span style="color: #6b7280; font-weight: 500;">有効期限</span>
         <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
 
         <% if link.expires_at <= Time.current %>
-          <span class="ml-2 inline-block bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
+          <span style="margin-left: 0.5rem; display: inline-block; background: rgba(239, 68, 68, 0.15); color: #fca5a5; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
             期限切れ
           </span>
         <% else %>
-          <span class="ml-2 inline-block bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+          <span style="margin-left: 0.5rem; display: inline-block; background: rgba(34, 197, 94, 0.15); color: #86efac; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
             有効
           </span>
         <% end %>
@@ -41,21 +41,21 @@
     <% end %>
 
     <%# 参加人数 %>
-    <p class="text-sm text-gray-600 mb-4">
+    <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1rem;">
       参加人数: <%= room.room_memberships.size %> 人
     </p>
 
     <%# 操作 %>
-    <div class="flex justify-end gap-4 text-sm w-full">
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; font-size: 0.875rem; width: 100%;">
       <%= link_to "編集",
                   edit_mypage_room_path(room),
                   data: { turbo_frame: dom_id(room) },
-                  class: "text-blue-600 hover:underline" %>
+                  style: "color: #60a5fa; text-decoration: none;" %>
 
       <%= link_to "削除",
                   mypage_room_path(room),
                   data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
-                  class: "text-red-600 hover:underline" %>
+                  style: "color: #ef4444; text-decoration: none;" %>
     </div>
   </div>
 <% end %>

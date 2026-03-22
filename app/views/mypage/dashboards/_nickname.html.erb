@@ -2,11 +2,11 @@
   <div data-controller="inline-edit">
     <%# 表示状態 %>
     <div data-inline-edit-target="display" class="flex items-center gap-3">
-      <p class="text-2xl font-bold"><%= current_user.nickname %></p>
+      <p style="font-size: 1.5rem; font-weight: 700; color: #ffffff;"><%= current_user.nickname %></p>
       <button data-action="inline-edit#edit"
-              class="text-gray-400 hover:text-gray-600 transition"
+              style="color: #6b7280; background: none; border: none; cursor: pointer; transition: color 0.2s;"
               title="ニックネームを編集">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem;" viewBox="0 0 20 20" fill="currentColor">
           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
         </svg>
       </button>
@@ -14,22 +14,22 @@
 
     <%# 編集状態 %>
     <div data-inline-edit-target="form" class="hidden">
-      <%= form_with model: current_user, url: mypage_dashboard_path, method: :patch, class: "flex items-center gap-3" do |f| %>
+      <%= form_with model: current_user, url: mypage_dashboard_path, method: :patch, style: "display: flex; align-items: center; gap: 0.75rem;" do |f| %>
         <%= f.text_field :nickname,
               value: current_user.nickname,
-              class: "text-2xl font-bold border border-gray-300 rounded-md px-2 py-1 focus:ring-indigo-500 focus:border-indigo-500",
+              style: "font-size: 1.5rem; font-weight: 700; color: #ffffff; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); border-radius: 0.375rem; padding: 0.25rem 0.5rem; outline: none;",
               maxlength: 20 %>
         <%= f.submit "保存",
-              class: "bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-1 rounded-md cursor-pointer" %>
+              style: "background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; cursor: pointer;" %>
         <button type="button"
                 data-action="inline-edit#cancel"
-                class="text-gray-500 hover:text-gray-700 text-sm">
+                style="color: #6b7280; font-size: 0.875rem; background: none; border: none; cursor: pointer;">
           キャンセル
         </button>
       <% end %>
 
       <% if current_user.errors[:nickname].any? %>
-        <p class="text-red-500 text-sm mt-1"><%= current_user.errors[:nickname].join(", ") %></p>
+        <p style="color: #fca5a5; font-size: 0.875rem; margin-top: 0.25rem;"><%= current_user.errors[:nickname].join(", ") %></p>
       <% end %>
     </div>
   </div>

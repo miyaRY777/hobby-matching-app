@@ -1,21 +1,21 @@
 <% content_for :no_center, true %>
 
-<div class="max-w-6xl mx-auto px-6 py-10">
-  <h1 class="text-3xl font-bold mb-8">部屋管理</h1>
+<div style="max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
+  <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin-bottom: 2rem;">部屋管理</h1>
 
   <%# 作成フォーム %>
-  <div class="bg-white shadow-md rounded-xl p-6 mb-10 max-w-lg">
-    <h2 class="text-xl font-semibold mb-4">+ 部屋を新規作成</h2>
+  <div style="max-width: 28rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); margin-bottom: 2.5rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">+ 部屋を新規作成</h2>
 
-    <%= form_with model: Room.new, url: mypage_rooms_path, class: "space-y-4" do |f| %>
-      <div>
-        <%= f.label :label, "部屋名（任意）", class: "block text-sm font-medium text-gray-700" %>
+    <%= form_with model: Room.new, url: mypage_rooms_path do |f| %>
+      <div style="margin-bottom: 1rem;">
+        <%= f.label :label, "部屋名（任意）", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
         <%= f.text_field :label,
-              class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" %>
+              style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
       </div>
 
       <%= f.submit "部屋を作成",
-            class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow cursor-pointer" %>
+            style: "padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
     <% end %>
   </div>
 
@@ -26,7 +26,7 @@
     <% end %>
   </div>
 
-  <div class="mt-6">
-    <%= link_to "マイページに戻る", mypage_root_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+  <div style="margin-top: 1.5rem;">
+    <%= link_to "マイページに戻る", mypage_root_path, style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>
   </div>
 </div>
