@@ -17,12 +17,12 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body<%= content_for?(:landing) ? ' style="background: #0a0e1a; margin: 0;"'.html_safe : '' %>>
+  <body style="background: #0a0e1a; margin: 0; color: #d1d5db;">
     <%= render "shared/navbar" %>
-    <div id="flash">
+    <div id="flash" style="position: fixed; top: 3rem; left: 0; right: 0; z-index: 40; padding: 0.5rem 1rem;">
         <%= render 'shared/flash' %>
     </div>
-    <main class="<%= content_for?(:landing) ? '' : content_for?(:full_width) ? 'mt-20 py-8 px-4' : "container mx-auto mt-20 py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>"<%= content_for?(:landing) ? ' style="margin: 0; padding: 0;"'.html_safe : '' %>>
+    <main class="<%= content_for?(:landing) ? '' : content_for?(:full_width) ? 'py-8 px-4' : "container mx-auto py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>" style="<%= content_for?(:landing) ? '' : 'margin-top: 7rem;' %>">
       <%= yield %>
     </main>
   </body>
