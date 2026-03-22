@@ -13,51 +13,55 @@
     </div>
   <% end %>
 
-  <div style="margin-bottom: 1.5rem;">
-    <%= f.label :bio, "自己紹介",
-          style: "display: block; font-size: 0.875rem; font-weight: 600; color: #d1d5db; margin-bottom: 0.375rem;" %>
-    <%= f.text_area :bio,
-          rows: 5,
-          placeholder: "例：\nインドア派で、ゲームやアニメが好きです！\n同じ趣味の人と気軽に話したいです。",
-          style: "width: 100%; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; padding: 0.5rem 1rem; font-size: 0.875rem; outline: none; resize: none; box-sizing: border-box;" %>
-  </div>
+  <div class="flex flex-col md:flex-row gap-6">
+    <%# 左カラム: 自己紹介 %>
+    <div class="w-full md:w-1/2">
+      <%= f.label :bio, "自己紹介",
+            style: "display: block; font-size: 0.875rem; font-weight: 600; color: #d1d5db; margin-bottom: 0.375rem;" %>
+      <%= f.text_area :bio,
+            rows: 15,
+            placeholder: "例：\nインドア派で、ゲームやアニメが好きです！\n同じ趣味の人と気軽に話したいです。",
+            style: "width: 100%; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; padding: 0.5rem 1rem; font-size: 0.875rem; outline: none; resize: none; box-sizing: border-box;" %>
+    </div>
 
-  <div class="relative"
-       data-controller="tag-description tag-autocomplete"
-       data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
-       data-tag-autocomplete-max-value="10"
-       data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription">
+    <%# 右カラム: タグ + 説明文 %>
+    <div class="w-full md:w-1/2 relative"
+         data-controller="tag-description tag-autocomplete"
+         data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
+         data-tag-autocomplete-max-value="10"
+         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription">
 
-    <%= f.label :hobbies_text, "タグ",
-          style: "display: block; font-size: 0.875rem; font-weight: 600; color: #d1d5db; margin-bottom: 0.375rem;" %>
+      <%= f.label :hobbies_text, "タグ",
+            style: "display: block; font-size: 0.875rem; font-weight: 600; color: #d1d5db; margin-bottom: 0.375rem;" %>
 
-    <%# hidden field: サーバーに送信される値 %>
-    <input type="hidden"
-           name="profile[hobbies_text]"
-           value="<%= @hobbies_text %>"
-           data-tag-autocomplete-target="hiddenField">
+      <%# hidden field: サーバーに送信される値 %>
+      <input type="hidden"
+             name="profile[hobbies_text]"
+             value="<%= @hobbies_text %>"
+             data-tag-autocomplete-target="hiddenField">
 
-    <%# チップ表示エリア %>
-    <div class="flex flex-wrap gap-2 mb-2 mt-1"
-         data-tag-autocomplete-target="chipList"></div>
+      <%# チップ表示エリア %>
+      <div class="flex flex-wrap gap-2 mb-2 mt-1"
+           data-tag-autocomplete-target="chipList"></div>
 
-    <%# テキスト入力 %>
-    <input type="text"
-           id="tag-input"
-           placeholder="タグを入力（2文字以上で候補表示）"
-           autocomplete="off"
-           data-testid="tag-input"
-           data-tag-autocomplete-target="input"
-           data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
-           style="width: 100%; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; padding: 0.5rem 1rem; font-size: 0.875rem; outline: none; box-sizing: border-box;">
+      <%# テキスト入力 %>
+      <input type="text"
+             id="tag-input"
+             placeholder="タグを入力（2文字以上で候補表示）"
+             autocomplete="off"
+             data-testid="tag-input"
+             data-tag-autocomplete-target="input"
+             data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
+             style="width: 100%; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; padding: 0.5rem 1rem; font-size: 0.875rem; outline: none; box-sizing: border-box;">
 
-    <%# オートコンプリート候補ドロップダウン %>
-    <ul data-tag-autocomplete-target="dropdown"
-        class="hidden absolute z-10 mt-1 w-full rounded-lg max-h-60 overflow-auto"
-        style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
+      <%# オートコンプリート候補ドロップダウン %>
+      <ul data-tag-autocomplete-target="dropdown"
+          class="hidden absolute z-10 mt-1 w-full rounded-lg max-h-60 overflow-auto"
+          style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
 
-    <%# 説明文入力エリア（tag-descriptionコントローラが管理）%>
-    <div data-tag-description-target="container"></div>
+      <%# 説明文入力エリア（tag-descriptionコントローラが管理）%>
+      <div data-tag-description-target="container"></div>
+    </div>
   </div>
 
   <div style="padding-top: 1rem;">
