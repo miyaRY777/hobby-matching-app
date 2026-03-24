@@ -60,6 +60,7 @@ group :development do
   gem "rubocop-performance", require: false # 追加
   gem "rubocop-rails", require: false # 追加
   gem "rubocop-rspec" # 追加
+  gem "letter_opener_web"
 end
 
 group :test do
