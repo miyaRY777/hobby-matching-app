@@ -25,6 +25,13 @@ Rails.application.routes.draw do
     end
   end
 
+  # 静的ページ
+  get "terms", to: "pages#terms"
+  get "privacy", to: "pages#privacy"
+
+  # お問い合わせ
+  resources :contacts, only: %i[new create]
+
   get "/share/:token", to: "shares#show", as: :share
 
   get "/rooms/:room_id/members/:id", to: "rooms/members#show", as: :room_member

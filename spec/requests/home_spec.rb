@@ -29,6 +29,12 @@ RSpec.describe "Home", type: :request do
       it "ユーザー登録リンクが表示される" do
         expect(response.body).to include("無料で始める")
       end
+
+      it "フッターが表示される" do
+        expect(response.body).to include("利用規約")
+        expect(response.body).to include("プライバシーポリシー")
+        expect(response.body).to include("お問い合わせ")
+      end
     end
 
     context "ログイン済み時" do

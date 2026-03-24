@@ -1,0 +1,45 @@
+<% content_for :no_center, "true" %>
+
+<div style="max-width: 48rem; margin: 0 auto; position: relative; z-index: 1;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; color: #ffffff; margin-bottom: 2rem;">お問い合わせ</h1>
+
+  <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(55, 65, 81, 0.4); border-radius: 0.75rem; padding: 2rem; backdrop-filter: blur(10px);">
+
+    <% if @contact_form.errors.any? %>
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
+        <ul style="margin: 0; padding-left: 1.25rem; color: #fca5a5;">
+          <% @contact_form.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @contact_form, url: contacts_path, local: true do |f| %>
+      <div style="margin-bottom: 1.25rem;">
+        <%= f.label :name, "名前", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.5rem;" %>
+        <%= f.text_field :name, style: "width: 100%; padding: 0.625rem 0.75rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(55, 65, 81, 0.6); border-radius: 0.375rem; color: #ffffff; font-size: 0.875rem; box-sizing: border-box;", placeholder: "お名前" %>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <%= f.label :email, "メールアドレス", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.5rem;" %>
+        <%= f.email_field :email, style: "width: 100%; padding: 0.625rem 0.75rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(55, 65, 81, 0.6); border-radius: 0.375rem; color: #ffffff; font-size: 0.875rem; box-sizing: border-box;", placeholder: "example@email.com" %>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <%= f.label :subject, "件名", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.5rem;" %>
+        <%= f.text_field :subject, style: "width: 100%; padding: 0.625rem 0.75rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(55, 65, 81, 0.6); border-radius: 0.375rem; color: #ffffff; font-size: 0.875rem; box-sizing: border-box;", placeholder: "件名を入力してください" %>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <%= f.label :body, "本文", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.5rem;" %>
+        <%= f.text_area :body, rows: 8, style: "width: 100%; padding: 0.625rem 0.75rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(55, 65, 81, 0.6); border-radius: 0.375rem; color: #ffffff; font-size: 0.875rem; box-sizing: border-box; resize: vertical;", placeholder: "お問い合わせ内容を入力してください" %>
+      </div>
+
+      <div>
+        <%= f.submit "送信する", style: "padding: 0.625rem 1.5rem; border-radius: 0.375rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
+      </div>
+    <% end %>
+
+  </div>
+</div>
