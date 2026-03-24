@@ -1,0 +1,13 @@
+<footer style="background: linear-gradient(to right, #0f172a, #1e293b, #0f172a); border-top: 1px solid rgba(55, 65, 81, 0.4); padding: 2rem 1rem; position: relative;">
+  <!-- 装飾ライン -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(96, 165, 250, 0.2), transparent);"></div>
+
+  <div class="container mx-auto" style="text-align: center;">
+    <nav style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem;">
+      <%= link_to "利用規約", terms_path, style: "color: #9ca3af; font-size: 0.875rem; text-decoration: none;" %>
+      <%= link_to "プライバシーポリシー", privacy_path, style: "color: #9ca3af; font-size: 0.875rem; text-decoration: none;" %>
+      <%= link_to "お問い合わせ", new_contact_path, style: "color: #9ca3af; font-size: 0.875rem; text-decoration: none;" %>
+    </nav>
+    <p style="color: #6b7280; font-size: 0.75rem; margin: 0;">&copy; <%= Date.current.year %> Hobby Matching</p>
+  </div>
+</footer>
