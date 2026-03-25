@@ -77,3 +77,6 @@ gem "devise"
 gem "omniauth-google-oauth2"
 gem "omniauth-discord"
 gem "omniauth-rails_csrf_protection"
+
+# SendGrid Web API
+gem "sendgrid-actionmailer"
