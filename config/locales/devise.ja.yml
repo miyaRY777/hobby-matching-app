@@ -40,6 +40,12 @@ ja:
         signed_up: ユーザー登録に成功しました。
     omniauth_callbacks:
       signed_in: ログインしました。
+    passwords:
+      no_token: "パスワードリセットトークンがありません。パスワードリセットメールのリンクからアクセスしてください。"
+      send_instructions: "パスワードリセット用のメールを送信しました。"
+      send_paranoid_instructions: "メールアドレスが登録済みの場合、パスワードリセット用のメールを送信しました。"
+      updated: "パスワードが正しく変更されました。"
+      updated_not_active: "パスワードが正しく変更されました。ログインしてください。"
     sessions:
       new:
         sign_in: ログイン
