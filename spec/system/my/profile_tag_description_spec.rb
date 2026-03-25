@@ -36,7 +36,8 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       find("[data-testid='description-input']").fill_in with: "毎日やってます"
       click_button "更新する"
 
-      expect(page).to have_text("プロフィールを更新しました")
+      expect(page).to have_current_path(profile_path(profile))
+      within("#flash") { expect(page).to have_text("プロフィールを更新しました") }
 
       ph = profile.reload.profile_hobbies.joins(:hobby).find_by(hobbies: { name: "ゲーム" })
       expect(ph.description).to eq("毎日やってます")
@@ -47,7 +48,8 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       find("[data-testid='tag-input']").send_keys(:return)
       click_button "更新する"
 
-      expect(page).to have_text("プロフィールを更新しました")
+      expect(page).to have_current_path(profile_path(profile))
+      within("#flash") { expect(page).to have_text("プロフィールを更新しました") }
 
       ph = profile.reload.profile_hobbies.joins(:hobby).find_by(hobbies: { name: "ゲーム" })
       expect(ph).not_to be_nil
@@ -85,7 +87,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(profile))
-      expect(page).to have_text("プロフィールを更新しました")
+      within("#flash") { expect(page).to have_text("プロフィールを更新しました") }
       expect(profile.reload.bio).to eq("テスト自己紹介です")
     end
   end
