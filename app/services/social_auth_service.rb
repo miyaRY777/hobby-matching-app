@@ -23,11 +23,13 @@ class SocialAuthService
 
     if user
       user.social_accounts.create!(provider: provider, uid: uid)
+      OauthAvatarDownloadService.call(user: user, auth: @auth)
       return success(user)
     end
 
     # 4. 新規ユーザー + SocialAccount を作成
     user = create_user_with_social_account
+    OauthAvatarDownloadService.call(user: user, auth: @auth)
     success(user)
   rescue ActiveRecord::RecordNotUnique
     # 5. 競合時: 再取得

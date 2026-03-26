@@ -224,5 +224,40 @@ RSpec.describe SocialAuthService, type: :service do
         expect(result.user).to eq(user)
       end
     end
+
+    context "avatar download" do
+      it "calls OauthAvatarDownloadService for new user" do
+        allow(OauthAvatarDownloadService).to receive(:call)
+
+        described_class.call(auth)
+
+        expect(OauthAvatarDownloadService).to have_received(:call).with(
+          user: an_instance_of(User),
+          auth: auth
+        )
+      end
+
+      it "does not call OauthAvatarDownloadService for existing SocialAccount" do
+        user = create(:user)
+        create(:social_account, user: user, provider: "google_oauth2", uid: "123456")
+        allow(OauthAvatarDownloadService).to receive(:call)
+
+        described_class.call(auth)
+
+        expect(OauthAvatarDownloadService).not_to have_received(:call)
+      end
+
+      it "calls OauthAvatarDownloadService when linking to existing email user" do
+        create(:user, email: "oauth@example.com")
+        allow(OauthAvatarDownloadService).to receive(:call)
+
+        described_class.call(auth)
+
+        expect(OauthAvatarDownloadService).to have_received(:call).with(
+          user: an_instance_of(User),
+          auth: auth
+        )
+      end
+    end
   end
 end
