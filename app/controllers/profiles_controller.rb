@@ -10,7 +10,7 @@ class ProfilesController < ApplicationController
   end
 
   def show
-    @profile = Profile.includes(:user, profile_hobbies: :hobby).find_by(id: params[:id])
+    @profile = Profile.includes(profile_hobbies: :hobby, user: { avatar_attachment: :blob }).find_by(id: params[:id])
     return redirect_to profiles_path, alert: "プロフィールが見つかりません" unless @profile
 
     @profile_hobby_map = @profile.profile_hobbies.index_by(&:hobby_id)
