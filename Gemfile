@@ -68,6 +68,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "minitest", "~> 5.20"
+  gem "webmock"
 end
 
 # deviseを追加
