@@ -5,6 +5,8 @@ class Mypage::DashboardsController < ApplicationController
   end
 
   def update
+    return handle_avatar_update if params.dig(:user, :avatar).present?
+
     if current_user.update(user_params)
       respond_to do |format|
         format.turbo_stream
@@ -24,7 +26,15 @@ class Mypage::DashboardsController < ApplicationController
 
   private
 
+  def handle_avatar_update
+    if current_user.update(avatar: params[:user][:avatar])
+      redirect_to mypage_root_path, notice: "プロフィール画像を更新しました"
+    else
+      redirect_to mypage_root_path, alert: current_user.errors[:avatar].join(", ")
+    end
+  end
+
   def user_params
-    params.require(:user).permit(:nickname)
+    params.require(:user).permit(:nickname, :avatar)
   end
 end
