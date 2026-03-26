@@ -103,6 +103,35 @@ RSpec.describe "Mypage::Dashboards", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(user.reload.nickname).to eq("旧ニックネーム")
       end
+
+      it "有効な画像をアップロードできる" do
+        user = create(:user)
+        sign_in user
+
+        avatar = fixture_file_upload(
+          Rails.root.join("spec/fixtures/files/valid_avatar.jpg"),
+          "image/jpeg"
+        )
+        patch mypage_dashboard_path, params: { user: { avatar: avatar } }
+
+        expect(response).to redirect_to(mypage_root_path)
+        expect(user.reload.avatar).to be_attached
+      end
+
+      it "不正な形式のファイルはバリデーションエラーになる" do
+        user = create(:user)
+        sign_in user
+
+        avatar = fixture_file_upload(
+          Rails.root.join("spec/fixtures/files/invalid_avatar.bmp"),
+          "image/bmp"
+        )
+        patch mypage_dashboard_path, params: { user: { avatar: avatar } }
+
+        expect(response).to redirect_to(mypage_root_path)
+        follow_redirect!
+        expect(response.body).to include("ファイルタイプは許可されていません")
+      end
     end
   end
 end

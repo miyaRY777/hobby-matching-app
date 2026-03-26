@@ -30,7 +30,7 @@ class My::ProfilesController < ApplicationController
   def update
     @profile.hobbies_text = profile_params[:hobbies_text]
     if @profile.update(profile_params.except(:hobbies_text))
-      @profile.update_hobbies_from_json(@profile.hobbies_text)
+      @profile.update_hobbies_from_json(@profile.hobbies_text) if @profile.hobbies_text.present?
       redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
     else
       @hobbies_text = @profile.hobbies_text
