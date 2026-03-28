@@ -7,10 +7,7 @@
     ],
     "deny": [
       "Bash(sudo *)",
-      "Bash(rm *)",
-      "Bash(rm -rf *)",
 
-      "Bash(git push *)",
       "Bash(git reset *)",
       "Bash(git reset --hard *)",
       "Bash(git rebase *)",
@@ -33,6 +30,24 @@
       "Bash(wget *)",
       "Bash(nc *)",
       "Bash(psql *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{
+          "type": "command",
+          "command": "if echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command' | grep -qE 'rm\\s+-rf'; then echo 'rm -rf は禁止です。個別に rm を使ってください。' >&2; exit 2; fi"
+        }]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [{
+          "type": "command",
+          "command": "if echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command' | grep -qE 'git\\s+push.*\\b(main|master)\\b'; then echo 'mainへの直接pushは禁止です。PRを使ってください。' >&2; exit 2; fi"
+        }]
+      }
     ]
   }
 }
