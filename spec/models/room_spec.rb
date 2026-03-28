@@ -7,6 +7,44 @@ RSpec.describe Room, type: :model do
     expect(room).not_to be_valid
   end
 
+  describe "room_type enum" do
+    it "デフォルト値が chat である" do
+      room = create(:room)
+
+      expect(room.room_type).to eq("chat")
+    end
+
+    it "study に変更できる" do
+      room = create(:room)
+
+      room.study!
+
+      expect(room).to be_study
+    end
+
+    it "game に変更できる" do
+      room = create(:room)
+
+      room.game!
+
+      expect(room).to be_game
+    end
+
+    it "スコープで絞り込みできる" do
+      chat_room = create(:room)
+      study_room = create(:room)
+      study_room.study!
+
+      expect(described_class.chat).to include(chat_room)
+      expect(described_class.chat).not_to include(study_room)
+      expect(described_class.study).to include(study_room)
+    end
+
+    it "不正な値で ArgumentError が発生する" do
+      expect { create(:room).room_type = "invalid" }.to raise_error(ArgumentError)
+    end
+  end
+
   it "has associations" do
     room = described_class.reflect_on_association(:issuer_profile)
 
