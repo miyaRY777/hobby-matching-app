@@ -6,6 +6,10 @@ class ShareLink < ApplicationRecord
   before_validation :set_token, on: :create
   before_validation :set_expires_at, on: :create
 
+  def expired?
+    expires_at <= Time.current
+  end
+
   private
 
   def set_token
