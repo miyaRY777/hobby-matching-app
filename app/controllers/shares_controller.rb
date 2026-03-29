@@ -13,9 +13,14 @@ class SharesController < ApplicationController
 
     # --------------------------------------------------
     # 2. 有効期限チェック
-    # 期限切れの場合は「410 Gone」を返す
+    # 期限切れ かつ 未参加ユーザー → 410 Gone
+    # 期限切れ かつ 既存メンバー → 通過（閲覧OK）
     # --------------------------------------------------
-    return head :gone if share_link.expires_at <= Time.current
+    if share_link.expires_at <= Time.current
+      viewer_profile = current_user.profile
+      is_member = viewer_profile && RoomMembership.exists?(room: share_link.room, profile: viewer_profile)
+      return head :gone unless is_member
+    end
 
     # --------------------------------------------------
     # 3. 表示対象の部屋と閲覧ユーザーのプロフィール取得
