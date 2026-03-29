@@ -9,24 +9,22 @@ class SharesController < ApplicationController
     # --------------------------------------------------
     # 1. 共有リンク取得（存在しない場合は 404）
     # --------------------------------------------------
-    share_link = ShareLink.find_by!(token: params[:token])
+    share_link = ShareLink.includes(:room).find_by!(token: params[:token])
+    @viewer_profile = current_user.profile
 
     # --------------------------------------------------
     # 2. 有効期限チェック
     # 期限切れ かつ 未参加ユーザー → 410 Gone
     # 期限切れ かつ 既存メンバー → 通過（閲覧OK）
     # --------------------------------------------------
-    if share_link.expires_at <= Time.current
-      viewer_profile = current_user.profile
-      is_member = viewer_profile && RoomMembership.exists?(room: share_link.room, profile: viewer_profile)
-      return head :gone unless is_member
+    if share_link.expired?
+      return head :gone unless @viewer_profile && RoomMembership.exists?(room: share_link.room, profile: @viewer_profile)
     end
 
     # --------------------------------------------------
-    # 3. 表示対象の部屋と閲覧ユーザーのプロフィール取得
+    # 3. 表示対象の部屋を取得
     # --------------------------------------------------
     @room = share_link.room
-    @viewer_profile = current_user.profile
 
     # --------------------------------------------------
     # 4. 共有リンク閲覧を「部屋参加」として扱う
