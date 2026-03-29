@@ -2,6 +2,7 @@
 
 * Phase 1 設計合意後に Issue + 作業ブランチを作成してから実装開始（GitHub Project「Hobby Matching」）
 * RED → GREEN → REFACTOR → PR
+* PR作成後に `/save-note` でObsidianノートを保存
 * すべてのコマンドは `docker compose exec web` 経由
 * PR前に RSpec / RuboCop 全通過
 * 不明点は必ず質問する（推測で実装しない）
@@ -21,7 +22,7 @@
 変更ファイル一覧・テスト一覧・RED/GREEN/REFACTORの分解・Service分離の要否。「この計画で進めてよいか？」を確認。
 
 ## Phase 3：実行
-RED → GREEN → REFACTOR 厳守。方針分岐時は停止して確認。各ステップで報告。
+RED → GREEN → REFACTOR 厳守。REFACTOR時にサブエージェント（rails-reviewer / performance-checker）を実行し、指摘があれば対応する。方針分岐時は停止して確認。各ステップで報告。
 
 ---
 
