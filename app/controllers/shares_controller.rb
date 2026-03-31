@@ -37,7 +37,7 @@ class SharesController < ApplicationController
     # includes により N+1 クエリを防止
     # --------------------------------------------------
     @memberships = @room.room_memberships
-                        .includes(profile: [ :user, { profile_hobbies: :hobby } ])
+                        .includes(profile: [ :user, { profile_hobbies: { hobby: :parent_tag } } ])
                         .order(created_at: :asc)
 
     # --------------------------------------------------

@@ -20,7 +20,7 @@ module Rooms
       # 1. 表示対象プロフィールを取得
       # user / hobbies を eager load して N+1 クエリを防ぐ
       # --------------------------------------------------
-      @profile = Profile.includes(:user, profile_hobbies: :hobby).find(params[:id])
+      @profile = Profile.includes(:user, profile_hobbies: { hobby: :parent_tag }).find(params[:id])
       @profile_hobby_map = @profile.profile_hobbies.index_by(&:hobby_id)
 
       # --------------------------------------------------
