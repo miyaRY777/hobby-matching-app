@@ -18,8 +18,8 @@ RSpec.describe Hobby, type: :model do
 
   describe "関連" do
     it "parent_tag に属することができる" do
-      parent_tag = ParentTag.create!(name: "アニメ", slug: "anime", room_type: :chat)
-      hobby = described_class.create!(name: "呪術廻戦", parent_tag: parent_tag)
+      parent_tag = ParentTag.create!(name: "テスト親タグ", slug: "test-parent", room_type: :chat)
+      hobby = described_class.create!(name: "テスト趣味D", parent_tag: parent_tag)
       expect(hobby.parent_tag).to eq(parent_tag)
     end
 
