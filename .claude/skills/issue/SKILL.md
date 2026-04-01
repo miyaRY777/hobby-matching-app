@@ -10,11 +10,29 @@ allowed-tools: Bash, AskUserQuestion
 
 Phase 1（設計合意）完了後に、GitHub Issue と作業ブランチを作成します。
 
+## 鉄則
+
+```
+Phase 1 合意なしにIssueを作成しない
+```
+
 ## 依頼内容
 
 $ARGUMENTS
 
 ## 実行手順
+
+### 0. 既存Issueの重複チェック
+
+Issue作成前に、類似の既存Issueがないか確認する：
+
+```bash
+gh issue list --state open --limit 50 --json number,title
+```
+
+- 類似Issueが見つかった場合 → ユーザーに提示し、既存Issueを使うか新規作成するか確認
+- 既存Issueを使う場合 → そのIssueの作業ブランチ作成（手順3）へスキップ
+- 見つからなければ → 手順1へ進む
 
 ### 1. Issue内容の確認
 

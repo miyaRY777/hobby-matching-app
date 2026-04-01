@@ -10,11 +10,26 @@ allowed-tools: Bash, Read, Glob, AskUserQuestion
 
 変更内容を分析し、GitHub PRを作成します。
 
+## 鉄則
+
+```
+/check 未実行のPRは作成しない
+```
+
 ## 依頼内容
 
 $ARGUMENTS
 
 ## 実行手順
+
+### 0. チェック済み確認
+
+PR作成前に `/check` が実行済みか確認する。
+未実行の場合は「先に `/check` を実行してください」と案内して終了する。
+
+確認方法：
+- 会話内で `/check` の実行結果（RSpec / RuboCop / 受入条件の突合結果）があるか
+- ない場合は先に `/check` を実行するよう促す
 
 ### 1. 現状確認（並列実行）
 - `git status` で未コミットの変更がないか確認
