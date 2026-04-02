@@ -91,20 +91,53 @@ $ARGUMENTS
 
 ## 出力フォーマット
 
+各セクションには必ず **設計意図**（なぜその設計にしたか・別案を採用しなかった理由）を記載すること。
+
+### 全体設計思想
+- この機能の設計における主要な判断とその根拠（複数案があった場合はトレードオフ表で示す）
+
 ### データ構造の変更
 - 変更内容（なしの場合は「なし」）
+- **設計意図:** なぜこの構造にしたか
+
+#### ER図（必須）
+機能に関係するテーブルをMermaid erDiagramで必ず出力する。
+変更がないテーブルも関連するものは含める。
+
+```mermaid
+erDiagram
+  例: テーブル名 {
+    型 カラム名 PK/FK "備考"
+  }
+```
 
 ### DB制約
 - 追加する制約一覧
+- **設計意図:** 各制約を設ける理由
 
 ### クエリ設計
 - 主要クエリとN+1対策
+- **設計意図:** クエリ設計の判断根拠
+
+#### シーケンス図（必須）
+主要なリクエスト〜レスポンスの処理フローをMermaid sequenceDiagramで必ず出力する。
+Controller → Service → Model（Repository）の呼び出し順を示す。
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant Controller
+  participant Service
+  participant Model
+```
 
 ### トランザクション
 - 必要 / 不要、必要な場合は境界の説明
+- **設計意図:** トランザクション境界をそこに引いた理由
 
 ### Service分離
 - 要 / 不要、要の場合はService名と責務
+- **設計意図:** 分離する・しない判断の根拠
 
 ### 設計案（複数案がある場合）
 
@@ -141,16 +174,23 @@ docs/designs/YYYY-MM-DD-<機能名>.md
 # [機能名] 設計書
 
 **日付:** YYYY-MM-DD
+**Issue:** #[番号]
 **Phase 0 インテイク:** [要約]
 **ステータス:** 合意済み
 
 ---
 
-[上記の出力フォーマットの内容をそのまま記載]
+[上記の出力フォーマットの内容をそのまま記載（設計意図を含む）]
 ```
 
-保存後、ユーザーに確認：
-> 「設計書を `docs/designs/YYYY-MM-DD-<機能名>.md` に保存しました。内容を確認の上、問題なければ `/issue` で Issue + ブランチを作成します。」
+保存後、以下のコマンドで knowledge-base にもコピーする：
+
+```bash
+cp docs/designs/YYYY-MM-DD-<機能名>.md ~/workspace/miyaRY777/knowledge-base/knowledge/projects/HobbyMatching/
+```
+
+ユーザーに確認：
+> 「設計書を `docs/designs/YYYY-MM-DD-<機能名>.md` に保存し、`knowledge-base/knowledge/projects/HobbyMatching/` にもコピーしました。内容を確認の上、問題なければ `/issue` で Issue + ブランチを作成します。」
 
 ## ルール
 
