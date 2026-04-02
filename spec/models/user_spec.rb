@@ -1,6 +1,13 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
+  describe "admin カラム" do
+    it "デフォルト値は false である" do
+      user = create(:user)
+      expect(user.admin).to be false
+    end
+  end
+
   describe "avatar バリデーション" do
     let(:user) { create(:user) }
 

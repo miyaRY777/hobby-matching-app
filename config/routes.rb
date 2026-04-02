@@ -53,4 +53,8 @@ Rails.application.routes.draw do
     get "mypage/settings", to: "users/registrations#edit", as: :mypage_settings
     patch "mypage/settings", to: "users/registrations#update"
   end
+
+  namespace :admin do
+    root "dashboards#show"
+  end
 end

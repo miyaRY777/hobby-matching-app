@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>管理画面 | Hobby Matching</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+  <body style="background: #0a0e1a; margin: 0; color: #d1d5db;">
+    <header style="background: #111827; border-bottom: 1px solid #374151; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+      <span style="font-weight: bold; color: #f9fafb;">管理画面</span>
+      <%= link_to "ダッシュボード", admin_root_path, style: "color: #9ca3af; text-decoration: none; font-size: 0.875rem;" %>
+      <span style="margin-left: auto;">
+        <%= link_to "サイトに戻る", root_path, style: "color: #9ca3af; text-decoration: none; font-size: 0.875rem;" %>
+      </span>
+    </header>
+    <div style="position: fixed; top: 3rem; left: 0; right: 0; z-index: 40; padding: 0.5rem 1rem;">
+      <%= render "shared/flash" %>
+    </div>
+    <main style="padding: 2rem 1.5rem; margin-top: 1rem;">
+      <%= yield %>
+    </main>
+  </body>
+</html>

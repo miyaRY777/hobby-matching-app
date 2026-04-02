@@ -17,4 +17,8 @@ class User < ApplicationRecord
   def own?(record)
     record.present? && record.user_id == id
   end
+
+  def admin?
+    admin
+  end
 end
