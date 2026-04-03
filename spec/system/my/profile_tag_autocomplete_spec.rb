@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe "タグ入力チップUI", type: :system, js: true do
   let(:user) { create(:user) }
   let!(:profile) { create(:profile, user:) }
+  let!(:uncategorized) { ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 } }
 
   before do
     login_as(user, scope: :user)

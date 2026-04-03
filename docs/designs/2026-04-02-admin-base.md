@@ -2,37 +2,96 @@
 
 **日付:** 2026-04-02
 **Issue:** #170
-**Phase 0 インテイク:** `users.admin` カラム追加、Admin::BaseController・DashboardsController、管理画面レイアウト・ルーティングを構築。未分類タグ管理画面（#171）の前提基盤。
 **ステータス:** 合意済み
 
 ---
 
-## 全体設計思想
+## 1. この設計で作るもの
 
-### なぜ `boolean` カラムか（role ベースにしない理由）
+本 Issue では、管理画面の基盤として以下を構築する。
 
-管理者権限の実装には大きく2つのアプローチがある。
+- `users.admin` カラムの追加
+- `Admin::BaseController` による認証・認可の共通化
+- `Admin::DashboardsController` の追加
+- `/admin` ルーティングの追加
+- 管理画面専用レイアウトの追加
 
-| | boolean カラム | role ベース（enum / 別テーブル） |
-|---|---|---|
-| 実装コスト | 低（カラム1つ + マイグレーション） | 高（enum定義 or 中間テーブル） |
-| 拡張性 | 低（複数ロールが必要になったら移行が必要） | 高（moderator, editor 等を追加しやすい） |
-| 現状の要件 | 「管理者か否か」の2値で十分 | 複数ロールは現時点で不要 |
-
-**採用理由：** 現状の要件は「未分類タグを管理できる管理者」のみ。将来複数ロールが必要になった段階で `role` カラムへ移行する方が、過剰設計を避けられる。YAGNI（You Aren't Gonna Need It）の原則に従い `boolean` を採用。
+これは、後続 Issue である**未分類タグ管理画面（#171）**を安全に実装するための前提基盤である。
 
 ---
 
-## データ構造の変更
+## 2. 目的
+
+- 管理者専用画面へ一般ユーザーが入れないようにする
+- 今後 `Admin::TagsController` などの管理機能を追加しやすい土台を作る
+
+---
+
+## 3. スコープ
+
+### 含むもの
+
+- `users` テーブルへの `admin` カラム追加
+- 管理者専用コントローラ基盤の追加
+- 管理画面トップページの追加
+- 管理画面用レイアウトの追加
+- 管理画面ルーティングの追加
+
+### 含まないもの
+
+- 未分類タグ管理そのものの実装
+- 管理者作成 UI
+- 複数ロール対応（moderator, editor など）
+- 管理操作ログ機能
+
+---
+
+## 4. 設計方針
+
+### なぜ `boolean` カラムを採用するか
+
+管理者権限の実装方法には、大きく次の 2 案がある。
+
+| 方式 | 実装コスト | 拡張性 | 現状との相性 |
+|---|---|---|---|
+| `boolean` カラム | 低い | 低い | 高い |
+| role ベース（enum / 別テーブル） | 高い | 高い | 低い |
+
+現時点の要件は「管理者か否か」の 2 値判定のみである。
+複数ロールを前提にした設計は過剰であり、YAGNI の観点から `boolean` を採用する。
+
+### 将来の拡張について
+
+将来的に `moderator` や `editor` など複数権限が必要になった場合は、その時点で `role` ベースへ移行する。
+現段階では必要最小限の設計を優先する。
+
+---
+
+## 5. データ設計
+
+### 変更内容
 
 ```ruby
-# 新規マイグレーション
 add_column :users, :admin, :boolean, null: false, default: false
 ```
 
-**設計意図:** 既存ユーザーは `default: false` で自動的に非管理者になる。マイグレーション適用と同時に整合性が保たれるため、データパッチ不要。`User#admin?` は Rails が boolean カラムから自動生成するため、モデルコードの追加不要。
+### 設計意図
 
-#### ER図
+- `default: false` により、既存ユーザーは自動的に非管理者になる
+- `null: false` により、`nil` が混入して認可判定が不安定になるのを防ぐ
+- Rails は boolean カラムから `admin?` を自動生成するため、モデル側の追加実装は不要
+
+### DB 制約
+
+| カラム | 制約 | 理由 |
+|---|---|---|
+| `users.admin` | `null: false` | `nil` 混入による認可ロジックの不安定化を防ぐ |
+| `users.admin` | `default: false` | 新規ユーザーが誤って管理者になる事故を防ぐ |
+| index | 不要 | 現状は一覧検索用途がなく、単一レコード参照のみ |
+
+### ER 図
+
+> 列の構成: `型` | `カラム名` | `キー` | `制約・備考`
 
 ```mermaid
 erDiagram
@@ -40,8 +99,8 @@ erDiagram
     bigint id PK
     string email "NOT NULL"
     string encrypted_password "NOT NULL"
-    string nickname
     boolean admin "NOT NULL, DEFAULT false"
+    string nickname
     datetime created_at "NOT NULL"
     datetime updated_at "NOT NULL"
   }
@@ -54,59 +113,45 @@ erDiagram
   users ||--o| profiles : "has one"
 ```
 
-## DB制約
+---
 
-| カラム | 制約 | 理由 |
-|---|---|---|
-| `users.admin` | `null: false` | NULL による予期しない挙動（`nil.present?` 等）を防ぐ |
-| `users.admin` | `default: false` | 新規ユーザーが誤って管理者になる事故防止 |
-| index | 不要 | `current_user.admin?` は session 経由の単一レコード参照のみ。管理者一覧検索のユースケースは現状ない |
+## 6. 画面・アクセス制御の流れ
 
-**設計意図:** boolean フラグは `null: false + default: false` をセットで設定するのが Rails のベストプラクティス。NULL が混入すると `admin?` が `nil` を返すケースが生じ、認可ロジックが破綻するリスクがある。
+管理画面へのアクセスは、次の順で判定する。
 
-## クエリ設計
+1. 未ログインならログイン画面へリダイレクト
+2. ログイン済みでも非管理者ならトップページへリダイレクト
+3. 管理者なら管理画面を表示
 
-`current_user` は Devise が既にロード済み（追加クエリなし）。今回のダッシュボードは静的表示のみで N+1 の発生源なし。
-
-**設計意図:** 管理者チェックは `current_user.admin?` の1属性参照のみ。セッションから取得済みのオブジェクトを使うため、DBへの追加クエリは発生しない。
-
-#### シーケンス図
+### アクセスシーケンス
 
 ```mermaid
 sequenceDiagram
-  actor User
-  participant Browser
-  participant Admin::DashboardsController
-  participant Admin::BaseController
-  participant Devise
+    participant U as User
+    participant B as Browser
+    participant C as DashboardsController
+    participant A as BaseController
 
-  User->>Browser: GET /admin
-  Browser->>Admin::DashboardsController: request
-
-  Admin::BaseController->>Devise: authenticate_user!
-  alt 未ログイン
-    Devise-->>Browser: redirect → /users/sign_in
-  end
-
-  Admin::BaseController->>Admin::BaseController: require_admin!（current_user.admin?）
-  alt admin: false
-    Admin::BaseController-->>Browser: redirect → / (alert: 権限がありません)
-  end
-
-  Admin::DashboardsController->>Browser: render admin/dashboards/show (200 OK)
+    U->>B: GET /admin
+    B->>C: request
+    C->>A: authenticate_user!
+    alt 未ログイン
+        A-->>B: redirect → /users/sign_in
+    else ログイン済み
+        C->>A: require_admin!
+        alt admin: false
+            A-->>B: redirect → / (alert: 権限がありません)
+        else admin: true
+            C-->>B: render admin/dashboards/show (200 OK)
+        end
+    end
 ```
 
-## トランザクション
+---
 
-不要。DB 操作はマイグレーション（DDL）のみ。アプリロジック上の複数テーブル書き込みなし。
+## 7. アプリケーション設計
 
-## Service分離
-
-不要。認証・認可・ルーティング・レイアウトのみで、ビジネスロジックは存在しない。
-
-**設計意図:** `before_action` による認可は Rails のイディオムであり、Controller に置くことが適切。ロジックが増えた場合（例：管理操作のログ記録）は Service 切り出しを検討する。
-
-## コントローラ構成
+### コントローラ構成
 
 ```ruby
 # app/controllers/admin/base_controller.rb
@@ -128,15 +173,59 @@ class Admin::DashboardsController < Admin::BaseController
 end
 ```
 
-**設計意図:** `Admin::BaseController` を基底クラスにすることで、今後追加する管理コントローラ（例：`Admin::TagsController`）が自動的に認証・認可を継承できる。各コントローラで `before_action` を繰り返す必要がなく、認可漏れのリスクを構造的に排除できる。`authenticate_user!` を先に実行するのは、未ログイン状態で `current_user.admin?` を呼ぶと `NoMethodError` になるため。
+### 設計意図
 
-## ナビゲーション設計
+- `Admin::BaseController` に認証・認可を集約することで、今後の管理系コントローラが共通ルールを継承できる
+- 各コントローラへ同じ `before_action` を重複記述せずに済む
+- 認可漏れを構造的に防げる
+- `authenticate_user!` を先に実行することで、未ログイン時に `current_user.admin?` を呼んで `NoMethodError` になるのを防ぐ
 
-**採用案：ヘッダーナビ**
+---
 
-**設計意図:** 現時点のスコープはダッシュボード1画面のみ。サイドバーは多数のメニュー項目がある場合に威力を発揮するが、項目が少ない段階では実装コストが見合わない。ヘッダーナビで始め、管理機能が5項目を超えた時点でサイドバーへの移行を検討する。既存の `application.html.erb` もヘッダーナビ構造のため、設計の一貫性も保てる。
+## 8. ルーティング設計
 
-## 実装内容まとめ
+```ruby
+namespace :admin do
+  root "dashboards#show"
+end
+```
+
+### 設計意図
+
+- `/admin` を管理画面の入口として固定する
+- 今後 `Admin::TagsController` などを同じ namespace 配下へ自然に追加できる
+
+---
+
+## 9. レイアウト設計
+
+**採用案：ヘッダーナビ形式**
+
+現時点のスコープはダッシュボード 1 画面のみであり、サイドバーは過剰。
+既存の `application.html.erb` もヘッダーナビ構成であり、一貫性がある。
+
+管理機能のメニュー項目が **5 項目を超えた段階**でサイドバーへの移行を検討する。
+
+---
+
+## 10. クエリ・性能面
+
+- `current_user` は Devise により取得済み（追加クエリなし）
+- 管理者チェックは `current_user.admin?` の 1 属性参照のみ
+- 今回のダッシュボードは静的表示であり、N+1 の発生源はない
+- 追加インデックスは不要
+
+---
+
+## 11. トランザクション / Service 分離
+
+**トランザクション：** 不要。DB 操作はマイグレーション（DDL）のみ。アプリケーション上の複数テーブル更新を伴わない。
+
+**Service 分離：** 不要。今回の責務は認証・認可・ルーティング・レイアウトであり、独立したビジネスロジックは存在しない。将来、管理操作ログや複雑な権限制御が発生した場合に検討する。
+
+---
+
+## 12. 実装対象一覧
 
 | # | 対象 | 内容 |
 |---|---|---|
@@ -148,11 +237,20 @@ end
 | 6 | Layout | `layouts/admin.html.erb`（ダーク系テーマ + ヘッダーナビ） |
 | 7 | View | `admin/dashboards/show.html.erb`（最小限のダッシュボード） |
 
-## 受入条件
+---
+
+## 13. 受入条件
 
 - [ ] `users.admin` カラムが追加されている（boolean, null: false, default: false）
 - [ ] `/admin` に admin ユーザーのみアクセスできる
-- [ ] 非adminユーザーはトップページにリダイレクト（alertあり）
-- [ ] 未ログインユーザーはログイン画面にリダイレクト
+- [ ] 非 admin ユーザーはトップページへリダイレクト（alert あり）
+- [ ] 未ログインユーザーはログイン画面へリダイレクト
 - [ ] 管理画面ダッシュボードが表示される
 - [ ] RSpec / RuboCop 全通過
+
+---
+
+## 14. この設計の結論
+
+本設計では**最小コストで安全な管理画面基盤を作ること**を優先し、`users.admin` による単純明快な認可方式を採用する。
+現時点では十分な構成であり、将来の要件増加に応じて role ベースへ拡張する。

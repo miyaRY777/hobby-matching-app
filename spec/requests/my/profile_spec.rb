@@ -20,6 +20,7 @@ RSpec.describe "My::Profile", type: :request do
 
   describe "PATCH /my/profile" do
     let!(:profile) { create(:profile, user:) }
+    let!(:uncategorized) { ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 } }
 
     it "11個のタグで更新するとバリデーションエラーになる" do
       hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
