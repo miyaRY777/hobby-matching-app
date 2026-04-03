@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe "Profile hobbies", type: :request do
   let(:user)    { create(:user) }
   let!(:profile) { create(:profile, user:) } # ← current_user の profile を明示
+  let!(:uncategorized) { create(:parent_tag, name: "未分類", slug: "uncategorized", room_type: nil) }
 
   before do
     sign_in user

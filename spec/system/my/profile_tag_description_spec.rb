@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe "タグ説明文入力UI", type: :system, js: true do
   let(:user) { create(:user) }
   let!(:profile) { create(:profile, user:) }
+  let!(:uncategorized) { create(:parent_tag, name: "未分類", slug: "uncategorized", room_type: nil) }
 
   before do
     login_as(user, scope: :user)

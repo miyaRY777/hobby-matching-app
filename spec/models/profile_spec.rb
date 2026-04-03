@@ -28,6 +28,8 @@ RSpec.describe Profile, type: :model do
   end
 
   describe "#update_hobbies_from_json" do
+    let!(:uncategorized) { create(:parent_tag, name: "未分類", slug: "uncategorized", room_type: nil) }
+
     it "JSONからhobbyを作成/取得しdescriptionを保存する" do
       profile = create(:profile)
       old = create(:hobby, name: "old")
