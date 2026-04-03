@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe ProfileHobbiesUpdater do
   describe ".call" do
     let(:profile) { create(:profile) }
-    let!(:uncategorized) { create(:parent_tag, name: "未分類", slug: "uncategorized", room_type: nil) }
+    let!(:uncategorized) { ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 } }
 
     it "新規タグを追加しdescriptionを保存する" do
       described_class.call(profile, [ { name: "ruby", description: "3年やってます" } ])
