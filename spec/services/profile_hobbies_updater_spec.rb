@@ -82,7 +82,7 @@ RSpec.describe ProfileHobbiesUpdater do
       end
 
       it "parent_tag_id が設定済みの既存 hobby は parent_tag を変更しない" do
-        programming = create(:parent_tag, name: "プログラミング", slug: "programming", room_type: 1)
+        programming = ParentTag.find_or_create_by!(slug: "programming", room_type: 1) { |pt| pt.name = "プログラミング"; pt.position = 0 }
         hobby = create(:hobby, name: "rails", parent_tag: programming)
 
         described_class.call(profile, [ { name: "rails", description: "" } ])
