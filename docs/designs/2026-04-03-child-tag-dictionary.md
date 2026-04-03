@@ -133,30 +133,45 @@ sequenceDiagram
 
 ## 7. アプリケーション設計
 
-### ProfileHobbiesUpdater（変更後イメージ）
+### ProfileHobbiesUpdater（最終実装）
 
 ```ruby
 class ProfileHobbiesUpdater
+  # tag_data: [{ name: String, description: String }, ...]
   def self.call(profile, tag_data)
     normalized = tag_data
       .map { |t| { name: Hobby.normalize(t[:name]), description: t[:description].to_s } }
       .reject { |t| t[:name].blank? }
       .uniq { |t| t[:name] }
 
+    # 辞書にない新規 Hobby に自動設定する未分類の親タグ
     uncategorized = ParentTag.find_by!(slug: "uncategorized", room_type: nil)
 
     ApplicationRecord.transaction do
       target_names = normalized.map { |t| t[:name] }
 
+      # 不要なprofile_hobbiesを削除
       profile.profile_hobbies
              .joins(:hobby)
              .where.not(hobbies: { normalized_name: target_names })
              .destroy_all
 
+      # N+1対策: 既存Hobbyをバッチロード
+      existing_hobbies = Hobby.where(normalized_name: target_names).index_by(&:normalized_name)
+
+      # N+1対策: 既存ProfileHobbyをバッチロード（destroy_all後に取得）
+      existing_phs = profile.profile_hobbies
+                            .includes(:hobby)
+                            .index_by { |ph| ph.hobby.normalized_name }
+
       normalized.each do |tag|
-        hobby = Hobby.find_by(normalized_name: tag[:name]) ||
-                Hobby.create!(name: tag[:name], parent_tag_id: uncategorized.id)
-        ph = profile.profile_hobbies.find_or_initialize_by(hobby:)
+        hobby = existing_hobbies[tag[:name]] ||
+                Hobby.find_or_create_by!(normalized_name: tag[:name]) do |h|
+                  h.name = tag[:name]
+                  h.parent_tag_id = uncategorized.id
+                end
+
+        ph = existing_phs[tag[:name]] || ProfileHobby.new(profile:, hobby:)
         ph.description = tag[:description]
         ph.save!
       end
@@ -167,6 +182,8 @@ end
 
 **設計意図:**
 - `uncategorized` はループ前に1回だけ取得してキャッシュ（N+1回避）
+- `find_or_create_by!` ブロック形式で Race Condition を回避（`find_by || create!` は非アトミック）
+- `existing_hobbies` / `existing_phs` をループ前にバッチロードしてループ内の DB アクセスをゼロに
 - `find_by(normalized_name:)` で表記ゆれを吸収（"Rails" → "rails" で既存 hobby を発見）
 - 新規 hobby には必ず `parent_tag_id` を設定（未分類）
 
@@ -221,10 +238,34 @@ end
 |---|---|
 | `ParentTag.find_by!` | ループ前に1回のみ実行、変数キャッシュ |
 | `ParentTag.all.index_by(&:slug)` | seed 実行時のみ、全件 Hash 化でループ内 DB アクセスなし |
-| `Hobby.find_by(normalized_name:)` | `normalized_name` に index 済み |
+| `Hobby.where(normalized_name:).index_by` | ループ前にバッチロード → ループ内 DB アクセスゼロ |
+| `profile_hobbies.includes(:hobby).index_by` | ループ前にバッチロード（destroy_all後に取得）→ ループ内 DB アクセスゼロ |
+| `Hobby.find_or_create_by!(normalized_name:)` | バッチロードで miss した場合のみ実行（新規 hobby のみ） |
 | `profile_hobbies.joins(:hobby).where.not(...)` | `hobby_id` に index 済み |
 
 **追加インデックス:** 不要。
+
+---
+
+## 10-a. テスト実装上の注意（CI環境）
+
+CI の `bin/rails db:prepare` は `db:schema:load` + `db:seed` を実行するため、テスト DB に seed で作成した `ParentTag` レコード（`uncategorized`・`programming` 等）が既に存在する状態でテストが実行される。
+
+この状態で `create!` や FactoryBot の `create(:parent_tag, slug: "uncategorized", ...)` を呼ぶと、slug の uniqueness 制約違反（`RecordInvalid`）が発生する。
+
+**対策:** seed で作成される slug を持つ `ParentTag` のテスト fixture には `find_or_create_by!` を使う。
+
+```ruby
+# NG（CI環境でseed済みの場合に失敗）
+let!(:uncategorized) { create(:parent_tag, slug: "uncategorized", room_type: nil) }
+
+# OK（冪等）
+let!(:uncategorized) {
+  ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 }
+}
+```
+
+**影響範囲:** seed に含まれる全 slug（`uncategorized`・`programming`・`design`・`anime` 等）が対象。
 
 ---
 
