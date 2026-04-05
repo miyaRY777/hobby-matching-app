@@ -28,6 +28,32 @@ RSpec.describe "Mypage::Rooms", type: :request do
         expect(response.body.index("新しい部屋")).to be < response.body.index("古い部屋")
       end
 
+      it "公開中の部屋に「公開中」バッジが表示される" do
+        # 公開中の部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        create(:room, issuer_profile: current_profile, locked: false)
+        sign_in current_user
+
+        get mypage_rooms_path
+
+        # 「公開中」バッジが表示されること
+        expect(response.body).to include("公開中")
+      end
+
+      it "ロック中の部屋に「ロック中」バッジが表示される" do
+        # ロック中の部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        create(:room, issuer_profile: current_profile, locked: true)
+        sign_in current_user
+
+        get mypage_rooms_path
+
+        # 「ロック中」バッジが表示されること
+        expect(response.body).to include("ロック中")
+      end
+
       it "他人の部屋は表示されない" do
         user = create(:user)
         create(:profile, user: user)
