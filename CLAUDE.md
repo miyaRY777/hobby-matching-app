@@ -2,7 +2,6 @@
 
 * Phase 1 設計合意後に Issue + 作業ブランチを作成してから実装開始（GitHub Project「Hobby Matching」）
 * RED → GREEN → REFACTOR → PR
-* PR作成後に `/save-note` でObsidianノートを保存（任意）
 * すべてのコマンドは `docker compose exec web` 経由
 * PR前に RSpec / RuboCop 全通過
 * 不明点は必ず質問する（推測で実装しない）
@@ -96,4 +95,3 @@ RED → GREEN → REFACTOR 厳守。REFACTOR時にサブエージェント（rai
 | `/check` | PR前 | RSpec + RuboCop + 受入条件突合 |
 | `/commit` | 随時 | 適切なメッセージでコミット作成 |
 | `/pr` | 完了後 | GitHub PR作成 |
-| `/save-note` | PR後 | Obsidianノート保存 |
