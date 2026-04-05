@@ -45,6 +45,14 @@ RSpec.describe Room, type: :model do
     end
   end
 
+  describe "locked カラム" do
+    it "デフォルト値が false である" do
+      room = create(:room)
+
+      expect(room.locked).to be false
+    end
+  end
+
   it "has associations" do
     room = described_class.reflect_on_association(:issuer_profile)
 
