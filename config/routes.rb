@@ -47,7 +47,7 @@ Rails.application.routes.draw do
     root to: "dashboards#show"
     resource :dashboard, only: [ :update ]
     resources :rooms, only: %i[index create edit update destroy]
-    resources :room_memberships, only: [:destroy]
+    resources :room_memberships, only: [ :destroy ]
   end
 
   devise_scope :user do

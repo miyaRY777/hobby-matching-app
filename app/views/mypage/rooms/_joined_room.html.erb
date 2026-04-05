@@ -24,6 +24,11 @@
     </div>
   <% end %>
 
+  <%# 参加人数 %>
+  <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1rem;">
+    参加人数: <%= room.room_memberships.size %> 人
+  </p>
+
   <%# 操作 %>
   <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; font-size: 0.875rem; width: 100%; margin-top: auto;">
     <% if link.present? %>

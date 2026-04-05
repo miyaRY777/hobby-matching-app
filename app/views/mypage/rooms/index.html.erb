@@ -29,7 +29,8 @@
 
   <%# 作成済みの部屋 %>
   <section style="margin-bottom: 3rem; min-height: 24rem;">
-    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">作成済みの部屋</h2>
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">管理中の部屋</h2>
+    <p style="font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem;">自分が作成・管理する部屋です。編集や削除ができます。</p>
     <%# rooms_list は常に DOM に存在させる（create.turbo_stream.erb の prepend 先） %>
     <div id="rooms_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <% if @rooms.empty? %>
@@ -46,7 +47,8 @@
 
   <%# 参加中の部屋 %>
   <section style="min-height: 24rem;">
-    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">参加中の部屋</h2>
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">参加中の部屋</h2>
+    <p style="font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem;">他のユーザーが作成した部屋に参加しています。退出できます。</p>
     <div id="memberships_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <% if @memberships.empty? %>
         <p style="color: #6b7280; font-size: 0.875rem; grid-column: 1 / -1;">
