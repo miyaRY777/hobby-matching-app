@@ -100,6 +100,35 @@ RSpec.describe "Mypage::Rooms", type: :request do
 
       expect(response).to redirect_to(mypage_rooms_path)
     end
+
+    it "room_type を指定して部屋を作成できる" do
+      user = create(:user)
+      create(:profile, user: user)
+      sign_in user
+
+      post mypage_rooms_path, params: { room: { label: "ゲーム部屋", room_type: "game" } }
+
+      expect(Room.last.room_type).to eq("game")
+    end
+
+    it "room_type を指定しない場合は chat になる" do
+      user = create(:user)
+      create(:profile, user: user)
+      sign_in user
+
+      post mypage_rooms_path, params: { room: { label: "デフォルト部屋" } }
+
+      expect(Room.last.room_type).to eq("chat")
+    end
+
+    it "プロフィール未作成のユーザーが部屋を作成しようとするとリダイレクトされる" do
+      user = create(:user)
+      sign_in user
+
+      post mypage_rooms_path, params: { room: { label: "部屋" } }
+
+      expect(response).to redirect_to(mypage_root_path)
+    end
   end
 
   describe "PATCH /mypage/rooms/:id" do
