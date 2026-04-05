@@ -183,4 +183,88 @@ RSpec.describe "Mypage::Rooms", type: :request do
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  describe "PATCH /mypage/rooms/:id/lock" do
+    context "オーナーがロックする場合" do
+      it "locked が true になる" do
+        # ログインユーザーと部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile, locked: false)
+        sign_in current_user
+
+        # ロックを実行
+        patch lock_mypage_room_path(own_room)
+
+        # locked が true になっていること
+        expect(own_room.reload.locked).to be true
+      end
+
+      it "turbo_stream で応答する" do
+        # ログインユーザーと部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        sign_in current_user
+
+        # turbo_stream リクエストを送信
+        patch lock_mypage_room_path(own_room), headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        # turbo_stream で応答すること
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+      end
+    end
+
+    context "他人の部屋をロックしようとした場合" do
+      it "404 を返す" do
+        # ログインユーザーと他人の部屋を準備
+        current_user = create(:user)
+        create(:profile, user: current_user)
+        room_owner = create(:user)
+        room_owner_profile = create(:profile, user: room_owner)
+        room_owners_room = create(:room, issuer_profile: room_owner_profile)
+        sign_in current_user
+
+        # 他人の部屋をロックしようとする
+        patch lock_mypage_room_path(room_owners_room)
+
+        # 404 が返ること
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "PATCH /mypage/rooms/:id/unlock" do
+    context "オーナーがロック解除する場合" do
+      it "locked が false になる" do
+        # ロック中の部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile, locked: true)
+        sign_in current_user
+
+        # ロック解除を実行
+        patch unlock_mypage_room_path(own_room)
+
+        # locked が false になっていること
+        expect(own_room.reload.locked).to be false
+      end
+
+      it "他人の部屋はロック解除できない" do
+        # ログインユーザーと他人のロック中部屋を準備
+        current_user = create(:user)
+        create(:profile, user: current_user)
+        room_owner = create(:user)
+        room_owner_profile = create(:profile, user: room_owner)
+        room_owners_room = create(:room, issuer_profile: room_owner_profile, locked: true)
+        sign_in current_user
+
+        # 他人の部屋をロック解除しようとする
+        patch unlock_mypage_room_path(room_owners_room)
+
+        # 404 が返ること
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
