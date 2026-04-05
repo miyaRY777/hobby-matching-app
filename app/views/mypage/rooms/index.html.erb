@@ -19,12 +19,38 @@
     <% end %>
   </div>
 
-  <%# 部屋一覧 %>
-  <div id="rooms_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <% @rooms.each do |room| %>
-      <%= render "mypage/rooms/room", room: room, link: room.share_link %>
-    <% end %>
-  </div>
+  <%# 作成済みの部屋 %>
+  <section style="margin-bottom: 3rem; min-height: 24rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">作成済みの部屋</h2>
+    <%# rooms_list は常に DOM に存在させる（create.turbo_stream.erb の prepend 先） %>
+    <div id="rooms_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% if @rooms.empty? %>
+        <p style="color: #6b7280; font-size: 0.875rem; grid-column: 1 / -1;">
+          まだ部屋を作成していません。上のフォームから部屋を作成してみましょう。
+        </p>
+      <% else %>
+        <% @rooms.each do |room| %>
+          <%= render "mypage/rooms/room", room: room, link: room.share_link %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <%# 参加中の部屋（Task4で専用パーシャルに移行予定） %>
+  <section style="min-height: 24rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">参加中の部屋</h2>
+    <div id="memberships_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% if @memberships.empty? %>
+        <p style="color: #6b7280; font-size: 0.875rem; grid-column: 1 / -1;">
+          参加中の部屋はありません。招待URLから部屋に参加できます。
+        </p>
+      <% else %>
+        <% @memberships.each do |membership| %>
+          <div><%= membership.room.label.presence || "名無しの部屋" %></div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
 
   <div style="margin-top: 1.5rem;">
     <%= link_to "マイページに戻る", mypage_root_path, style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>
