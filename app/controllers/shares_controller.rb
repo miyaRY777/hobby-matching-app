@@ -1,107 +1,94 @@
 # 共有リンク（token）から部屋ページを表示するコントローラ
-# - トークン検証
-# - 部屋参加処理
-# - マインドマップ表示用データの準備
+# 主な責務：
+#   1. トークンの有効性検証（存在・有効期限）
+#   2. ロック状態に応じた参加制御
+#   3. 入室処理（RoomMembership の作成）
+#   4. マインドマップ表示用データの準備
 class SharesController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    # --------------------------------------------------
-    # 1. 共有リンク取得（存在しない場合は 404）
-    # --------------------------------------------------
-    share_link = ShareLink.includes(:room).find_by!(token: params[:token])
+    share_link      = ShareLink.includes(:room).find_by!(token: params[:token])
+    @room           = share_link.room
     @viewer_profile = current_user.profile
 
-    # --------------------------------------------------
-    # 2. 有効期限チェック
-    # 期限切れ かつ 未参加ユーザー → 410 Gone
-    # 期限切れ かつ 既存メンバー → 通過（閲覧OK）
-    # --------------------------------------------------
+    # 期限切れの場合は未参加者のみ 410 Gone を返す。
+    # 既存メンバーはリンクが切れていても閲覧を継続できる。
     if share_link.expired?
-      return head :gone unless @viewer_profile && RoomMembership.exists?(room: share_link.room, profile: @viewer_profile)
+      return head :gone unless @viewer_profile && RoomMembership.exists?(room: @room, profile: @viewer_profile)
     end
 
-    # --------------------------------------------------
-    # 3. 表示対象の部屋を取得
-    # --------------------------------------------------
-    @room = share_link.room
+    # ロック中の部屋は未参加・非オーナーの入室を拒否する。
+    # ページ自体は表示し、flash で理由を伝える（完全な 403 ではなく閲覧は許容）。
+    # 既存メンバー・オーナーはロック状態に関わらず通過する。
+    if @room.locked?
+      already_member = @viewer_profile && RoomMembership.exists?(room: @room, profile: @viewer_profile)
+      is_owner       = @viewer_profile&.id == @room.issuer_profile_id
 
-    # --------------------------------------------------
-    # 4. 共有リンク閲覧を「部屋参加」として扱う
-    # 未参加の場合のみ RoomMembership を作成
-    # --------------------------------------------------
+      unless already_member || is_owner
+        flash.now[:alert] = "この部屋は現在ロック中のため参加できません"
+        @memberships = memberships_for_display
+        @jsmind_data = build_jsmind_data(@room, @memberships)
+        return render :show
+      end
+    end
+
+    # 初回アクセス時に入室処理を行う。
+    # find_or_create_by! により二重参加は発生しない。
     RoomMembership.find_or_create_by!(room: @room, profile: @viewer_profile) if @viewer_profile
 
-    # --------------------------------------------------
-    # 5. マインドマップ表示用データ取得
-    # includes により N+1 クエリを防止
-    # --------------------------------------------------
-    @memberships = @room.room_memberships
-                        .includes(profile: [ :user, { profile_hobbies: { hobby: :parent_tag } } ])
-                        .order(created_at: :asc)
-
-    # --------------------------------------------------
-    # 6. jsMind 用データ生成
-    # --------------------------------------------------
+    @memberships = memberships_for_display
     @jsmind_data = build_jsmind_data(@room, @memberships)
   end
 
   private
 
-  # --------------------------------------------------
-  # jsMind 用の node_tree 形式データを生成
+  # マインドマップ表示に必要な membership 一覧を取得する。
+  # includes で N+1 を防止する。
+  def memberships_for_display
+    @room.room_memberships
+         .includes(profile: [ :user, { profile_hobbies: { hobby: :parent_tag } } ])
+         .order(created_at: :asc)
+  end
+
+  # jsMind 用の node_tree 形式データを生成する。
   #
-  # 構造
-  #   趣味（親ノード）
-  #      └ ユーザー（子ノード）
+  # ノード構造:
+  #   root
+  #   └ 趣味ノード（hobby_#{id}）
+  #       └ ユーザーノード（p_#{profile_id}_h_#{hobby_id}）
   #
-  # ユーザーノードには member 詳細ページのURLを持たせ、
-  # クリック時に Turbo Frame で右ペインを更新できるようにする
-  # --------------------------------------------------
+  # ユーザーノードの data.url はクリック時に Turbo Frame で
+  # 右ペインのメンバー詳細を更新するために使用する。
   def build_jsmind_data(room, memberships)
-    # --------------------------------------------------
-    # 趣味 => その趣味を持つプロフィール一覧
-    # --------------------------------------------------
     hobby_to_profiles = {}
 
     memberships.each do |membership|
-      # 表示順を安定させるため趣味名でソート
+      # 趣味名でソートして表示順を安定させる
       membership.profile.hobbies.sort_by(&:name).each do |hobby|
         (hobby_to_profiles[hobby] ||= []) << membership.profile
       end
     end
 
-    # --------------------------------------------------
-    # jsMind ノード生成
-    # - 趣味名順
-    # - プロフィールID順
-    # --------------------------------------------------
     hobby_nodes = hobby_to_profiles.sort_by { |hobby, _| hobby.name }.map do |hobby, profiles|
       profile_nodes = profiles.sort_by(&:id).map do |profile|
         {
-          # jsMind ノードIDはツリー内で一意である必要がある
-          id: "p_#{profile.id}_h_#{hobby.id}",
+          id:    "p_#{profile.id}_h_#{hobby.id}", # ツリー内で一意である必要がある
           topic: profile.user.nickname.presence || "no-name",
-
-          # ノードクリック時に呼び出すメンバー詳細URL
-          data: { url: room_member_path(room_id: room.id, id: profile.id) }
+          data:  { url: room_member_path(room_id: room.id, id: profile.id) }
         }
       end
 
-      # 趣味ノード（親）
       { id: "hobby_#{hobby.id}", topic: hobby.name, children: profile_nodes }
     end
 
-    # --------------------------------------------------
-    # jsMind が期待するルート付きツリー構造
-    # --------------------------------------------------
     {
-      meta: { name: "room-map", version: "0.2" },
+      meta:   { name: "room-map", version: "0.2" },
       format: "node_tree",
-      data: {
-        id: "root",
-        isroot: true,
-        topic: room.label.presence || "この部屋の趣味",
+      data:   {
+        id:       "root",
+        isroot:   true,
+        topic:    room.label.presence || "この部屋の趣味",
         children: hobby_nodes
       }
     }

@@ -9,6 +9,12 @@
       </span>
     <% end %>
 
+    <%# 公開状態バッジ %>
+    <% lock_badge = lock_status_badge(room) %>
+    <span style="display: inline-block; align-self: flex-start; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; margin-bottom: 0.5rem; background: <%= lock_badge[:color] %>; border: 1px solid <%= lock_badge[:border] %>; color: <%= lock_badge[:text] %>;">
+      <%= lock_badge[:label] %>
+    </span>
+
     <%# 部屋名 %>
     <h3 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin-bottom: 0.75rem;">
       <%= room.label.presence || "名無しの部屋" %>
@@ -67,6 +73,18 @@
                   edit_mypage_room_path(room),
                   data: { turbo_frame: dom_id(room) },
                   style: "color: #60a5fa; text-decoration: none;" %>
+
+      <% if room.locked? %>
+        <%= link_to "解除する",
+                    unlock_mypage_room_path(room),
+                    data: { turbo_method: :patch, turbo_confirm: "この部屋のロックを解除しますか？" },
+                    style: "color: #86efac; text-decoration: none;" %>
+      <% else %>
+        <%= link_to "ロックする",
+                    lock_mypage_room_path(room),
+                    data: { turbo_method: :patch, turbo_confirm: "この部屋をロックしますか？" },
+                    style: "color: #fca5a5; text-decoration: none;" %>
+      <% end %>
 
       <%= link_to "削除",
                   mypage_room_path(room),

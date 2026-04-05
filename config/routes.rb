@@ -46,7 +46,12 @@ Rails.application.routes.draw do
   namespace :mypage do
     root to: "dashboards#show"
     resource :dashboard, only: [ :update ]
-    resources :rooms, only: %i[index create edit update destroy]
+    resources :rooms, only: %i[index create edit update destroy] do
+      member do
+        patch :lock
+        patch :unlock
+      end
+    end
     resources :room_memberships, only: [ :destroy ]
   end
 

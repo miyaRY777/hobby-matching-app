@@ -1,6 +1,6 @@
 class Mypage::RoomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_room, only: %i[edit update destroy]
+  before_action :set_room, only: %i[edit update destroy lock unlock]
 
   def index
     profile = current_user.profile
@@ -59,6 +59,14 @@ class Mypage::RoomsController < ApplicationController
     end
   end
 
+  def lock
+    update_lock(true, "部屋をロックしました")
+  end
+
+  def unlock
+    update_lock(false, "部屋のロックを解除しました")
+  end
+
   def destroy
     @room.destroy!
     respond_to do |format|
@@ -75,5 +83,13 @@ class Mypage::RoomsController < ApplicationController
 
   def room_params
     params.require(:room).permit(:label, :room_type)
+  end
+
+  def update_lock(state, message)
+    @room.update!(locked: state)
+    respond_to do |format|
+      format.turbo_stream { flash.now[:notice] = message }
+      format.html { redirect_to mypage_rooms_path, notice: message }
+    end
   end
 end
