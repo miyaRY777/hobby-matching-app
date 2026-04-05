@@ -14,17 +14,53 @@
               style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
       </div>
 
+      <div style="margin-bottom: 1rem;">
+        <%= f.label :room_type, "タイプ", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+        <%= f.select :room_type,
+              [["雑談", "chat"], ["勉強", "study"], ["ゲーム", "game"]],
+              { selected: "chat" },
+              style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+      </div>
+
       <%= f.submit "部屋を作成",
             style: "padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
     <% end %>
   </div>
 
-  <%# 部屋一覧 %>
-  <div id="rooms_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <% @rooms.each do |room| %>
-      <%= render "mypage/rooms/room", room: room, link: room.share_link %>
-    <% end %>
-  </div>
+  <%# 作成済みの部屋 %>
+  <section style="margin-bottom: 3rem; min-height: 24rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">管理中の部屋</h2>
+    <p style="font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem;">自分が作成・管理する部屋です。編集や削除ができます。</p>
+    <%# rooms_list は常に DOM に存在させる（create.turbo_stream.erb の prepend 先） %>
+    <div id="rooms_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% if @rooms.empty? %>
+        <p style="color: #6b7280; font-size: 0.875rem; grid-column: 1 / -1;">
+          まだ部屋を作成していません。上のフォームから部屋を作成してみましょう。
+        </p>
+      <% else %>
+        <% @rooms.each do |room| %>
+          <%= render "mypage/rooms/room", room: room, link: room.share_link %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <%# 参加中の部屋 %>
+  <section style="min-height: 24rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">参加中の部屋</h2>
+    <p style="font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem;">他のユーザーが作成した部屋に参加しています。退出できます。</p>
+    <div id="memberships_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% if @memberships.empty? %>
+        <p style="color: #6b7280; font-size: 0.875rem; grid-column: 1 / -1;">
+          参加中の部屋はありません。招待URLから部屋に参加できます。
+        </p>
+      <% else %>
+        <% @memberships.each do |membership| %>
+          <%= render "mypage/rooms/joined_room", membership: membership %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
 
   <div style="margin-top: 1.5rem;">
     <%= link_to "マイページに戻る", mypage_root_path, style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>

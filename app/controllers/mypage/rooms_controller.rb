@@ -4,20 +4,32 @@ class Mypage::RoomsController < ApplicationController
 
   def index
     profile = current_user.profile
-    @rooms = if profile
-      profile.issued_rooms.includes(:share_link, :room_memberships).order(created_at: :desc)
-    else
-      Room.none
+    unless profile
+      @rooms = Room.none
+      @memberships = RoomMembership.none
+      return
     end
+
+    # 自分が作成した部屋一覧
+    @rooms = profile.issued_rooms
+                    .includes(:share_link, :room_memberships)
+                    .order(created_at: :desc)
+
+    # 自分が参加中の部屋（自分が作成者の部屋は除く）
+    @memberships = profile.room_memberships
+                          .joins(:room)
+                          .where.not(rooms: { issuer_profile_id: profile.id })
+                          .includes(room: [ { issuer_profile: :user }, :room_memberships, :share_link ])
+                          .order("rooms.created_at DESC")
   end
 
   def create
     issuer_profile = current_user.profile
+    return redirect_to mypage_root_path unless issuer_profile
 
     Room.transaction do
       @room = Room.create!(
-        issuer_profile: issuer_profile,
-        label: params.dig(:room, :label)
+        room_params.merge(issuer_profile: issuer_profile)
       )
 
       RoomMembership.create!(room: @room, profile: issuer_profile)
@@ -62,6 +74,6 @@ class Mypage::RoomsController < ApplicationController
   end
 
   def room_params
-    params.require(:room).permit(:label)
+    params.require(:room).permit(:label, :room_type)
   end
 end

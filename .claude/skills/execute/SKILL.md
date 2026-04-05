@@ -157,3 +157,14 @@ Phase 2 で合意した計画に従い、以下のサイクルを繰り返す：
 - 途中で方針が分岐したら停止してAskUserQuestionで確認する
 - 高リスク操作（DB変更・既存テスト修正など）前は必ず確認する
 - TDD省略条件（CLAUDE.md参照）に該当する場合のみ省略可
+
+## テストの書き方ルール
+
+- ログインユーザーの変数名は `current_user`、そのプロフィールは `current_profile` とする
+- その他の変数も役割が伝わる名前にする。命名の基本方針：
+  - 所有関係を `_の所有者名_` でつなぐ（例: `room_owners_room`, `room_owners_membership`）
+  - 自分自身に関するものは `own_` プレフィックス（例: `own_room`, `own_membership`）
+  - 他のメンバーに関するものは `other_member_` / `other_members_` プレフィックス（例: `other_member_profile`, `other_members_membership`）
+  - 部屋の作成者は `room_owner` / `room_owner_profile`
+- `user`, `profile`, `room`, `membership` などの汎用名は使わない
+- 各セットアップ・リクエスト・アサーションには日本語コメントで意図を明記する

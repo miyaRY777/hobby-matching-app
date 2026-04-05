@@ -1,0 +1,5 @@
+<%# 退出した部屋のカードを一覧から削除する %>
+<%= turbo_stream.remove dom_id(@membership) %>
+
+<%# フラッシュメッセージを更新する %>
+<%= turbo_stream.update "flash", partial: "shared/flash" %>

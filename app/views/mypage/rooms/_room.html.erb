@@ -1,5 +1,14 @@
+<% badge = room_type_badge(room.room_type) %>
+
 <%= turbo_frame_tag dom_id(room) do %>
   <div style="padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column;">
+    <%# 部屋タイプバッジ %>
+    <% if badge %>
+      <span style="display: inline-block; align-self: flex-start; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; margin-bottom: 0.5rem; background: <%= badge[:color] %>; border: 1px solid <%= badge[:border] %>; color: <%= badge[:text] %>;">
+        <%= badge[:label] %>
+      </span>
+    <% end %>
+
     <%# 部屋名 %>
     <h3 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin-bottom: 0.75rem;">
       <%= room.label.presence || "名無しの部屋" %>
@@ -47,6 +56,13 @@
 
     <%# 操作 %>
     <div style="display: flex; justify-content: flex-end; gap: 1rem; font-size: 0.875rem; width: 100%;">
+      <% if link.present? %>
+        <%= link_to "部屋を見る",
+                    share_path(link.token),
+                    target: "_blank",
+                    style: "color: #a78bfa; text-decoration: none;" %>
+      <% end %>
+
       <%= link_to "編集",
                   edit_mypage_room_path(room),
                   data: { turbo_frame: dom_id(room) },
