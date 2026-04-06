@@ -43,7 +43,7 @@
         <span style="color: #6b7280; font-weight: 500;">有効期限</span>
         <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
 
-        <% if link.expires_at <= Time.current %>
+        <% if link.expired? %>
           <span style="margin-left: 0.5rem; display: inline-block; background: rgba(239, 68, 68, 0.15); color: #fca5a5; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
             期限切れ
           </span>

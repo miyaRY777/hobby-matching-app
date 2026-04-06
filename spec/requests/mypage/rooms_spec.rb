@@ -95,6 +95,23 @@ RSpec.describe "Mypage::Rooms", type: :request do
       end
     end
 
+    it "expires_at が nil の部屋があってもエラーにならない" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      current_profile = create(:profile, user: current_user)
+
+      # expires_at が nil の共有リンクを持つ部屋を用意
+      own_room = create(:room, issuer_profile: current_profile)
+      create(:share_link, room: own_room, expires_at: nil)
+      sign_in current_user
+
+      # 部屋一覧ページにアクセス
+      get mypage_rooms_path
+
+      # エラーなく表示されること
+      expect(response).to have_http_status(:ok)
+    end
+
     context "未ログインの場合" do
       it "ログイン画面にリダイレクトされる" do
         get mypage_rooms_path
