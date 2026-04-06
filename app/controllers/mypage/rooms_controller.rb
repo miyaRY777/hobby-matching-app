@@ -82,7 +82,7 @@ class Mypage::RoomsController < ApplicationController
   end
 
   def room_params
-    params.require(:room).permit(:label, :room_type)
+    params.require(:room).permit(:label, :room_type, :locked)
   end
 
   def update_lock(state, message)

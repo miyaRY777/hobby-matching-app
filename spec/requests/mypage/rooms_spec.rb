@@ -147,6 +147,19 @@ RSpec.describe "Mypage::Rooms", type: :request do
       expect(Room.last.room_type).to eq("chat")
     end
 
+    it "locked: true を指定してロック状態で作成できる" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # locked: true を指定して部屋を作成
+      post mypage_rooms_path, params: { room: { label: "ロック部屋", locked: true } }
+
+      # 作成された部屋が locked になっていること
+      expect(Room.last.locked).to be true
+    end
+
     it "プロフィール未作成のユーザーが部屋を作成しようとするとリダイレクトされる" do
       user = create(:user)
       sign_in user
