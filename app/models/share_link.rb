@@ -14,5 +14,4 @@ class ShareLink < ApplicationRecord
   def set_token
     self.token ||= SecureRandom.urlsafe_base64(16)
   end
-
 end

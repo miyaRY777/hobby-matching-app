@@ -23,18 +23,16 @@
 
         <p style="font-size: 0.875rem; color: #d1d5db; margin-bottom: 0.5rem;">
           有効期限:
-          <%= link.expires_at.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
+          <%= link.expires_at.in_time_zone.strftime("%Y/%m/%d %H:%M") if link.expires_at.present? %>
 
-          <% if link.expires_at.present? %>
-            <% if link.expires_at <= Time.current %>
-              <span style="margin-left: 0.5rem; display: inline-block; background: rgba(239, 68, 68, 0.15); color: #fca5a5; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                期限切れ
-              </span>
-            <% else %>
-              <span style="margin-left: 0.5rem; display: inline-block; background: rgba(34, 197, 94, 0.15); color: #86efac; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
-                有効
-              </span>
-            <% end %>
+          <% if link.expired? %>
+            <span style="margin-left: 0.5rem; display: inline-block; background: rgba(239, 68, 68, 0.15); color: #fca5a5; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
+              期限切れ
+            </span>
+          <% elsif link.expires_at.present? %>
+            <span style="margin-left: 0.5rem; display: inline-block; background: rgba(34, 197, 94, 0.15); color: #86efac; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;">
+              有効
+            </span>
           <% end %>
         </p>
       <% end %>
