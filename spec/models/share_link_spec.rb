@@ -14,11 +14,24 @@ RSpec.describe ShareLink, type: :model do
     expect(share_link.token).to be_present
   end
 
-  it "作成時にexpire_atが現在時刻から24時間後に設定される" do
+  it "作成時にexpires_atが現在時刻から24時間後に設定される" do
     room = create(:room)
     share_link = described_class.create(room: room)
 
     expect(share_link.expires_at).to be_within(5.seconds).of(24.hours.from_now)
+  end
+
+  describe "no_expiry フラグ" do
+    it "no_expiry: true で作成すると expires_at が nil のまま保存される" do
+      # 部屋を用意
+      room = create(:room)
+
+      # no_expiry フラグを立てて作成
+      share_link = described_class.create!(room: room, no_expiry: true)
+
+      # expires_at が nil のまま保存されること
+      expect(share_link.expires_at).to be_nil
+    end
   end
 
   describe "#expired?" do
