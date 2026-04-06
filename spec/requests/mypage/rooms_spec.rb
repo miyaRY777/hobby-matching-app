@@ -95,6 +95,23 @@ RSpec.describe "Mypage::Rooms", type: :request do
       end
     end
 
+    it "expires_at が nil の部屋があってもエラーにならない" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      current_profile = create(:profile, user: current_user)
+
+      # expires_at が nil の共有リンクを持つ部屋を用意
+      own_room = create(:room, issuer_profile: current_profile)
+      create(:share_link, room: own_room, expires_at: nil)
+      sign_in current_user
+
+      # 部屋一覧ページにアクセス
+      get mypage_rooms_path
+
+      # エラーなく表示されること
+      expect(response).to have_http_status(:ok)
+    end
+
     context "未ログインの場合" do
       it "ログイン画面にリダイレクトされる" do
         get mypage_rooms_path
@@ -145,6 +162,45 @@ RSpec.describe "Mypage::Rooms", type: :request do
       post mypage_rooms_path, params: { room: { label: "デフォルト部屋" } }
 
       expect(Room.last.room_type).to eq("chat")
+    end
+
+    it "expires_in: '7d' を指定すると ShareLink の expires_at が 7日後になる" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # expires_in: "7d" を指定して部屋を作成
+      post mypage_rooms_path, params: { room: { label: "部屋" }, expires_in: "7d" }
+
+      # ShareLink の expires_at が 7日後になっていること
+      expect(ShareLink.last.expires_at).to be_within(5.seconds).of(7.days.from_now)
+    end
+
+    it "expires_in: 'none' を指定すると ShareLink の expires_at が nil になる" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # expires_in: "none" を指定して部屋を作成
+      post mypage_rooms_path, params: { room: { label: "部屋" }, expires_in: "none" }
+
+      # ShareLink の expires_at が nil になっていること
+      expect(ShareLink.last.expires_at).to be_nil
+    end
+
+    it "locked: true を指定してロック状態で作成できる" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # locked: true を指定して部屋を作成
+      post mypage_rooms_path, params: { room: { label: "ロック部屋", locked: true } }
+
+      # 作成された部屋が locked になっていること
+      expect(Room.last.locked).to be true
     end
 
     it "プロフィール未作成のユーザーが部屋を作成しようとするとリダイレクトされる" do
