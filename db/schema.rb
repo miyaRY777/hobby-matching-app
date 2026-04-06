@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_05_102454) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_06_071014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -105,7 +105,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_05_102454) do
   create_table "share_links", force: :cascade do |t|
     t.bigint "room_id", null: false
     t.string "token", null: false
-    t.datetime "expires_at", null: false
+    t.datetime "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["room_id"], name: "index_share_links_on_room_id", unique: true

@@ -7,7 +7,7 @@ class ShareLink < ApplicationRecord
   before_validation :set_expires_at, on: :create
 
   def expired?
-    expires_at <= Time.current
+    expires_at.present? && expires_at <= Time.current
   end
 
   private

@@ -20,4 +20,30 @@ RSpec.describe ShareLink, type: :model do
 
     expect(share_link.expires_at).to be_within(5.seconds).of(24.hours.from_now)
   end
+
+  describe "#expired?" do
+    it "expires_at が nil のとき false を返す" do
+      # 期限なしの共有リンクを用意
+      share_link = build(:share_link, expires_at: nil)
+
+      # 期限切れではないと判定されること
+      expect(share_link.expired?).to be false
+    end
+
+    it "expires_at が過去のとき true を返す" do
+      # 期限切れの共有リンクを用意
+      share_link = build(:share_link, expires_at: 1.hour.ago)
+
+      # 期限切れと判定されること
+      expect(share_link.expired?).to be true
+    end
+
+    it "expires_at が未来のとき false を返す" do
+      # 有効な共有リンクを用意
+      share_link = build(:share_link, expires_at: 1.hour.from_now)
+
+      # 期限切れではないと判定されること
+      expect(share_link.expired?).to be false
+    end
+  end
 end
