@@ -1,6 +1,6 @@
 class Mypage::RoomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_room, only: %i[edit update destroy lock unlock]
+  before_action :set_room, only: %i[edit update destroy lock unlock regenerate_share_link]
 
   def index
     profile = current_user.profile
@@ -67,6 +67,20 @@ class Mypage::RoomsController < ApplicationController
 
   def unlock
     update_lock(false, "部屋のロックを解除しました")
+  end
+
+  def regenerate_share_link
+    @room = current_user.profile.issued_rooms
+                        .includes(:share_link, :room_memberships)
+                        .find(params[:id])
+    @share_link = @room.share_link
+    raise ActiveRecord::RecordNotFound, "ShareLink not found for room #{@room.id}" unless @share_link
+
+    @share_link.regenerate!
+    respond_to do |format|
+      format.turbo_stream { flash.now[:notice] = "招待リンクを再発行しました" }
+      format.html { redirect_to mypage_rooms_path, notice: "招待リンクを再発行しました" }
+    end
   end
 
   def destroy

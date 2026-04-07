@@ -375,4 +375,77 @@ RSpec.describe "Mypage::Rooms", type: :request do
       end
     end
   end
+
+  describe "PATCH /mypage/rooms/:id/regenerate_share_link" do
+    context "オーナーが再発行する場合" do
+      it "token と expires_at が更新される" do
+        # ログインユーザーと期限切れの共有リンクを持つ部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        share_link = create(:share_link, room: own_room, token: "old_token", expires_in: "24h", expires_at: 1.day.ago)
+        sign_in current_user
+
+        # 再発行を実行
+        patch regenerate_share_link_mypage_room_path(own_room)
+
+        # token が更新されていること
+        expect(share_link.reload.token).not_to eq("old_token")
+        # expires_at が 24 時間後に更新されていること
+        expect(share_link.reload.expires_at).to be_within(5.seconds).of(24.hours.from_now)
+      end
+
+      it "turbo_stream で応答する" do
+        # ログインユーザーと共有リンクを持つ部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        create(:share_link, room: own_room)
+        sign_in current_user
+
+        # turbo_stream リクエストを送信
+        patch regenerate_share_link_mypage_room_path(own_room),
+              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        # turbo_stream で応答すること
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+      end
+    end
+
+    context "share_link が存在しない場合" do
+      it "404 を返す" do
+        # share_link を持たない部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        # share_link を作成しない
+        sign_in current_user
+
+        # 再発行を試みる
+        patch regenerate_share_link_mypage_room_path(own_room)
+
+        # 404 が返ること
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人の部屋を再発行しようとした場合" do
+      it "404 を返す" do
+        # ログインユーザーと他人の部屋を準備
+        current_user = create(:user)
+        create(:profile, user: current_user)
+        room_owner = create(:user)
+        room_owner_profile = create(:profile, user: room_owner)
+        room_owners_room = create(:room, issuer_profile: room_owner_profile)
+        create(:share_link, room: room_owners_room)
+        sign_in current_user
+
+        # 他人の部屋を再発行しようとする
+        patch regenerate_share_link_mypage_room_path(room_owners_room)
+
+        # 404 が返ること
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
