@@ -203,6 +203,32 @@ RSpec.describe "Mypage::Rooms", type: :request do
       expect(Room.last.locked).to be true
     end
 
+    it "expires_in: '7d' を指定すると share_link.expires_in に '7d' が保存される" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # expires_in: "7d" を指定して部屋を作成
+      post mypage_rooms_path, params: { room: { label: "部屋" }, expires_in: "7d" }
+
+      # share_link.expires_in に "7d" が保存されていること
+      expect(ShareLink.last.expires_in).to eq("7d")
+    end
+
+    it "expires_in を指定しない場合 share_link.expires_in が nil になる" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # expires_in を指定せず部屋を作成
+      post mypage_rooms_path, params: { room: { label: "部屋" } }
+
+      # share_link.expires_in が nil になっていること
+      expect(ShareLink.last.expires_in).to be_nil
+    end
+
     it "プロフィール未作成のユーザーが部屋を作成しようとするとリダイレクトされる" do
       user = create(:user)
       sign_in user
