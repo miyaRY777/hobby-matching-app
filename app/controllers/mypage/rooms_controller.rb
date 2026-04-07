@@ -1,6 +1,6 @@
 class Mypage::RoomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_room, only: %i[edit update destroy lock unlock]
+  before_action :set_room, only: %i[edit update destroy lock unlock regenerate_share_link]
 
   def index
     profile = current_user.profile
@@ -27,12 +27,15 @@ class Mypage::RoomsController < ApplicationController
     issuer_profile = current_user.profile
     return redirect_to mypage_root_path unless issuer_profile
 
-    expires_at = convert_expires_in(params[:expires_in])
+    # "none" や未指定は nil に正規化し、保存と計算を同一の変数から行う
+    raw = params[:expires_in]
+    expires_in_value = ShareLink::EXPIRES_IN_MAP.key?(raw) ? raw : nil
+    expires_at = ShareLink::EXPIRES_IN_MAP[expires_in_value]&.from_now
 
     Room.transaction do
       @room = Room.create!(room_create_params.merge(issuer_profile: issuer_profile))
       RoomMembership.create!(room: @room, profile: issuer_profile)
-      ShareLink.create!(room: @room, expires_at: expires_at)
+      ShareLink.create!(room: @room, expires_at: expires_at, expires_in: expires_in_value)
     end
 
     respond_to do |format|
@@ -66,6 +69,20 @@ class Mypage::RoomsController < ApplicationController
     update_lock(false, "部屋のロックを解除しました")
   end
 
+  def regenerate_share_link
+    @room = current_user.profile.issued_rooms
+                        .includes(:share_link, :room_memberships)
+                        .find(params[:id])
+    @share_link = @room.share_link
+    raise ActiveRecord::RecordNotFound, "ShareLink not found for room #{@room.id}" unless @share_link
+
+    @share_link.regenerate!
+    respond_to do |format|
+      format.turbo_stream { flash.now[:notice] = "招待リンクを再発行しました" }
+      format.html { redirect_to mypage_rooms_path, notice: "招待リンクを再発行しました" }
+    end
+  end
+
   def destroy
     @room.destroy!
     respond_to do |format|
@@ -88,17 +105,6 @@ class Mypage::RoomsController < ApplicationController
   # update 専用（locked は lock/unlock アクション経由でのみ変更）
   def room_params
     params.require(:room).permit(:label, :room_type)
-  end
-
-  def convert_expires_in(value)
-    case value
-    when "1h"   then 1.hour.from_now
-    when "24h"  then 24.hours.from_now
-    when "3d"   then 3.days.from_now
-    when "7d"   then 7.days.from_now
-    when "none" then nil
-    else 24.hours.from_now  # 未指定時は 24 時間をデフォルトとする
-    end
   end
 
   def update_lock(state, message)

@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       member do
         patch :lock
         patch :unlock
+        patch :regenerate_share_link
       end
     end
     resources :room_memberships, only: [ :destroy ]

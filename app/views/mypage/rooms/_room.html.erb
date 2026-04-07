@@ -67,6 +67,11 @@
                     share_path(link.token),
                     target: "_blank",
                     style: "color: #a78bfa; text-decoration: none;" %>
+
+        <%= link_to "再発行",
+                    regenerate_share_link_mypage_room_path(room),
+                    data: { turbo_method: :patch, turbo_confirm: "招待リンクを再発行しますか？古いURLは無効になります。" },
+                    style: "color: #fbbf24; text-decoration: none;" %>
       <% end %>
 
       <%= link_to "編集",

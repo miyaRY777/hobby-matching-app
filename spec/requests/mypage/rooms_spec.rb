@@ -203,6 +203,32 @@ RSpec.describe "Mypage::Rooms", type: :request do
       expect(Room.last.locked).to be true
     end
 
+    it "expires_in: '7d' を指定すると share_link.expires_in に '7d' が保存される" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # expires_in: "7d" を指定して部屋を作成
+      post mypage_rooms_path, params: { room: { label: "部屋" }, expires_in: "7d" }
+
+      # share_link.expires_in に "7d" が保存されていること
+      expect(ShareLink.last.expires_in).to eq("7d")
+    end
+
+    it "expires_in を指定しない場合 share_link.expires_in が nil になる" do
+      # ログインユーザーと紐づくプロフィールを用意
+      current_user = create(:user)
+      create(:profile, user: current_user)
+      sign_in current_user
+
+      # expires_in を指定せず部屋を作成
+      post mypage_rooms_path, params: { room: { label: "部屋" } }
+
+      # share_link.expires_in が nil になっていること
+      expect(ShareLink.last.expires_in).to be_nil
+    end
+
     it "プロフィール未作成のユーザーが部屋を作成しようとするとリダイレクトされる" do
       user = create(:user)
       sign_in user
@@ -343,6 +369,79 @@ RSpec.describe "Mypage::Rooms", type: :request do
 
         # 他人の部屋をロック解除しようとする
         patch unlock_mypage_room_path(room_owners_room)
+
+        # 404 が返ること
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "PATCH /mypage/rooms/:id/regenerate_share_link" do
+    context "オーナーが再発行する場合" do
+      it "token と expires_at が更新される" do
+        # ログインユーザーと期限切れの共有リンクを持つ部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        share_link = create(:share_link, room: own_room, token: "old_token", expires_in: "24h", expires_at: 1.day.ago)
+        sign_in current_user
+
+        # 再発行を実行
+        patch regenerate_share_link_mypage_room_path(own_room)
+
+        # token が更新されていること
+        expect(share_link.reload.token).not_to eq("old_token")
+        # expires_at が 24 時間後に更新されていること
+        expect(share_link.reload.expires_at).to be_within(5.seconds).of(24.hours.from_now)
+      end
+
+      it "turbo_stream で応答する" do
+        # ログインユーザーと共有リンクを持つ部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        create(:share_link, room: own_room)
+        sign_in current_user
+
+        # turbo_stream リクエストを送信
+        patch regenerate_share_link_mypage_room_path(own_room),
+              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        # turbo_stream で応答すること
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+      end
+    end
+
+    context "share_link が存在しない場合" do
+      it "404 を返す" do
+        # share_link を持たない部屋を準備
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile)
+        # share_link を作成しない
+        sign_in current_user
+
+        # 再発行を試みる
+        patch regenerate_share_link_mypage_room_path(own_room)
+
+        # 404 が返ること
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人の部屋を再発行しようとした場合" do
+      it "404 を返す" do
+        # ログインユーザーと他人の部屋を準備
+        current_user = create(:user)
+        create(:profile, user: current_user)
+        room_owner = create(:user)
+        room_owner_profile = create(:profile, user: room_owner)
+        room_owners_room = create(:room, issuer_profile: room_owner_profile)
+        create(:share_link, room: room_owners_room)
+        sign_in current_user
+
+        # 他人の部屋を再発行しようとする
+        patch regenerate_share_link_mypage_room_path(room_owners_room)
 
         # 404 が返ること
         expect(response).to have_http_status(:not_found)
