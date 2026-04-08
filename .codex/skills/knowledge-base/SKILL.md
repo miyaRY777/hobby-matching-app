@@ -23,6 +23,7 @@ description: Use when working with the local knowledge-base repository, answerin
 - inbox を atomic note に distill する
 - テーマ別 MOC を作る、更新する
 - クイズ形式で復習する
+- 月次クイズ形式で復習する
 - 週次レビューを作る
 
 ## 実行ルール
@@ -47,6 +48,7 @@ description: Use when working with the local knowledge-base repository, answerin
 - `ask`: 質問に結論と根拠付きで答える
 - `search`: 全文検索結果を返す
 - `quiz`: 1問ずつ出題して復習候補を管理する
+- `month_quiz`: 直近1ヶ月のノートを土日に1問ずつ出題して復習候補を管理する
 - `weekly-review`: inbox、notes、open questions を棚卸しする
 
 ## 作業の基本順
