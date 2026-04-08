@@ -18,7 +18,7 @@ RSpec.describe JsmindDataBuilder do
   # memberships は before ブロックで membership を作成してから評価する
   let(:memberships) do
     chat_room.room_memberships
-             .includes(profile: [:user, { profile_hobbies: { hobby: :parent_tag } }])
+             .includes(profile: [ :user, { profile_hobbies: { hobby: :parent_tag } } ])
   end
 
   subject(:result) { described_class.new(chat_room, memberships).build }
