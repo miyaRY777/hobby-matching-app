@@ -40,8 +40,8 @@ RSpec.describe "Rooms::Members#show", type: :request do
 
   describe "@room_related_phs" do
     # 閲覧者（部屋メンバー）
-    let(:current_user) { create(:user) }
-    let(:current_profile) { create(:profile, user: current_user) }
+    let!(:current_user) { create(:user) }
+    let!(:current_profile) { create(:profile, user: current_user) }
 
     before do
       # 閲覧者を部屋に参加させる
