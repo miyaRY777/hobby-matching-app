@@ -21,40 +21,16 @@ module Rooms
       # user / hobbies を eager load して N+1 クエリを防ぐ
       # --------------------------------------------------
       @profile = Profile.includes(:user, profile_hobbies: { hobby: :parent_tag }).find(params[:id])
-      @profile_hobby_map = @profile.profile_hobbies.index_by(&:hobby_id)
 
       # --------------------------------------------------
-      # 2. 部屋メンバーが持っている趣味のID集合を取得
+      # 2. 部屋のroom_typeに一致する親タグを持つ子タグのみ抽出
       #
-      # 処理内容
-      # - Hobby を起点に profiles テーブルと JOIN
-      # - 現在の部屋に所属するプロフィールのみ対象
-      # - 同一趣味を複数人が持つ可能性があるため distinct
-      #
-      # 目的
-      # 「部屋という文脈で存在する趣味」を定義する
+      # Room と ParentTag は同一の room_type enum を持つため
+      # メモリ内で比較可能。eager load 済みなので追加クエリなし。
       # --------------------------------------------------
-      room_hobby_ids = Hobby.joins(:profiles)
-                            .where(profiles: { id: @room.profile_ids })
-                            .select(:id)
-                            .distinct
-
-      # --------------------------------------------------
-      # 3. 表示する趣味を決定
-      #
-      # 計算
-      #   プロフィールの趣味 ∩ 部屋の趣味
-      #
-      # 例
-      #   部屋の趣味 : [ゲーム, 釣り, 読書]
-      #   ユーザーB : [ゲーム]
-      #
-      #   → 表示 : [ゲーム]
-      #
-      # 目的
-      # 「部屋の話題として意味のある趣味」だけを表示する
-      # --------------------------------------------------
-      @shared_hobbies = @profile.hobbies.where(id: room_hobby_ids)
+      @room_related_phs = @profile.profile_hobbies.select do |ph|
+        ph.hobby.parent_tag&.room_type == @room.room_type
+      end
     end
 
     private
