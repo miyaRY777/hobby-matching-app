@@ -28,7 +28,7 @@ class SharesController < ApplicationController
       unless already_member || is_owner
         flash.now[:alert] = "この部屋は現在ロック中のため参加できません"
         @memberships = memberships_for_display
-        @jsmind_data = build_jsmind_data(@room, @memberships)
+        @jsmind_data = JsmindDataBuilder.new(@room, @memberships).build
         return render :show
       end
     end
@@ -38,7 +38,7 @@ class SharesController < ApplicationController
     RoomMembership.find_or_create_by!(room: @room, profile: @viewer_profile) if @viewer_profile
 
     @memberships = memberships_for_display
-    @jsmind_data = build_jsmind_data(@room, @memberships)
+    @jsmind_data = JsmindDataBuilder.new(@room, @memberships).build
   end
 
   private
@@ -49,48 +49,5 @@ class SharesController < ApplicationController
     @room.room_memberships
          .includes(profile: [ :user, { profile_hobbies: { hobby: :parent_tag } } ])
          .order(created_at: :asc)
-  end
-
-  # jsMind 用の node_tree 形式データを生成する。
-  #
-  # ノード構造:
-  #   root
-  #   └ 趣味ノード（hobby_#{id}）
-  #       └ ユーザーノード（p_#{profile_id}_h_#{hobby_id}）
-  #
-  # ユーザーノードの data.url はクリック時に Turbo Frame で
-  # 右ペインのメンバー詳細を更新するために使用する。
-  def build_jsmind_data(room, memberships)
-    hobby_to_profiles = {}
-
-    memberships.each do |membership|
-      # 趣味名でソートして表示順を安定させる
-      membership.profile.hobbies.sort_by(&:name).each do |hobby|
-        (hobby_to_profiles[hobby] ||= []) << membership.profile
-      end
-    end
-
-    hobby_nodes = hobby_to_profiles.sort_by { |hobby, _| hobby.name }.map do |hobby, profiles|
-      profile_nodes = profiles.sort_by(&:id).map do |profile|
-        {
-          id:    "p_#{profile.id}_h_#{hobby.id}", # ツリー内で一意である必要がある
-          topic: profile.user.nickname.presence || "no-name",
-          data:  { url: room_member_path(room_id: room.id, id: profile.id) }
-        }
-      end
-
-      { id: "hobby_#{hobby.id}", topic: hobby.name, children: profile_nodes }
-    end
-
-    {
-      meta:   { name: "room-map", version: "0.2" },
-      format: "node_tree",
-      data:   {
-        id:       "root",
-        isroot:   true,
-        topic:    room.label.presence || "この部屋の趣味",
-        children: hobby_nodes
-      }
-    }
   end
 end

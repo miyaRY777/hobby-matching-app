@@ -1,31 +1,32 @@
 require "rails_helper"
 
 RSpec.describe "Shares#show jsMind data", type: :request do
-  # 事前準備（User, Profile, Room, ShareLink）
-  let(:issuer_user) { create(:user, nickname: "issuer_nick") }
-  let(:issuer_profile) { create(:profile, user: issuer_user) }
-  let(:room) { create(:room, issuer_profile: issuer_profile) }
-  let(:share_link) { create(:share_link, room: room, expires_at: 1.hour.from_now) }
+  # 部屋オーナー（ログインユーザー）
+  let(:current_user)    { create(:user, nickname: "issuer_nick") }
+  let(:current_profile) { create(:profile, user: current_user) }
+  let(:chat_room)       { create(:room, issuer_profile: current_profile, room_type: :chat) }
+  let(:share_link)      { create(:share_link, room: chat_room, expires_at: 1.hour.from_now) }
+  let(:chat_parent_tag) { create(:parent_tag, name: "アニメ", room_type: :chat) }
 
-  # issuer_profile を room のメンバーに追加（jsMindデータ生成に必要）
-  # Shares#show にアクセスできるようログイン状態にする
   before do
-    create(:room_membership, room: room, profile: issuer_profile)
-    sign_in issuer_user
+    # 部屋に参加済み・ログイン状態にする
+    create(:room_membership, room: chat_room, profile: current_profile)
+    sign_in current_user
   end
 
-  it "趣味名がjsMindデータとしてレスポンスに含まれる" do
-    hobby = create(:hobby, name: "登山")
-    issuer_profile.hobbies << hobby
+  it "親タグ名がjsMindデータとしてレスポンスに含まれる" do
+    # chat 部屋で chat タイプの親タグに属する趣味を持つ
+    hobby = create(:hobby, name: "ワンピース", parent_tag: chat_parent_tag)
+    current_profile.hobbies << hobby
 
     get share_path(share_link.token)
 
-    expect(response.body).to include("登山")
+    expect(response.body).to include("アニメ")
   end
 
   it "ユーザーのnicknameがjsMindデータとしてレスポンスに含まれる" do
-    hobby = create(:hobby, name: "読書")
-    issuer_profile.hobbies << hobby
+    hobby = create(:hobby, name: "読書", parent_tag: chat_parent_tag)
+    current_profile.hobbies << hobby
 
     get share_path(share_link.token)
 
@@ -33,11 +34,11 @@ RSpec.describe "Shares#show jsMind data", type: :request do
   end
 
   it "人ノードの詳細URLがレスポンスに含まれる" do
-    hobby = create(:hobby, name: "料理")
-    issuer_profile.hobbies << hobby
+    hobby = create(:hobby, name: "料理", parent_tag: chat_parent_tag)
+    current_profile.hobbies << hobby
 
     get share_path(share_link.token)
 
-    expect(response.body).to include("/rooms/#{room.id}/members/#{issuer_profile.id}")
+    expect(response.body).to include("/rooms/#{chat_room.id}/members/#{current_profile.id}")
   end
 end
