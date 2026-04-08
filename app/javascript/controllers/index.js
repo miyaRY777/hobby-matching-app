@@ -28,3 +28,6 @@ application.register("clipboard", ClipboardController)
 import AvatarPreviewController from "./avatar_preview_controller"
 application.register("avatar-preview", AvatarPreviewController)
 
+import TabsController from "./tabs_controller"
+application.register("tabs", TabsController)
+
