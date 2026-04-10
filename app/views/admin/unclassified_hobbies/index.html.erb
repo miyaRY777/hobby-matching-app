@@ -1,0 +1,51 @@
+<div style="max-width: 72rem; margin: 0 auto;">
+  <h1 style="font-size: 1.5rem; font-weight: bold; color: #f9fafb; margin-bottom: 1.5rem;">未分類タグ管理</h1>
+
+  <%= form_with url: admin_unclassified_hobbies_path, method: :get, local: true do |f| %>
+    <%= f.text_field :q, value: params[:q], placeholder: "タグ名で検索",
+          style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.375rem 0.75rem; border-radius: 0.25rem;" %>
+    <%= f.submit "検索",
+          style: "margin-left: 0.5rem; background: #374151; color: #f9fafb; border: none; padding: 0.375rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" %>
+  <% end %>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 1.5rem; color: #d1d5db;">
+    <thead>
+      <tr style="border-bottom: 1px solid #374151; text-align: left;">
+        <th style="padding: 0.5rem 1rem;">タグ名</th>
+        <th style="padding: 0.5rem 1rem;">使用回数</th>
+        <th style="padding: 0.5rem 1rem;">ユーザー数</th>
+        <th style="padding: 0.5rem 1rem;">分類</th>
+        <th style="padding: 0.5rem 1rem;">統合</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @hobbies.each do |hobby| %>
+        <tr data-hobby-id="<%= hobby.id %>" style="border-bottom: 1px solid #1f2937;">
+          <td data-col="name" style="padding: 0.5rem 1rem;"><%= hobby.name %></td>
+          <td style="padding: 0.5rem 1rem;"><%= hobby.usage_count %></td>
+          <td style="padding: 0.5rem 1rem;"><%= hobby.user_count %></td>
+          <td style="padding: 0.5rem 1rem;">
+            <%= form_with url: admin_unclassified_hobby_path(hobby), method: :patch, local: true do |f| %>
+              <%= select_tag :parent_tag_id,
+                    options_for_select(@parent_tags.map { |pt| [pt.name, pt.id] }),
+                    prompt: "選択してください",
+                    style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
+              <%= f.submit "分類",
+                    style: "margin-left: 0.25rem; background: #2563eb; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" %>
+            <% end %>
+          </td>
+          <td style="padding: 0.5rem 1rem;">
+            <%= form_with url: merge_admin_unclassified_hobby_path(hobby), method: :post, local: true do |f| %>
+              <%= select_tag :target_hobby_id,
+                    options_for_select(@all_hobbies.reject { |(_, id)| id == hobby.id }),
+                    prompt: "選択してください",
+                    style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
+              <%= submit_tag "統合",
+                    style: "margin-left: 0.25rem; background: #dc2626; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

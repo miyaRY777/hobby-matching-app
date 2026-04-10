@@ -63,5 +63,10 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboards#show"
+    resources :unclassified_hobbies, only: [ :index, :update ] do
+      member do
+        post :merge
+      end
+    end
   end
 end
