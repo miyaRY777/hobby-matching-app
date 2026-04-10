@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Admin 未分類タグ管理", type: :system do
   let!(:admin_user) { create(:user, :admin) }
   let!(:uncategorized_parent_tag) { ParentTag.find_or_create_by!(slug: "uncategorized") { |pt| pt.name = "未分類" } }
-  let!(:programming_parent_tag)   { create(:parent_tag, name: "プログラミング", room_type: :study, position: 1) }
+  let!(:programming_parent_tag)   { ParentTag.find_or_create_by!(slug: "programming") { |pt| pt.name = "プログラミング"; pt.room_type = :study; pt.position = 1 } }
 
   before { login_as(admin_user, scope: :user) }
 
