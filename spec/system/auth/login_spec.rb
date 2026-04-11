@@ -10,4 +10,8 @@ RSpec.describe "ログイン画面", type: :system do
   it "「ユーザー登録はこちら」リンクが表示される" do
     expect(page).to have_link("ユーザー登録はこちら", href: new_user_registration_path)
   end
+
+  it "「ログイン状態を保持する」チェックボックスが表示される" do
+    expect(page).to have_field("ログイン状態を保持する", type: :checkbox)
+  end
 end
