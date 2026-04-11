@@ -63,6 +63,26 @@ RSpec.describe "Shares", type: :request do
       end
     end
 
+    context "期限切れリンクに非メンバーがアクセスした場合" do
+      it "410 Gone を返す" do
+        # 期限切れの共有リンクを準備
+        room_owner = create(:user)
+        room_owner_profile = create(:profile, user: room_owner)
+        room = create(:room, issuer_profile: room_owner_profile)
+        expired_link = create(:share_link, room: room, expires_at: 1.hour.ago)
+
+        # 未参加のゲストユーザーでアクセス
+        guest_user = create(:user)
+        create(:profile, user: guest_user)
+        sign_in guest_user
+
+        get share_path(expired_link.token)
+
+        # 期限切れ+非メンバー → 410 Gone
+        expect(response).to have_http_status(:gone)
+      end
+    end
+
     context "ロックされていない部屋に未参加ユーザーがアクセスした場合" do
       it "RoomMembership が作成される" do
         # 公開中の部屋と共有リンクを準備
