@@ -88,3 +88,6 @@ gem "cloudinary"
 
 # Active Storage バリデーション（スプーフィング対策込み）
 gem "active_storage_validations"
+
+# 認可
+gem "action_policy"
