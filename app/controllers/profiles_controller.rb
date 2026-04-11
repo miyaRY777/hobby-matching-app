@@ -10,12 +10,17 @@ class ProfilesController < ApplicationController
   end
 
   def show
-    @profile = Profile.includes(profile_hobbies: { hobby: :parent_tag }, user: { avatar_attachment: :blob }).find_by(id: params[:id])
+    @profile = Profile.includes(
+      :hobbies,
+      profile_hobbies: { hobby: :parent_tag },
+      user: { avatar_attachment: :blob }
+    ).find_by(id: params[:id])
     return redirect_to profiles_path, alert: "プロフィールが見つかりません" unless @profile
 
     @profile_hobby_map = @profile.profile_hobbies.index_by(&:hobby_id)
 
-    my_profile = current_user.profile
+    # current_user.profile は includes を付けられないため、直接クエリで hobbies を eager load する
+    my_profile = Profile.includes(:hobbies).find_by(user_id: current_user.id)
     @shared_hobbies = my_profile ? my_profile.shared_hobbies_with(@profile) : []
   end
 end
