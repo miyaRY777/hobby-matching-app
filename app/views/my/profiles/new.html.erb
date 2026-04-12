@@ -1,21 +1,19 @@
-<div style="width: 100%; max-width: 56rem; padding: 2rem; border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+<div class="w-full max-w-4xl">
+  <div class="rounded-2xl border border-slate-700/40 bg-white/[0.03] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+    <h1 class="mb-4 text-2xl font-bold text-center text-white">
+      プロフィール作成
+    </h1>
 
-  <h1 style="font-size: 1.5rem; font-weight: 700; text-align: center; color: #ffffff; margin-bottom: 1rem;">
-    プロフィール作成
-  </h1>
+    <p class="mb-8 text-center text-gray-400">
+      <span class="font-semibold text-white">
+        <%= current_user.nickname.presence || current_user.email %>
+      </span>
+      さんのプロフィール
+    </p>
 
-  <p style="text-align: center; color: #9ca3af; margin-bottom: 2rem;">
-    <span style="font-weight: 600; color: #ffffff;">
-      <%= current_user.nickname.presence || current_user.email %>
-    </span>
-    さんのプロフィール
-  </p>
-
-  <%= render "form",
-        profile: @profile,
-        submit_label: "作成する" %>
-  <br>
-
-  <%= link_to "プロフィール一覧へ戻る", profiles_path, style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>
-
+    <%= render "form",
+          profile: @profile,
+          submit_label: "作成する",
+          return_path: profiles_path %>
+  </div>
 </div>

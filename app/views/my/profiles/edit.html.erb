@@ -1,30 +1,36 @@
-<div style="width: 100%; max-width: 56rem; padding: 2rem; border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+<div class="w-full max-w-4xl space-y-6">
+  <div class="rounded-2xl border border-slate-700/40 bg-white/[0.03] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+    <h1 class="mb-4 text-2xl font-bold text-center text-white">
+      プロフィール編集
+    </h1>
 
-  <h1 style="font-size: 1.5rem; font-weight: 700; text-align: center; color: #ffffff; margin-bottom: 1rem;">
-    プロフィール編集
-  </h1>
+    <p class="mb-8 text-center text-gray-400">
+      <span class="font-semibold text-white">
+        <%= current_user.nickname.presence || current_user.email %>
+      </span>
+      さんのプロフィール
+    </p>
 
-  <p style="text-align: center; color: #9ca3af; margin-bottom: 2rem;">
-    <span style="font-weight: 600; color: #ffffff;">
-      <%= current_user.nickname.presence || current_user.email %>
-    </span>
-    さんのプロフィール
-  </p>
-
-  <%= render "form",
-        profile: @profile,
-        submit_label: "更新する" %>
-
-  <%# プロフィール削除 %>
-  <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(55, 65, 81, 0.4);">
-    <%= button_to "プロフィールを削除する",
-      my_profile_path,
-      method: :delete,
-      data: { turbo_confirm: "本当に削除しますか？" },
-      style: "width: 100%; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; font-size: 0.875rem; cursor: pointer;" %>
+    <%= render "form",
+          profile: @profile,
+          submit_label: "更新する",
+          return_path: profiles_path %>
   </div>
 
-  <br>
-
-  <%= link_to "プロフィール一覧へ戻る", profiles_path, style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>
+  <%# プロフィール削除（折りたたみ）%>
+  <details class="rounded-2xl border border-red-500/20 bg-red-500/5 p-5">
+    <summary class="cursor-pointer text-sm font-semibold text-red-300 hover:text-red-200 select-none">
+      危険ゾーン
+    </summary>
+    <div class="mt-4 space-y-3">
+      <p class="text-sm leading-relaxed text-red-200/80">
+        プロフィールを削除すると、登録した自己紹介や趣味タグは元に戻せません。
+      </p>
+      <%= button_to "プロフィールを削除する",
+        my_profile_path,
+        method: :delete,
+        data: { turbo_confirm: "本当に削除しますか？" },
+        class: "w-full rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300 cursor-pointer transition hover:bg-red-500/20 hover:text-red-100" %>
+    </div>
+  </details>
 </div>
