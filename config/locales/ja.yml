@@ -1,0 +1,8 @@
+ja:
+  activerecord:
+    attributes:
+      room:
+        room_types:
+          chat: "雑談"
+          study: "勉強"
+          game: "ゲーム"
