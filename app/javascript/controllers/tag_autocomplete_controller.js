@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "hiddenField", "chipList", "dropdown"]
+  static targets = ["input", "hiddenField", "chipList", "dropdown", "count"]
   static values = {
     url: String,
     max: { type: Number, default: 10 }
@@ -123,6 +123,10 @@ export default class extends Controller {
                 aria-label="${this.#escapeHtml(chip.name)}を削除">×</button>
       </span>
     `).join("")
+
+    if (this.hasCountTarget) {
+      this.countTarget.textContent = `${this.#chips.length} / ${this.maxValue}件`
+    }
   }
 
   #syncHiddenField() {
