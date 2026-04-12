@@ -98,6 +98,8 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       page.execute_script("document.querySelector('[data-tag-autocomplete-target=\"hiddenField\"]').value = #{over_limit.to_json}")
       click_button "更新する"
 
+      # バリデーションエラー後はタブがリセットされるため、タグタブを再度クリックする
+      click_on "タグ"
       expect(page).to have_css("[data-testid='chip']")
     end
   end
