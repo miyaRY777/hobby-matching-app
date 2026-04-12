@@ -7,6 +7,9 @@ import { application } from "./application"
 import AvatarPreviewController from "./avatar_preview_controller"
 application.register("avatar-preview", AvatarPreviewController)
 
+import CharCounterController from "./char_counter_controller"
+application.register("char-counter", CharCounterController)
+
 import ClipboardController from "./clipboard_controller"
 application.register("clipboard", ClipboardController)
 
