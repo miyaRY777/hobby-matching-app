@@ -3,43 +3,54 @@
 <div style="max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
   <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin-bottom: 2rem;">部屋管理</h1>
 
-  <%# 作成フォーム %>
-  <div style="max-width: 28rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); margin-bottom: 2.5rem;">
-    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">+ 部屋を新規作成</h2>
+  <%# 作成フォーム（折りたたみ） %>
+  <div data-controller="toggle" style="margin-bottom: 2.5rem;">
+    <button
+      type="button"
+      data-action="click->toggle#toggle"
+      style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: 0.75rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.9375rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);"
+    >
+      <span data-toggle-target="openText">+ 部屋を新規作成</span>
+      <span data-toggle-target="closeText" class="hidden">− フォームを閉じる</span>
+    </button>
 
-    <%= form_with model: Room.new, url: mypage_rooms_path do |f| %>
-      <div style="margin-bottom: 1rem;">
-        <%= f.label :label, "部屋名（任意）", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-        <%= f.text_field :label,
-              style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-      </div>
+    <div data-toggle-target="content" style="max-width: 28rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); margin-top: 1rem;">
+      <h2 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">新しい部屋を作成</h2>
 
-      <div style="margin-bottom: 1rem;">
-        <%= f.label :room_type, "タイプ", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-        <%= f.select :room_type,
-              [["雑談", "chat"], ["勉強", "study"], ["ゲーム", "game"]],
-              { selected: "chat" },
-              style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-      </div>
+      <%= form_with model: Room.new, url: mypage_rooms_path do |f| %>
+        <div style="margin-bottom: 1rem;">
+          <%= f.label :label, "部屋名（任意）", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+          <%= f.text_field :label,
+                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+        </div>
 
-      <div style="margin-bottom: 1rem;">
-        <%= f.label :locked, "公開設定", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-        <%= f.select :locked,
-              [["公開", false], ["ロック", true]],
-              { selected: false },
-              style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-      </div>
+        <div style="margin-bottom: 1rem;">
+          <%= f.label :room_type, "タイプ", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+          <%= f.select :room_type,
+                [["雑談", "chat"], ["勉強", "study"], ["ゲーム", "game"]],
+                { selected: "chat" },
+                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+        </div>
 
-      <div style="margin-bottom: 1rem;">
-        <%= label_tag :expires_in, "招待リンクの有効期限", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-        <%= select_tag :expires_in,
-              options_for_select([["1時間", "1h"], ["24時間", "24h"], ["3日", "3d"], ["7日", "7d"], ["期限なし", "none"]], "24h"),
-              style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-      </div>
+        <div style="margin-bottom: 1rem;">
+          <%= f.label :locked, "公開設定", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+          <%= f.select :locked,
+                [["公開", false], ["ロック", true]],
+                { selected: false },
+                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+        </div>
 
-      <%= f.submit "部屋を作成",
-            style: "padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
-    <% end %>
+        <div style="margin-bottom: 1rem;">
+          <%= label_tag :expires_in, "招待リンクの有効期限", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+          <%= select_tag :expires_in,
+                options_for_select([["1時間", "1h"], ["24時間", "24h"], ["3日", "3d"], ["7日", "7d"], ["期限なし", "none"]], "24h"),
+                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+        </div>
+
+        <%= f.submit "部屋を作成",
+              style: "padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
+      <% end %>
+    </div>
   </div>
 
   <%# 作成済みの部屋 %>
