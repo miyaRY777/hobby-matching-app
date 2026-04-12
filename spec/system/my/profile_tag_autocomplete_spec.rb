@@ -94,7 +94,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       find("[data-testid='tag-input']").send_keys(:return)
 
       # hidden fieldを11個分のタグ（上限超過）に書き換えてバリデーションエラーを発生させる
-      over_limit = ([{ name: "ゲーム", description: "" }] + (1..10).map { |i| { name: "tag#{i}", description: "" } }).to_json
+      over_limit = ([ { name: "ゲーム", description: "" } ] + (1..10).map { |i| { name: "tag#{i}", description: "" } }).to_json
       page.execute_script("document.querySelector('[data-tag-autocomplete-target=\"hiddenField\"]').value = #{over_limit.to_json}")
       click_button "更新する"
 

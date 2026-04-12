@@ -41,24 +41,30 @@ export default class extends Controller {
       return
     }
     this.containerTarget.innerHTML = chips.map(chip => `
-      <div class="mt-3 rounded-lg border border-slate-700/60 bg-white/5">
+      <div class="rounded-2xl border border-slate-700/60 bg-slate-900/65 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
         <button type="button"
                 data-action="click->tag-description#onToggle"
                 data-testid="description-toggle"
-                class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-semibold text-blue-400 hover:bg-white/5 rounded-lg">
-          <span>${this.#escapeHtml(chip.name)}</span>
-          <span class="text-xs text-gray-400">✏️ 説明を追加</span>
+                class="flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition hover:bg-white/5">
+          <span class="flex min-w-0 items-center gap-3">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/15 text-base text-blue-300">✏️</span>
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-semibold text-slate-100">${this.#escapeHtml(chip.name)}</span>
+              <span class="mt-0.5 block text-xs text-slate-400">その趣味との関わり方や最近ハマっていることを書けます</span>
+            </span>
+          </span>
+          <span class="shrink-0 text-xs font-medium text-blue-300">説明を追加</span>
         </button>
-        <div data-description-content class="hidden px-3 pb-3">
+        <div data-description-content class="hidden border-t border-slate-700/60 px-4 pb-4 pt-4">
           <textarea data-testid="description-input"
                     data-name="${this.#escapeHtml(chip.name)}"
                     data-action="input->tag-description#onDescriptionInput"
                     placeholder="例：マイクラ歴3年で、建築メインで遊んでいます！"
                     maxlength="200"
                     rows="3"
-                    class="w-full rounded-md border border-slate-700/60 bg-white/5 px-3 py-2 text-sm text-white outline-none resize-none box-border">${this.#escapeHtml(chip.description || "")}</textarea>
+                    class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm leading-7 text-white outline-none resize-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">${this.#escapeHtml(chip.description || "")}</textarea>
           <div data-testid="description-counter"
-               class="mt-1 text-right text-xs text-gray-500">${(chip.description || "").length} / 200字</div>
+               class="mt-2 text-right text-xs font-medium tracking-wide text-slate-500">${(chip.description || "").length} / 200字</div>
         </div>
       </div>
     `).join("")

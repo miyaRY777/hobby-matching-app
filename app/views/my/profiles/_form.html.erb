@@ -1,5 +1,6 @@
 <%= form_with model: profile,
-              url: my_profile_path do |f| %>
+              url: my_profile_path,
+              class: "space-y-8" do |f| %>
 
   <%# エラー表示 %>
   <% if profile.errors.any? %>
@@ -15,51 +16,62 @@
   <% end %>
 
   <%# タブ切り替え %>
-  <div data-controller="tabs">
+  <div data-controller="tabs" class="space-y-6">
 
     <%# タブボタン %>
-    <div class="flex gap-2 mb-5">
+    <div class="inline-flex rounded-2xl border border-slate-700/60 bg-slate-900/70 p-1">
       <button type="button"
               data-tabs-target="tab"
               data-action="click->tabs#switch"
-              class="rounded-lg border px-4 py-2 text-sm font-semibold">ひとこと</button>
+              class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">ひとこと</button>
       <button type="button"
               data-tabs-target="tab"
               data-action="click->tabs#switch"
-              class="rounded-lg border px-4 py-2 text-sm font-semibold">タグ</button>
+              class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">タグ</button>
     </div>
 
     <%# ひとことパネル %>
-    <div data-tabs-target="panel">
+    <div data-tabs-target="panel"
+         class="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6">
       <div data-controller="char-counter" data-char-counter-max-value="500">
         <%= f.label :bio, "ひとこと（500字以内）",
-              class: "block text-sm font-semibold text-gray-300 mb-1" %>
+              class: "mb-2 block text-sm font-semibold text-slate-200" %>
+        <p class="mb-4 text-sm leading-relaxed text-slate-400">
+          好きなことや話しかけやすい話題を書いておくと、共通点のある相手に見つけてもらいやすくなります。
+        </p>
         <%= f.text_area :bio,
               rows: 6,
               placeholder: "例：\nインドア派で、ゲームやアニメが好きです！\n同じ趣味の人と気軽に話したいです。",
-              class: "w-full rounded-lg bg-white/5 border border-slate-700/60 text-white px-4 py-2 text-sm outline-none resize-none box-border",
+              class: "min-h-[180px] w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm leading-7 text-white outline-none box-border transition focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20 resize-none",
               data: {
                 "char-counter-target": "input",
                 action: "input->char-counter#count"
               } %>
         <div data-char-counter-target="display"
              data-testid="bio-counter"
-             class="mt-1 text-right text-xs text-gray-500">0 / 500字</div>
+             class="mt-2 text-right text-xs font-medium tracking-wide text-slate-500">0 / 500字</div>
       </div>
     </div>
 
     <%# タグパネル %>
     <div data-tabs-target="panel"
-         class="hidden relative"
+         class="relative hidden rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6"
          data-controller="tag-description tag-autocomplete"
          data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
          data-tag-autocomplete-max-value="10"
          data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription">
 
-      <%# 件数カウンター %>
-      <div data-tag-autocomplete-target="count"
-           data-testid="tag-count"
-           class="mb-2 text-right text-xs text-gray-500">0 / 10件</div>
+      <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-slate-200">趣味タグ</h2>
+          <p class="mt-1 text-sm leading-relaxed text-slate-400">
+            まずは気軽に 2〜5 個ほど登録すると、プロフィールの雰囲気が伝わりやすくなります。
+          </p>
+        </div>
+        <div data-tag-autocomplete-target="count"
+             data-testid="tag-count"
+             class="text-xs font-medium tracking-wide text-slate-500">0 / 10件</div>
+      </div>
 
       <%# hidden field: サーバーに送信される値 %>
       <input type="hidden"
@@ -68,7 +80,7 @@
              data-tag-autocomplete-target="hiddenField">
 
       <%# チップ表示エリア %>
-      <div class="flex flex-wrap gap-2 mb-2"
+      <div class="mb-4 flex min-h-9 flex-wrap gap-2"
            data-tag-autocomplete-target="chipList"></div>
 
       <%# テキスト入力 %>
@@ -79,7 +91,7 @@
              data-testid="tag-input"
              data-tag-autocomplete-target="input"
              data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
-             class="w-full rounded-lg bg-white/5 border border-slate-700/60 text-white px-4 py-2 text-sm outline-none box-border">
+             class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">
 
       <%# オートコンプリート候補ドロップダウン %>
       <ul data-tag-autocomplete-target="dropdown"
@@ -87,19 +99,19 @@
           style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
 
       <%# 説明文入力エリア（tag-descriptionコントローラが管理）%>
-      <div data-tag-description-target="container"></div>
+      <div class="mt-5" data-tag-description-target="container"></div>
     </div>
 
   </div>
 
-  <%# Sticky ボタンエリア %>
-  <div class="sticky bottom-0 z-10 bg-[#0f172a] pt-4 pb-2 flex items-center gap-3 mt-6">
+  <%# ボタンエリア %>
+  <div class="grid gap-3 border-t border-slate-700/50 pt-6 md:grid-cols-2">
     <% if local_assigns[:return_path] %>
       <%= link_to "一覧へ戻る", return_path,
-            class: "flex-1 rounded-lg border border-slate-600 text-center py-3 text-sm text-gray-400 hover:bg-white/5" %>
+            class: "flex items-center justify-center rounded-2xl border border-slate-600/80 bg-slate-900/60 px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-slate-500 hover:bg-white/5 hover:text-white" %>
     <% end %>
     <%= f.submit submit_label,
-          class: "flex-1 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 text-white py-3 text-base font-semibold border-none cursor-pointer",
+          class: "w-full rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 py-3 text-base font-semibold text-white shadow-[0_12px_30px_rgba(37,99,235,0.25)] border-none cursor-pointer transition hover:brightness-110",
           data: { turbo_submits_with: "送信中..." } %>
   </div>
 
