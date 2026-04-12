@@ -4,11 +4,26 @@
 
 import { application } from "./application"
 
+import AvatarPreviewController from "./avatar_preview_controller"
+application.register("avatar-preview", AvatarPreviewController)
+
+import ClipboardController from "./clipboard_controller"
+application.register("clipboard", ClipboardController)
+
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import InlineEditController from "./inline_edit_controller"
+application.register("inline-edit", InlineEditController)
+
 import ProfileSearchController from "./profile_search_controller"
 application.register("profile-search", ProfileSearchController)
+
+import TabsController from "./tabs_controller"
+application.register("tabs", TabsController)
 
 import TagAutocompleteController from "./tag_autocomplete_controller"
 application.register("tag-autocomplete", TagAutocompleteController)
@@ -19,15 +34,5 @@ application.register("tag-description", TagDescriptionController)
 import TagToggleController from "./tag_toggle_controller"
 application.register("tag-toggle", TagToggleController)
 
-import InlineEditController from "./inline_edit_controller"
-application.register("inline-edit", InlineEditController)
-
-import ClipboardController from "./clipboard_controller"
-application.register("clipboard", ClipboardController)
-
-import AvatarPreviewController from "./avatar_preview_controller"
-application.register("avatar-preview", AvatarPreviewController)
-
-import TabsController from "./tabs_controller"
-application.register("tabs", TabsController)
-
+import ToggleController from "./toggle_controller"
+application.register("toggle", ToggleController)
