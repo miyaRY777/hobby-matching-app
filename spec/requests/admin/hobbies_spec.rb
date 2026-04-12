@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Admin::HobbiesController", type: :request do
   let!(:admin_user) { create(:user, :admin) }
-  let!(:parent_tag) { create(:parent_tag, name: "アニメ", slug: "anime", room_type: :chat) }
+  let!(:parent_tag) { create(:parent_tag, name: "アニメ", room_type: :chat) }
   let!(:hobby) { create(:hobby, name: "進撃の巨人", parent_tag:) }
 
   describe "認可" do

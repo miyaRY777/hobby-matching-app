@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe "Admin::ParentTagsController", type: :request do
   let!(:admin_user) { create(:user, :admin) }
-  let!(:chat_parent_tag) { create(:parent_tag, name: "アニメ", slug: "anime", room_type: :chat, position: 1) }
-  let!(:study_parent_tag) { create(:parent_tag, name: "資格", slug: "license", room_type: :study, position: 2) }
+  let!(:chat_parent_tag) { create(:parent_tag, name: "アニメ", room_type: :chat, position: 1) }
+  let!(:study_parent_tag) { create(:parent_tag, name: "資格", room_type: :study, position: 2) }
   let!(:uncategorized_parent_tag) { ParentTag.find_or_create_by!(slug: "uncategorized") { |pt| pt.name = "未分類" } }
   let!(:chat_hobby) { create(:hobby, name: "進撃の巨人", parent_tag: chat_parent_tag) }
   let!(:study_hobby) { create(:hobby, name: "簿記", parent_tag: study_parent_tag) }
