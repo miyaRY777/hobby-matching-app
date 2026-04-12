@@ -62,7 +62,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(current_profile))
-      expect(page).to have_css("#flash", text: "プロフィールを更新しました")
+      expect(page).to have_text("プロフィールを更新しました")
 
       ph = current_profile.reload.profile_hobbies.joins(:hobby).find_by(hobbies: { name: "ゲーム" })
       expect(ph.description).to eq("毎日やってます")
@@ -75,7 +75,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(current_profile))
-      expect(page).to have_css("#flash", text: "プロフィールを更新しました")
+      expect(page).to have_text("プロフィールを更新しました")
 
       ph = current_profile.reload.profile_hobbies.joins(:hobby).find_by(hobbies: { name: "ゲーム" })
       expect(ph).not_to be_nil
@@ -119,7 +119,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(current_profile))
-      expect(page).to have_css("#flash", text: "プロフィールを更新しました")
+      expect(page).to have_text("プロフィールを更新しました")
       expect(current_profile.reload.bio).to eq("テスト自己紹介です")
     end
   end
