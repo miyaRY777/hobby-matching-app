@@ -7,6 +7,7 @@ RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true
 
     login_as(user, scope: :user)
     visit edit_my_profile_path
+    click_on "タグ"
 
     fill_in "tag-input", with: "rails"
     find("[data-testid='tag-input']").send_keys(:return)

@@ -1,13 +1,15 @@
 require "rails_helper"
 
 RSpec.describe "タグ入力チップUI", type: :system, js: true do
-  let(:user) { create(:user) }
-  let!(:profile) { create(:profile, user:) }
+  let(:current_user) { create(:user) }
+  let!(:current_profile) { create(:profile, user: current_user) }
   let!(:uncategorized) { ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 } }
 
   before do
-    login_as(user, scope: :user)
+    # タグ操作はタグタブで行う
+    login_as(current_user, scope: :user)
     visit edit_my_profile_path
+    click_on "タグ"
   end
 
   describe "タグの追加" do
@@ -40,6 +42,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
 
   describe "タグの削除" do
     it "×ボタンでチップを削除できる" do
+      # タグを追加してから削除する
       fill_in "tag-input", with: "ゲーム"
       find("[data-testid='tag-input']").send_keys(:return)
       expect(page).to have_css("[data-testid='chip']", text: "ゲーム")
@@ -81,7 +84,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       click_button "更新する"
 
       expect(page).to have_content("ゲーム")
-      expect(profile.reload.hobbies.pluck(:name)).to include("ゲーム")
+      expect(current_profile.reload.hobbies.pluck(:name)).to include("ゲーム")
     end
   end
 
@@ -95,7 +98,30 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       page.execute_script("document.querySelector('[data-tag-autocomplete-target=\"hiddenField\"]').value = #{over_limit.to_json}")
       click_button "更新する"
 
+      # バリデーションエラー後はタブがリセットされるため、タグタブを再度クリックする
+      click_on "タグ"
       expect(page).to have_css("[data-testid='chip']")
+    end
+  end
+
+  describe "タグ件数カウンター" do
+    it "初期表示で 0 / 10件 が表示される" do
+      expect(page).to have_css("[data-testid='tag-count']", text: "0 / 10件")
+    end
+
+    it "タグ追加時にカウンターが更新される" do
+      fill_in "tag-input", with: "ゲーム"
+      find("[data-testid='tag-input']").send_keys(:return)
+
+      expect(page).to have_css("[data-testid='tag-count']", text: "1 / 10件")
+    end
+
+    it "タグ削除時にカウンターが更新される" do
+      fill_in "tag-input", with: "ゲーム"
+      find("[data-testid='tag-input']").send_keys(:return)
+      find("[data-testid='chip']", text: "ゲーム").find("button").click
+
+      expect(page).to have_css("[data-testid='tag-count']", text: "0 / 10件")
     end
   end
 end

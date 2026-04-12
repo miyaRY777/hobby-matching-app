@@ -8,9 +8,24 @@ export default class extends Controller {
     this.#renderDescriptionInputs(chips)
   }
 
+  onToggle(event) {
+    const button = event.currentTarget
+    const content = button.nextElementSibling
+    content.classList.toggle("hidden")
+  }
+
   onDescriptionInput(event) {
-    const name = event.currentTarget.dataset.name
-    const description = event.currentTarget.value
+    const textarea = event.currentTarget
+    const name = textarea.dataset.name
+    const description = textarea.value
+
+    // カウンター更新
+    const counter = textarea.closest("[data-description-content]")
+                            ?.querySelector("[data-testid='description-counter']")
+    if (counter) {
+      counter.textContent = `${description.length} / 200字`
+    }
+
     this.element.dispatchEvent(new CustomEvent("tag-description-update", {
       bubbles: true,
       detail: { name, description }
@@ -26,18 +41,31 @@ export default class extends Controller {
       return
     }
     this.containerTarget.innerHTML = chips.map(chip => `
-      <div style="margin-top: 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(55, 65, 81, 0.6); background: rgba(255,255,255,0.05); padding: 0.75rem 1rem;">
-        <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #60a5fa; margin-bottom: 0.25rem;">
-          # ${this.#escapeHtml(chip.name)}
-          <span style="margin-left: 0.25rem; font-size: 0.75rem; font-weight: 400; color: #6b7280;">の説明（任意・200字以内）</span>
-        </label>
-        <textarea data-testid="description-input"
-                  data-name="${this.#escapeHtml(chip.name)}"
-                  data-action="input->tag-description#onDescriptionInput"
-                  placeholder="例：\nマイクラ歴3年で、建築メインで遊んでいます！最近はサバイバルモードにハマっています。"
-                  maxlength="200"
-                  rows="10"
-                  style="width: 100%; border-radius: 0.5rem; border: 1px solid rgba(55, 65, 81, 0.6); background: rgba(255,255,255,0.05); color: #ffffff; padding: 0.5rem 0.75rem; font-size: 0.875rem; outline: none; resize: none; box-sizing: border-box;">${this.#escapeHtml(chip.description || "")}</textarea>
+      <div class="rounded-2xl border border-slate-700/60 bg-slate-900/65 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+        <button type="button"
+                data-action="click->tag-description#onToggle"
+                data-testid="description-toggle"
+                class="flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition hover:bg-white/5">
+          <span class="flex min-w-0 items-center gap-3">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/15 text-base text-blue-300">✏️</span>
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-semibold text-slate-100">${this.#escapeHtml(chip.name)}</span>
+              <span class="mt-0.5 block text-xs text-slate-400">その趣味との関わり方や最近ハマっていることを書けます</span>
+            </span>
+          </span>
+          <span class="shrink-0 text-xs font-medium text-blue-300">説明を追加</span>
+        </button>
+        <div data-description-content class="hidden border-t border-slate-700/60 px-4 pb-4 pt-4">
+          <textarea data-testid="description-input"
+                    data-name="${this.#escapeHtml(chip.name)}"
+                    data-action="input->tag-description#onDescriptionInput"
+                    placeholder="例：マイクラ歴3年で、建築メインで遊んでいます！"
+                    maxlength="200"
+                    rows="3"
+                    class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm leading-7 text-white outline-none resize-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">${this.#escapeHtml(chip.description || "")}</textarea>
+          <div data-testid="description-counter"
+               class="mt-2 text-right text-xs font-medium tracking-wide text-slate-500">${(chip.description || "").length} / 200字</div>
+        </div>
       </div>
     `).join("")
   }
