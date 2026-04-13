@@ -20,7 +20,7 @@ module Rooms
       # 1. 表示対象プロフィールを取得
       # user / hobbies を eager load して N+1 クエリを防ぐ
       # --------------------------------------------------
-      @profile = Profile.includes(:user, profile_hobbies: { hobby: :parent_tag }).find(params[:id])
+      @profile = Profile.includes(:user, profile_hobbies: { hobby: :hobby_parent_tags }).find(params[:id])
 
       # --------------------------------------------------
       # 2. 部屋のroom_typeに一致する親タグを持つ子タグのみ抽出
@@ -29,7 +29,7 @@ module Rooms
       # メモリ内で比較可能。eager load 済みなので追加クエリなし。
       # --------------------------------------------------
       @room_related_phs = @profile.profile_hobbies.select do |ph|
-        ph.hobby.parent_tag&.room_type == @room.room_type
+        ph.hobby.hobby_parent_tags.any? { |hpt| hpt.room_type == @room.room_type }
       end
     end
 

@@ -41,7 +41,7 @@ class ProfileSearchQuery
   end
 
   def base_scope
-    Profile.includes(profile_hobbies: { hobby: :parent_tag }, user: { avatar_attachment: :blob }).order(created_at: :desc)
+    Profile.includes(profile_hobbies: { hobby: :hobby_parent_tags }, user: { avatar_attachment: :blob }).order(created_at: :desc)
   end
 
   def sanitize_sql_like(str)
