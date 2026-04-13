@@ -33,6 +33,7 @@ description: Use when working with the local knowledge-base repository, answerin
 - 既存ノートに重複しそうなら新規作成より更新提案を優先する
 - `distill` と `moc` は、保存前に生成案を見せて確認を取る
 - ノート本文はコピペせず、自分の言葉で要約する
+- `quiz` と `month_quiz` の `#要復習` 管理には、ノート末尾の HTML コメント `review_log` を使う
 
 ## 役割対応
 
@@ -47,8 +48,8 @@ description: Use when working with the local knowledge-base repository, answerin
 - `moc`: テーマ別の MOC を生成または更新する
 - `ask`: 質問に結論と根拠付きで答える
 - `search`: 全文検索結果を返す
-- `quiz`: 1問ずつ出題して復習候補を管理する
-- `month_quiz`: 直近1ヶ月のノートを土日に1問ずつ出題して復習候補を管理する
+- `quiz`: 1問ずつ出題し、正誤確定後に `review_tag_sync.rb` で `#要復習` と `review_log` を更新する
+- `month_quiz`: 直近1ヶ月のノートを土日に1問ずつ出題し、正誤確定後に `review_tag_sync.rb` で `#要復習` と `review_log` を更新する
 - `weekly-review`: inbox、notes、open questions を棚卸しする
 
 ## 作業の基本順
