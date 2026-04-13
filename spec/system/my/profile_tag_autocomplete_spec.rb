@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe "タグ入力チップUI", type: :system, js: true do
   let(:current_user) { create(:user) }
   let!(:current_profile) { create(:profile, user: current_user) }
-  let!(:uncategorized) { ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 } }
 
   before do
     # タグ操作はタグタブで行う
