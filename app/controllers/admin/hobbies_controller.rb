@@ -29,7 +29,7 @@ class Admin::HobbiesController < Admin::BaseController
     if @hobby.destroy
       redirect_to admin_parent_tags_path, notice: "削除しました"
     else
-      usage_count = @hobby.profile_hobbies.count
+      usage_count = @hobby.profile_hobbies.size
       redirect_to admin_parent_tags_path, alert: "使用中のため削除できません（#{usage_count}件が使用中）"
     end
   end
@@ -41,7 +41,7 @@ class Admin::HobbiesController < Admin::BaseController
   end
 
   def set_parent_tags
-    @parent_tags = ParentTag.where.not(room_type: nil).order(:room_type, :position, :id)
+    @parent_tags = ParentTag.classified.order(:room_type, :position, :id)
   end
 
   def hobby_params

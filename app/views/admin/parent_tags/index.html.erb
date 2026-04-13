@@ -8,7 +8,7 @@
       <div>
         <%= f.label :room_type, "部屋タイプ", style: "display: block; margin-bottom: 0.375rem; color: #e5e7eb;" %>
         <%= f.select :room_type,
-              ParentTag.room_types.keys.map { |room_type| [room_type, room_type] },
+              @room_type_options.map { |room_type| [room_type, room_type] },
               { include_blank: "すべて" },
               { style: "min-width: 10rem; background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.5rem 0.75rem; border-radius: 0.375rem;" } %>
       </div>
@@ -26,7 +26,7 @@
     </div>
   <% end %>
 
-  <% ParentTag.room_types.keys.each do |room_type| %>
+  <% @room_type_options.each do |room_type| %>
     <% room_parent_tags = @parent_tags_by_room_type.fetch(room_type, []) %>
     <% create_parent_path = new_admin_parent_tag_path(room_type:) %>
     <% first_parent_tag = room_parent_tags.first %>

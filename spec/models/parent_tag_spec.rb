@@ -31,6 +31,18 @@ RSpec.describe ParentTag, type: :model do
       parent_tag = described_class.new(name: "テスト異種B", slug: "test-cross", room_type: :study)
       expect(parent_tag).to be_valid
     end
+
+    it "同じ room_type + name の組み合わせは重複して保存できない" do
+      described_class.create!(name: "テスト名重複", slug: "test-name-dup-a", room_type: :chat)
+      parent_tag = described_class.new(name: "テスト名重複", slug: "test-name-dup-b", room_type: :chat)
+      expect(parent_tag).to be_invalid
+    end
+
+    it "room_type が異なれば同じ name で保存できる" do
+      described_class.create!(name: "テスト名異種", slug: "test-name-cross-a", room_type: :chat)
+      parent_tag = described_class.new(name: "テスト名異種", slug: "test-name-cross-b", room_type: :study)
+      expect(parent_tag).to be_valid
+    end
   end
 
   describe "enum" do
