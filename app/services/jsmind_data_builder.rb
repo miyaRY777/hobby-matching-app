@@ -78,7 +78,11 @@ class JsmindDataBuilder
   def profiles_by_parent_tag_id
     @profiles_by_parent_tag_id ||=
       all_profiles.each_with_object(Hash.new { |h, k| h[k] = [] }) do |profile, hash|
-        profile.profile_hobbies.each { |ph| hash[ph.hobby.parent_tag_id] << profile }
+        profile.profile_hobbies.each do |profile_hobby|
+          profile_hobby.hobby.hobby_parent_tags.each do |hobby_parent_tag|
+            hash[hobby_parent_tag.parent_tag_id] << profile
+          end
+        end
       end
   end
 
