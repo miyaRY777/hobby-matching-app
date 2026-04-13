@@ -63,6 +63,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboards#show"
+    resources :parent_tags, only: %i[index new create edit update destroy]
+    resources :hobbies, only: %i[new create edit update destroy]
     resources :unclassified_hobbies, only: [ :index, :update ] do
       member do
         post :merge

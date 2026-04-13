@@ -2,8 +2,15 @@ require "rails_helper"
 
 RSpec.describe "Admin 未分類タグ管理", type: :system do
   let!(:admin_user) { create(:user, :admin) }
-  let!(:uncategorized_parent_tag) { ParentTag.find_or_create_by!(slug: "uncategorized") { |pt| pt.name = "未分類" } }
-  let!(:programming_parent_tag)   { ParentTag.find_or_create_by!(slug: "programming") { |pt| pt.name = "プログラミング"; pt.room_type = :study; pt.position = 1 } }
+  let!(:uncategorized_parent_tag) do
+    ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類" }
+  end
+  let!(:programming_parent_tag) do
+    ParentTag.find_or_create_by!(slug: "programming", room_type: :study) do |pt|
+      pt.name = "プログラミング"
+      pt.position = 1
+    end
+  end
 
   before { login_as(admin_user, scope: :user) }
 

@@ -1,0 +1,31 @@
+<% if hobby.errors.any? %>
+  <div style="margin-bottom: 1rem; border-radius: 0.5rem; padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);">
+    <ul style="margin: 0; padding-left: 1.25rem;">
+      <% hobby.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: [:admin, hobby], local: true do |f| %>
+  <div style="display: grid; gap: 1rem; max-width: 32rem;">
+    <div>
+      <%= f.label :name, "子タグ名", style: "display: block; margin-bottom: 0.375rem; color: #e5e7eb;" %>
+      <%= f.text_field :name, style: "width: 100%; box-sizing: border-box; background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.625rem 0.75rem; border-radius: 0.375rem;" %>
+    </div>
+
+    <div>
+      <%= f.label :parent_tag_id, "親タグ", style: "display: block; margin-bottom: 0.375rem; color: #e5e7eb;" %>
+      <%= f.select :parent_tag_id,
+            @parent_tags.map { |parent_tag| [parent_tag.name, parent_tag.id] },
+            { prompt: "選択してください" },
+            { style: "width: 100%; box-sizing: border-box; background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.625rem 0.75rem; border-radius: 0.375rem;" } %>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <%= f.submit submit_label, style: "background: #2563eb; color: white; border: none; padding: 0.625rem 1rem; border-radius: 0.375rem; cursor: pointer;" %>
+      <%= link_to "一覧に戻る", admin_parent_tags_path, style: "display: inline-block; background: #374151; color: #f9fafb; text-decoration: none; padding: 0.625rem 1rem; border-radius: 0.375rem;" %>
+    </div>
+  </div>
+<% end %>
