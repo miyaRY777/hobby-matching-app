@@ -1,6 +1,14 @@
 require "rails_helper"
 
 RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true do
+  # ProfileHobbiesUpdater が find_by!(slug: "uncategorized") を呼ぶため必須
+  let!(:uncategorized_parent_tag) do
+    ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) do |pt|
+      pt.name = "未分類"
+      pt.position = 0
+    end
+  end
+
   it "ログインして、プロフィール編集でタグを更新し、詳細に表示させる" do
     user = create(:user)
     create(:profile, user: user)
@@ -9,10 +17,15 @@ RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true
     visit edit_my_profile_path
     click_on "タグ"
 
+    # chip が DOM に追加されるまで待ってから次のタグを入力する（JS タイミング対策）
     fill_in "tag-input", with: "rails"
     find("[data-testid='tag-input']").send_keys(:return)
+    expect(page).to have_css("[data-testid='chip']", text: "rails")
+
     fill_in "tag-input", with: "ruby"
     find("[data-testid='tag-input']").send_keys(:return)
+    expect(page).to have_css("[data-testid='chip']", text: "ruby")
+
     click_button "更新する"
 
     expect(page).to have_content("rails")
