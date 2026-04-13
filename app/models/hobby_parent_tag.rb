@@ -12,7 +12,7 @@ class HobbyParentTag < ApplicationRecord
   private
 
   def sync_room_type
-    return unless parent_tag.present? && room_type.blank?
+    return unless parent_tag_id.present? && room_type.nil?
 
     self.room_type = parent_tag.room_type
   end

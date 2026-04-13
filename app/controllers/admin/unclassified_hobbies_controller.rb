@@ -7,6 +7,7 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
     scope = scope.where("hobbies.name LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:q])}%") if params[:q].present?
     @hobbies = scope
     @parent_tags = ParentTag.order(:room_type, :position)
+    @grouped_parent_tag_options = build_grouped_parent_tag_options
     @all_hobbies_grouped = build_all_hobbies_grouped
   end
 
@@ -32,12 +33,20 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
 
   private
 
+  def build_grouped_parent_tag_options
+    ParentTag.room_types.keys.to_h do |room_type|
+      [
+        room_type,
+        @parent_tags.select { |pt| pt.room_type == room_type }.map { |pt| [ pt.name, pt.id ] }
+      ]
+    end
+  end
+
   def build_all_hobbies_grouped
     grouped_hobbies = Hobby.includes(:hobby_parent_tags)
                            .order(:name)
                            .each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |hobby, hash|
-      room_type = hobby.hobby_parent_tags.min_by(&:room_type_before_type_cast)&.room_type || "unclassified"
-      hash[room_type] << [ hobby.name, hobby.id ]
+      hash[hobby.primary_room_type] << [ hobby.name, hobby.id ]
     end
 
     ParentTag.room_types.keys

@@ -4,6 +4,10 @@ class Hobby < ApplicationRecord
   has_many :hobby_parent_tags, dependent: :destroy
   has_many :parent_tags, through: :hobby_parent_tags
 
+  def primary_room_type
+    hobby_parent_tags.min_by { |hpt| HobbyParentTag.room_types[hpt.room_type] }&.room_type || "unclassified"
+  end
+
   has_many :profile_hobbies, dependent: :restrict_with_error
   has_many :profiles, through: :profile_hobbies
 

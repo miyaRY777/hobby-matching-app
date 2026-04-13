@@ -59,6 +59,8 @@ class JsmindDataBuilder
   end
 
   # room_memberships は DB 制約でユニーク保証済みだが、防御的に uniq を適用
+  # 呼び出し元で以下の includes が必須（未設定時に N+1 が発生する）:
+  #   includes(profile: [:user, { profile_hobbies: { hobby: :hobby_parent_tags } }])
   def all_profiles
     @all_profiles ||= @memberships.map(&:profile).uniq(&:id)
   end

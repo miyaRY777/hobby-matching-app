@@ -39,6 +39,6 @@ class CreateHobbyParentTags < ActiveRecord::Migration[7.2]
   end
 
   def down
-    drop_table :hobby_parent_tags
+    raise ActiveRecord::IrreversibleMigration
   end
 end

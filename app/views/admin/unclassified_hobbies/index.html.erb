@@ -26,16 +26,8 @@
           <td style="padding: 0.5rem 1rem;"><%= hobby.user_count %></td>
           <td style="padding: 0.5rem 1rem;">
             <%= form_with url: admin_unclassified_hobby_path(hobby), method: :patch, local: true do |f| %>
-              <% grouped_parent_tag_options = ParentTag.room_types.keys.to_h do |room_type|
-                   [
-                     room_type,
-                     @parent_tags
-                       .select { |parent_tag| parent_tag.room_type == room_type }
-                       .map { |parent_tag| [parent_tag.name, parent_tag.id] }
-                   ]
-                 end %>
               <%= select_tag :parent_tag_id,
-                    grouped_options_for_select(grouped_parent_tag_options),
+                    grouped_options_for_select(@grouped_parent_tag_options),
                     prompt: "選択してください",
                     style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
               <%= f.submit "分類",

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_14_090002) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_14_090003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -60,6 +60,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_14_090002) do
     t.index ["hobby_id", "parent_tag_id"], name: "index_hobby_parent_tags_on_hobby_id_and_parent_tag_id", unique: true
     t.index ["hobby_id", "room_type"], name: "index_hobby_parent_tags_on_hobby_id_and_room_type", unique: true
     t.index ["hobby_id"], name: "index_hobby_parent_tags_on_hobby_id"
+    t.index ["parent_tag_id", "room_type"], name: "index_hobby_parent_tags_on_parent_tag_id_and_room_type"
     t.index ["parent_tag_id"], name: "index_hobby_parent_tags_on_parent_tag_id"
   end
 

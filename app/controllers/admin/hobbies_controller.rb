@@ -10,7 +10,7 @@ class Admin::HobbiesController < Admin::BaseController
   def create
     @hobby = Hobby.new(name: hobby_params[:name])
     if @hobby.save
-      classify_hobby(@hobby)
+      Admin::HobbyClassificationService.call_bulk(hobby: @hobby, room_type_to_parent_tag_id: bulk_parent_tag_params)
       redirect_to admin_parent_tags_path, notice: "子タグを作成しました"
     else
       render :new, status: :unprocessable_entity
@@ -21,7 +21,7 @@ class Admin::HobbiesController < Admin::BaseController
 
   def update
     if @hobby.update(name: hobby_params[:name])
-      classify_hobby(@hobby)
+      Admin::HobbyClassificationService.call_bulk(hobby: @hobby, room_type_to_parent_tag_id: bulk_parent_tag_params)
       redirect_to admin_parent_tags_path, notice: "子タグを更新しました"
     else
       render :edit, status: :unprocessable_entity
@@ -56,13 +56,9 @@ class Admin::HobbiesController < Admin::BaseController
     )
   end
 
-  def classify_hobby(hobby)
-    ParentTag.room_types.each_key do |room_type|
-      parent_tag_id = hobby_params[:"#{room_type}_parent_tag_id"]
-      next if parent_tag_id.blank?
-
-      parent_tag = ParentTag.find(parent_tag_id)
-      Admin::HobbyClassificationService.call(hobby:, parent_tag:)
+  def bulk_parent_tag_params
+    ParentTag.room_types.keys.to_h do |room_type|
+      [ room_type, hobby_params[:"#{room_type}_parent_tag_id"] ]
     end
   end
 end
