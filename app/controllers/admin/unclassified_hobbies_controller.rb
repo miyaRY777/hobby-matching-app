@@ -12,11 +12,11 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
 
   def update
     @hobby = Hobby.unclassified.find(params[:id])
-    if @hobby.update(parent_tag_id: params[:parent_tag_id])
-      redirect_to admin_unclassified_hobbies_path, notice: "分類しました"
-    else
-      redirect_to admin_unclassified_hobbies_path, alert: "分類に失敗しました"
-    end
+    parent_tag = ParentTag.find(params[:parent_tag_id])
+    Admin::HobbyClassificationService.call(hobby: @hobby, parent_tag:)
+    redirect_to admin_unclassified_hobbies_path, notice: "分類しました"
+  rescue ActiveRecord::RecordInvalid
+    redirect_to admin_unclassified_hobbies_path, alert: "分類に失敗しました"
   end
 
   def merge
