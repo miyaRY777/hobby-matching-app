@@ -5,16 +5,17 @@ parent_tags = [
   { name: "ゲーム", slug: "game", room_type: :chat, position: 1 },
   { name: "音楽", slug: "music", room_type: :chat, position: 2 },
   { name: "カフェ", slug: "cafe", room_type: :chat, position: 3 },
+  { name: "未分類", slug: "uncategorized", room_type: :chat, position: 999 },
   # 勉強系（study）
   { name: "プログラミング", slug: "programming", room_type: :study, position: 0 },
   { name: "デザイン", slug: "design", room_type: :study, position: 1 },
   { name: "学習スタイル", slug: "learning-style", room_type: :study, position: 2 },
+  { name: "未分類", slug: "uncategorized", room_type: :study, position: 999 },
   # ゲーム系（game）
   { name: "協力ゲーム", slug: "coop", room_type: :game, position: 0 },
   { name: "対戦ゲーム", slug: "versus", room_type: :game, position: 1 },
   { name: "カジュアル", slug: "casual", room_type: :game, position: 2 },
-  # 共通（未分類）
-  { name: "未分類", slug: "uncategorized", room_type: nil, position: 0 }
+  { name: "未分類", slug: "uncategorized", room_type: :game, position: 999 }
 ]
 
 parent_tags.each do |attrs|
@@ -50,14 +51,20 @@ HOBBY_DICTIONARY = {
   "カフェ巡り" => "cafe", "コーヒー" => "cafe", "スタバ" => "cafe"
 }.freeze
 
-# 既存 hobbies の parent_tag_id を一括設定（冪等: nil のものだけ対象）
-parent_tag_map = ParentTag.all.index_by(&:slug)
-uncategorized = ParentTag.find_by!(slug: "uncategorized", room_type: nil)
+# 既存 hobbies を hobby_parent_tags で分類（冪等: 既に分類済みの room_type は skip）
+parent_tag_by_slug = ParentTag.all.group_by(&:slug)
+classified_count = 0
 
-Hobby.where(parent_tag_id: nil).find_each do |hobby|
+Hobby.find_each do |hobby|
   slug = HOBBY_DICTIONARY[hobby.normalized_name]
-  parent_tag = slug ? parent_tag_map[slug] : uncategorized
-  hobby.update_columns(parent_tag_id: parent_tag.id)
+  next unless slug
+
+  parent_tag_by_slug[slug]&.each do |parent_tag|
+    next if hobby.hobby_parent_tags.exists?(room_type: parent_tag.room_type)
+
+    Admin::HobbyClassificationService.call(hobby:, parent_tag:)
+    classified_count += 1
+  end
 end
 
-puts "Hobbies parent_tag set: #{Hobby.where.not(parent_tag_id: nil).count} 件"
+puts "Hobbies classified: #{classified_count} 件"
