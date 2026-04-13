@@ -61,8 +61,8 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       find("[data-testid='description-input']").fill_in with: "毎日やってます"
       click_button "更新する"
 
-      expect(page).to have_text("プロフィールを更新しました")
       expect(page).to have_current_path(profile_path(current_profile))
+      expect(page).to have_css("[data-testid='toggle-tag']", text: "ゲーム")
 
       ph = current_profile.reload.profile_hobbies.joins(:hobby).find_by(hobbies: { name: "ゲーム" })
       expect(ph.description).to eq("毎日やってます")
@@ -74,8 +74,8 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       find("[data-testid='tag-input']").send_keys(:return)
       click_button "更新する"
 
-      expect(page).to have_text("プロフィールを更新しました")
       expect(page).to have_current_path(profile_path(current_profile))
+      expect(page).to have_css("[data-testid='toggle-tag']", text: "ゲーム")
 
       ph = current_profile.reload.profile_hobbies.joins(:hobby).find_by(hobbies: { name: "ゲーム" })
       expect(ph).not_to be_nil
