@@ -3,12 +3,14 @@ class Admin::HobbiesController < Admin::BaseController
   before_action :set_parent_tags, only: %i[new create edit update]
 
   def new
-    @hobby = Hobby.new(parent_tag_id: params[:parent_tag_id])
+    @hobby = Hobby.new
+    @initial_parent_tag = ParentTag.find_by(id: params[:parent_tag_id])
   end
 
   def create
-    @hobby = Hobby.new(hobby_params)
+    @hobby = Hobby.new(name: hobby_params[:name])
     if @hobby.save
+      classify_hobby(@hobby)
       redirect_to admin_parent_tags_path, notice: "子タグを作成しました"
     else
       render :new, status: :unprocessable_entity
@@ -18,7 +20,8 @@ class Admin::HobbiesController < Admin::BaseController
   def edit; end
 
   def update
-    if @hobby.update(hobby_params)
+    if @hobby.update(name: hobby_params[:name])
+      classify_hobby(@hobby)
       redirect_to admin_parent_tags_path, notice: "子タグを更新しました"
     else
       render :edit, status: :unprocessable_entity
@@ -41,10 +44,25 @@ class Admin::HobbiesController < Admin::BaseController
   end
 
   def set_parent_tags
-    @parent_tags = ParentTag.classified.order(:room_type, :position, :id)
+    @parent_tags_by_room_type = ParentTag.order(:room_type, :position).group_by(&:room_type)
   end
 
   def hobby_params
-    params.require(:hobby).permit(:name, :parent_tag_id)
+    params.require(:hobby).permit(
+      :name,
+      :chat_parent_tag_id,
+      :study_parent_tag_id,
+      :game_parent_tag_id
+    )
+  end
+
+  def classify_hobby(hobby)
+    ParentTag.room_types.each_key do |room_type|
+      parent_tag_id = hobby_params[:"#{room_type}_parent_tag_id"]
+      next if parent_tag_id.blank?
+
+      parent_tag = ParentTag.find(parent_tag_id)
+      Admin::HobbyClassificationService.call(hobby:, parent_tag:)
+    end
   end
 end
