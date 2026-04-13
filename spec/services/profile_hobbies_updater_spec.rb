@@ -72,6 +72,19 @@ RSpec.describe ProfileHobbiesUpdater do
       expect(Hobby.count).to eq(1)
     end
 
+    it "normalized_name が nil の既存 hobby も再利用する" do
+      hobby = create(:hobby, name: "ゲーム")
+      hobby.update_columns(normalized_name: nil)
+
+      expect {
+        described_class.call(profile, [ { name: "ゲーム", description: "対戦が好き" } ])
+      }.not_to raise_error
+
+      ph = profile.profile_hobbies.joins(:hobby).find_by(hobbies: { id: hobby.id })
+      expect(ph.description).to eq("対戦が好き")
+      expect(Hobby.where(name: "ゲーム").count).to eq(1)
+    end
+
     context "parent_tag の自動設定" do
       it "辞書にない新規タグは未分類 parent_tag に設定される" do
         described_class.call(profile, [ { name: "newtagxyz", description: "" } ])
