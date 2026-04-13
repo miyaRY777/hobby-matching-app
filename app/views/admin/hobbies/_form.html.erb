@@ -15,7 +15,7 @@
       <%= f.text_field :name, style: "width: 100%; box-sizing: border-box; background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.625rem 0.75rem; border-radius: 0.375rem;" %>
     </div>
 
-    <% room_type_labels = { "chat" => "チャット", "study" => "スタディ", "game" => "ゲーム" } %>
+    <% room_type_labels = { "chat" => "chat", "study" => "study", "game" => "game" } %>
     <% ParentTag.room_types.each_key do |room_type| %>
       <%
         param_name = "#{room_type}_parent_tag_id"
