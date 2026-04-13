@@ -1,6 +1,4 @@
 class Hobby < ApplicationRecord
-  belongs_to :parent_tag, optional: true
-
   scope :unclassified, -> { left_joins(:hobby_parent_tags).where(hobby_parent_tags: { id: nil }) }
 
   has_many :hobby_parent_tags, dependent: :destroy

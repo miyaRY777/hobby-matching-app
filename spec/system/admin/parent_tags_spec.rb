@@ -8,8 +8,16 @@ RSpec.describe "Admin 親タグ管理", type: :system do
   let!(:uncategorized_parent_tag) do
     ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類" }
   end
-  let!(:chat_hobby) { create(:hobby, name: "進撃の巨人", parent_tag: chat_parent_tag) }
-  let!(:used_hobby) { create(:hobby, name: "簿記", parent_tag: study_parent_tag) }
+  let!(:chat_hobby) do
+    hobby = create(:hobby, name: "進撃の巨人")
+    create(:hobby_parent_tag, hobby:, parent_tag: chat_parent_tag)
+    hobby
+  end
+  let!(:used_hobby) do
+    hobby = create(:hobby, name: "簿記")
+    create(:hobby_parent_tag, hobby:, parent_tag: study_parent_tag)
+    hobby
+  end
 
   before do
     create(:profile_hobby, hobby: used_hobby)

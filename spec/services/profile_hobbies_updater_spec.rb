@@ -105,14 +105,15 @@ RSpec.describe ProfileHobbiesUpdater do
       end
     end
 
-    context "既存 hobby の parent_tag は維持する" do
-      it "parent_tag_id が設定済みの既存 hobby は parent_tag を変更しない" do
+    context "既存 hobby の分類は維持する" do
+      it "既存の hobby_parent_tags は変更しない" do
         programming = ParentTag.find_or_create_by!(slug: "programming", room_type: 1) { |pt| pt.name = "プログラミング"; pt.position = 0 }
-        hobby = create(:hobby, name: "rails", parent_tag: programming)
+        hobby = create(:hobby, name: "rails")
+        create(:hobby_parent_tag, hobby:, parent_tag: programming)
 
         described_class.call(profile, [ { name: "rails", description: "" } ])
 
-        expect(hobby.reload.parent_tag).to eq(programming)
+        expect(hobby.reload.hobby_parent_tags.find_by(room_type: :study)&.parent_tag).to eq(programming)
       end
     end
 

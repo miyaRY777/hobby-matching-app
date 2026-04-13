@@ -17,17 +17,6 @@ RSpec.describe Hobby, type: :model do
   end
 
   describe "関連" do
-    it "parent_tag に属することができる" do
-      parent_tag = ParentTag.create!(name: "テスト親タグ", slug: "test-parent", room_type: :chat)
-      hobby = described_class.create!(name: "テスト趣味D", parent_tag: parent_tag)
-      expect(hobby.parent_tag).to eq(parent_tag)
-    end
-
-    it "parent_tag が nil でも有効（optional）" do
-      hobby = described_class.new(name: "その他の趣味", parent_tag: nil)
-      expect(hobby).to be_valid
-    end
-
     it "has_many :hobby_parent_tags を持つ" do
       association = described_class.reflect_on_association(:hobby_parent_tags)
 
