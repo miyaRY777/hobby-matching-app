@@ -10,6 +10,22 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+module TestDatabaseCleanup
+  module_function
+
+  def clean_test_database!
+    connection = ActiveRecord::Base.connection
+    tables = connection.tables - %w[ar_internal_metadata schema_migrations]
+
+    connection.disable_referential_integrity do
+      tables.each do |table|
+        quoted_table = connection.quote_table_name(table)
+        connection.execute("TRUNCATE TABLE #{quoted_table} RESTART IDENTITY CASCADE")
+      end
+    end
+  end
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -74,6 +90,8 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Warden::Test::Helpers, type: :system
   config.after(type: :system) { Warden.test_reset! }
+  config.before(:suite) { TestDatabaseCleanup.clean_test_database! }
+  config.append_after(:each, type: :system, js: true) { TestDatabaseCleanup.clean_test_database! }
 
   # JSなし system spec は rack_test（ブラウザ起動しない）
   config.before(:each, type: :system) do

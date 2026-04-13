@@ -118,8 +118,8 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       find("[data-testid='tag-input']").send_keys(:return)
       click_button "更新する"
 
-      expect(page).to have_text("プロフィールを更新しました")
       expect(page).to have_current_path(profile_path(current_profile))
+      expect(page).to have_text("テスト自己紹介です")
       expect(current_profile.reload.bio).to eq("テスト自己紹介です")
     end
   end

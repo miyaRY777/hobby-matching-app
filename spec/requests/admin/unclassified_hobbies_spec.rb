@@ -3,7 +3,9 @@ require "rails_helper"
 RSpec.describe "Admin::UnclassifiedHobbiesController", type: :request do
   let!(:admin_user) { create(:user, :admin) }
   # Hobby.unclassified は slug: "uncategorized" の親タグに依存するため find_or_create_by! を使う
-  let!(:uncategorized_parent_tag) { ParentTag.find_or_create_by!(slug: "uncategorized") { |pt| pt.name = "未分類" } }
+  let!(:uncategorized_parent_tag) do
+    ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類" }
+  end
   let!(:classified_parent_tag)    { create(:parent_tag) }
 
   # -----------------------------------------------------------------------
