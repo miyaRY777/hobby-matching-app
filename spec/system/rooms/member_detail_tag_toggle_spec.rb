@@ -21,12 +21,8 @@ RSpec.describe "部屋メンバー詳細タブ切り替え", type: :system, js: 
     visit room_member_path(room_id: room.id, id: member_profile.id)
   end
 
-  it "「詳細を見る」リンクが表示される" do
-    expect(page).to have_link("詳細を見る")
-  end
-
-  it "ページを開くと自己紹介が表示される" do
-    expect(page).to have_text("メンバー自己紹介です")
+  it "ページを開くと説明エリアは非表示" do
+    expect(page).to have_no_css("[data-tabs-target='panel']:not(.hidden)")
   end
 
   it "タブをクリックすると説明文が表示される" do
@@ -34,13 +30,26 @@ RSpec.describe "部屋メンバー詳細タブ切り替え", type: :system, js: 
     expect(page).to have_text("毎日やってます")
   end
 
-  it "「ひとこと」タブをクリックすると自己紹介に戻る" do
-    find("[data-tabs-target='tab']", text: "ゲーム").click
-    expect(page).to have_text("毎日やってます")
-
+  it "「ひとこと」タブをクリックすると自己紹介が表示される" do
     find("[data-tabs-target='tab']", text: "ひとこと").click
     expect(page).to have_text("メンバー自己紹介です")
     expect(page).to have_css("[data-tabs-target='panel'].hidden", text: "毎日やってます", visible: false)
+  end
+
+  it "選択中の趣味タブを再クリックすると説明エリアが閉じる" do
+    find("[data-tabs-target='tab']", text: "ゲーム").click
+    expect(page).to have_text("毎日やってます")
+
+    find("[data-tabs-target='tab']", text: "ゲーム").click
+    expect(page).to have_no_css("[data-tabs-target='panel']:not(.hidden)")
+  end
+
+  it "選択中の「ひとこと」タブを再クリックすると説明エリアが閉じる" do
+    find("[data-tabs-target='tab']", text: "ひとこと").click
+    expect(page).to have_text("メンバー自己紹介です")
+
+    find("[data-tabs-target='tab']", text: "ひとこと").click
+    expect(page).to have_no_css("[data-tabs-target='panel']:not(.hidden)")
   end
 
   context "説明文が未入力のタブがある場合" do
