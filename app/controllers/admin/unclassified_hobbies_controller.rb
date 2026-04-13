@@ -37,7 +37,7 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
                            .order(:name)
                            .each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |hobby, hash|
       room_type = hobby.hobby_parent_tags.min_by(&:room_type_before_type_cast)&.room_type || "unclassified"
-      hash[room_type] << [hobby.name, hobby.id]
+      hash[room_type] << [ hobby.name, hobby.id ]
     end
 
     ParentTag.room_types.keys
