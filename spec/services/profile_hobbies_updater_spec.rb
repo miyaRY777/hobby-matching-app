@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe ProfileHobbiesUpdater do
   describe ".call" do
     let(:profile) { create(:profile) }
-    let!(:uncategorized) { ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) { |pt| pt.name = "未分類"; pt.position = 0 } }
 
     it "新規タグを追加しdescriptionを保存する" do
       described_class.call(profile, [ { name: "ruby", description: "3年やってます" } ])
@@ -85,24 +84,40 @@ RSpec.describe ProfileHobbiesUpdater do
       expect(Hobby.where(name: "ゲーム").count).to eq(1)
     end
 
-    context "parent_tag の自動設定" do
-      it "辞書にない新規タグは未分類 parent_tag に設定される" do
-        described_class.call(profile, [ { name: "newtagxyz", description: "" } ])
+    context "新規 hobby の parent_tags" do
+      it "辞書にない新規タグは hobby_parent_tags を持たない（未分類）" do
+        described_class.call(profile, [ { name: "brandnewtag", description: "" } ])
 
-        hobby = Hobby.find_by(normalized_name: "newtagxyz")
+        hobby = Hobby.find_by(normalized_name: "brandnewtag")
         expect(hobby).not_to be_nil
-        expect(hobby.parent_tag).to eq(uncategorized)
+        expect(hobby.hobby_parent_tags).to be_empty
       end
 
-      it "parent_tag_id が設定済みの既存 hobby は parent_tag を変更しない" do
-        programming = ParentTag.find_or_create_by!(slug: "programming", room_type: 1) { |pt| pt.name = "プログラミング"; pt.position = 0 }
-        hobby = create(:hobby, name: "rails", parent_tag: programming)
+      it "normalized_name で削除対象を判定する" do
+        hobby_rails = create(:hobby, name: "rails")
+        hobby_ruby = create(:hobby, name: "ruby")
+        create(:profile_hobby, profile:, hobby: hobby_rails)
+        create(:profile_hobby, profile:, hobby: hobby_ruby)
 
         described_class.call(profile, [ { name: "rails", description: "" } ])
 
-        expect(hobby.reload.parent_tag).to eq(programming)
+        expect(profile.hobbies.pluck(:name)).to eq([ "rails" ])
       end
+    end
 
+    context "既存 hobby の分類は維持する" do
+      it "既存の hobby_parent_tags は変更しない" do
+        programming = ParentTag.find_or_create_by!(slug: "programming", room_type: 1) { |pt| pt.name = "プログラミング"; pt.position = 0 }
+        hobby = create(:hobby, name: "rails")
+        create(:hobby_parent_tag, hobby:, parent_tag: programming)
+
+        described_class.call(profile, [ { name: "rails", description: "" } ])
+
+        expect(hobby.reload.hobby_parent_tags.find_by(room_type: :study)&.parent_tag).to eq(programming)
+      end
+    end
+
+    context "削除対象の判定" do
       it "normalized_name で削除対象を判定する" do
         hobby_rails = create(:hobby, name: "rails")
         hobby_ruby  = create(:hobby, name: "ruby")

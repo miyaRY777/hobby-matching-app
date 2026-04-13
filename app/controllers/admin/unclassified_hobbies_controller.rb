@@ -7,16 +7,17 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
     scope = scope.where("hobbies.name LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:q])}%") if params[:q].present?
     @hobbies = scope
     @parent_tags = ParentTag.order(:room_type, :position)
-    @all_hobbies = Hobby.order(:name).pluck(:name, :id)
+    @grouped_parent_tag_options = build_grouped_parent_tag_options
+    @all_hobbies_grouped = build_all_hobbies_grouped
   end
 
   def update
     @hobby = Hobby.unclassified.find(params[:id])
-    if @hobby.update(parent_tag_id: params[:parent_tag_id])
-      redirect_to admin_unclassified_hobbies_path, notice: "分類しました"
-    else
-      redirect_to admin_unclassified_hobbies_path, alert: "分類に失敗しました"
-    end
+    parent_tag = ParentTag.find(params[:parent_tag_id])
+    Admin::HobbyClassificationService.call(hobby: @hobby, parent_tag:)
+    redirect_to admin_unclassified_hobbies_path, notice: "分類しました"
+  rescue ActiveRecord::RecordInvalid
+    redirect_to admin_unclassified_hobbies_path, alert: "分類に失敗しました"
   end
 
   def merge
@@ -28,5 +29,29 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
     else
       redirect_to admin_unclassified_hobbies_path, alert: result.error
     end
+  end
+
+  private
+
+  def build_grouped_parent_tag_options
+    ParentTag.room_types.keys.to_h do |room_type|
+      [
+        room_type,
+        @parent_tags.select { |pt| pt.room_type == room_type }.map { |pt| [ pt.name, pt.id ] }
+      ]
+    end
+  end
+
+  def build_all_hobbies_grouped
+    grouped_hobbies = Hobby.includes(:hobby_parent_tags)
+                           .order(:name)
+                           .each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |hobby, hash|
+      hash[hobby.primary_room_type] << [ hobby.name, hobby.id ]
+    end
+
+    ParentTag.room_types.keys
+             .append("unclassified")
+             .index_with { |room_type| grouped_hobbies[room_type] }
+             .reject { |_, hobbies| hobbies.empty? }
   end
 end

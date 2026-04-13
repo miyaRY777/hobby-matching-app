@@ -25,7 +25,7 @@ class SharesController < ApplicationController
 
   def memberships_for_display
     @room.room_memberships
-         .includes(profile: [ :user, { profile_hobbies: { hobby: :parent_tag } } ])
+         .includes(profile: [ :user, { profile_hobbies: { hobby: :hobby_parent_tags } } ])
          .order(created_at: :asc)
   end
 

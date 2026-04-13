@@ -11,14 +11,15 @@ class My::ProfilesController < ApplicationController
     @profile = current_user.build_profile(profile_params.except(:hobbies_text))
     @profile.hobbies_text = profile_params[:hobbies_text]
 
-    if @profile.save
+    ApplicationRecord.transaction do
+      @profile.save!
       @profile.update_hobbies_from_json(@profile.hobbies_text)
-      redirect_to profile_path(@profile), notice: "プロフィールを作成しました"
-    else
-      @hobbies_text = @profile.hobbies_text
-      flash.now[:alert] = "プロフィールを作成できませんでした"
-      render :new, status: :unprocessable_entity
     end
+    redirect_to profile_path(@profile), notice: "プロフィールを作成しました"
+  rescue ActiveRecord::RecordInvalid
+    @hobbies_text = @profile.hobbies_text
+    flash.now[:alert] = "プロフィールを作成できませんでした"
+    render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -29,14 +30,16 @@ class My::ProfilesController < ApplicationController
 
   def update
     @profile.hobbies_text = profile_params[:hobbies_text]
-    if @profile.update(profile_params.except(:hobbies_text))
+
+    ApplicationRecord.transaction do
+      @profile.update!(profile_params.except(:hobbies_text))
       @profile.update_hobbies_from_json(@profile.hobbies_text) if @profile.hobbies_text.present?
-      redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
-    else
-      @hobbies_text = @profile.hobbies_text
-      flash.now[:alert] = "プロフィールを更新できませんでした"
-      render :edit, status: :unprocessable_entity
     end
+    redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
+  rescue ActiveRecord::RecordInvalid
+    @hobbies_text = @profile.hobbies_text
+    flash.now[:alert] = "プロフィールを更新できませんでした"
+    render :edit, status: :unprocessable_entity
   end
 
   def destroy

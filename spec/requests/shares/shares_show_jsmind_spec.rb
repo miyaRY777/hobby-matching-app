@@ -15,8 +15,8 @@ RSpec.describe "Shares#show jsMind data", type: :request do
   end
 
   it "親タグ名がjsMindデータとしてレスポンスに含まれる" do
-    # chat 部屋で chat タイプの親タグに属する趣味を持つ
-    hobby = create(:hobby, name: "ワンピース", parent_tag: chat_parent_tag)
+    hobby = create(:hobby, name: "ワンピース")
+    create(:hobby_parent_tag, hobby:, parent_tag: chat_parent_tag)
     current_profile.hobbies << hobby
 
     get share_path(share_link.token)
@@ -25,7 +25,8 @@ RSpec.describe "Shares#show jsMind data", type: :request do
   end
 
   it "ユーザーのnicknameがjsMindデータとしてレスポンスに含まれる" do
-    hobby = create(:hobby, name: "読書", parent_tag: chat_parent_tag)
+    hobby = create(:hobby, name: "読書")
+    create(:hobby_parent_tag, hobby:, parent_tag: chat_parent_tag)
     current_profile.hobbies << hobby
 
     get share_path(share_link.token)
@@ -34,7 +35,8 @@ RSpec.describe "Shares#show jsMind data", type: :request do
   end
 
   it "人ノードの詳細URLがレスポンスに含まれる" do
-    hobby = create(:hobby, name: "料理", parent_tag: chat_parent_tag)
+    hobby = create(:hobby, name: "料理")
+    create(:hobby_parent_tag, hobby:, parent_tag: chat_parent_tag)
     current_profile.hobbies << hobby
 
     get share_path(share_link.token)

@@ -50,8 +50,8 @@ RSpec.describe "Rooms::Members#show", type: :request do
     end
 
     it "部屋のroom_typeに一致する親タグを持つ子タグを返す" do
-      # game親タグに紐づく趣味をオーナープロフィールに追加
-      game_hobby = create(:hobby, name: "マイクラ", parent_tag: game_parent_tag)
+      game_hobby = create(:hobby, name: "マイクラ")
+      create(:hobby_parent_tag, hobby: game_hobby, parent_tag: game_parent_tag)
       room_owner_profile.hobbies << game_hobby
 
       get room_member_path(room_id: room.id, id: room_owner_profile.id)
@@ -61,9 +61,9 @@ RSpec.describe "Rooms::Members#show", type: :request do
     end
 
     it "部屋のroom_typeと一致しない親タグの子タグは返さない" do
-      # study親タグに紐づく趣味をオーナープロフィールに追加
       study_parent_tag = create(:parent_tag, room_type: :study)
-      study_hobby = create(:hobby, name: "読書", parent_tag: study_parent_tag)
+      study_hobby = create(:hobby, name: "読書")
+      create(:hobby_parent_tag, hobby: study_hobby, parent_tag: study_parent_tag)
       room_owner_profile.hobbies << study_hobby
 
       get room_member_path(room_id: room.id, id: room_owner_profile.id)

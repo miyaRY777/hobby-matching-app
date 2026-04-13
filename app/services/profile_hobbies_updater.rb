@@ -6,9 +6,6 @@ class ProfileHobbiesUpdater
       .reject { |t| t[:name].blank? }
       .uniq { |t| t[:name] }
 
-    # 辞書にない新規 Hobby に自動設定する未分類の親タグ
-    uncategorized = ParentTag.find_by!(slug: "uncategorized", room_type: nil)
-
     ApplicationRecord.transaction do
       target_names = normalized.map { |t| t[:name] }
 
@@ -38,7 +35,6 @@ class ProfileHobbiesUpdater
         hobby = existing_hobbies[tag[:name]] ||
                 Hobby.find_or_create_by!(normalized_name: tag[:name]) do |h|
                   h.name = tag[:name]
-                  h.parent_tag_id = uncategorized.id
                 end
 
         ph = existing_phs[tag[:name]] || ProfileHobby.new(profile:, hobby:)

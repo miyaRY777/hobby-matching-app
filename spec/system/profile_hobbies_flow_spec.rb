@@ -1,14 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true do
-  # ProfileHobbiesUpdater が find_by!(slug: "uncategorized") を呼ぶため必須
-  let!(:uncategorized_parent_tag) do
-    ParentTag.find_or_create_by!(slug: "uncategorized", room_type: nil) do |pt|
-      pt.name = "未分類"
-      pt.position = 0
-    end
-  end
-
   it "ログインして、プロフィール編集でタグを更新し、詳細に表示させる" do
     user = create(:user)
     create(:profile, user: user)

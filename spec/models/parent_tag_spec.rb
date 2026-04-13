@@ -52,16 +52,23 @@ RSpec.describe ParentTag, type: :model do
   end
 
   describe "関連" do
-    it "hobbies を複数持てる" do
-      parent_tag = described_class.create!(name: "テスト関連", slug: "test-assoc", room_type: :chat)
-      parent_tag.hobbies.create!(name: "テスト趣味A")
-      parent_tag.hobbies.create!(name: "テスト趣味B")
-      expect(parent_tag.hobbies.count).to eq(2)
+    it "has_many :hobby_parent_tags を持つ" do
+      association = described_class.reflect_on_association(:hobby_parent_tags)
+
+      expect(association.macro).to eq(:has_many)
     end
 
-    it "子 hobby がある場合は削除できない" do
+    it "has_many :hobbies through :hobby_parent_tags を持つ" do
+      association = described_class.reflect_on_association(:hobbies)
+
+      expect(association.macro).to eq(:has_many)
+    end
+
+    it "hobby_parent_tags がある場合は削除できない" do
       parent_tag = described_class.create!(name: "テスト削除", slug: "test-delete", room_type: :chat)
-      parent_tag.hobbies.create!(name: "テスト趣味C")
+      hobby = create(:hobby, name: "テスト趣味C")
+      create(:hobby_parent_tag, hobby:, parent_tag:)
+
       expect { parent_tag.destroy }.not_to change(described_class, :count)
       expect(parent_tag.errors[:base]).to be_present
     end

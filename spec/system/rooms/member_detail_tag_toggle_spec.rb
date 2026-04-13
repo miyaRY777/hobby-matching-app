@@ -7,7 +7,11 @@ RSpec.describe "部屋メンバー詳細タブ切り替え", type: :system, js: 
   let!(:member_profile) { create(:profile, user: member_user, bio: "メンバー自己紹介です") }
   let!(:game_parent_tag) { create(:parent_tag, room_type: :game) }
   let!(:room) { create(:room, issuer_profile: viewer_profile, room_type: :game) }
-  let!(:hobby) { create(:hobby, name: "ゲーム", parent_tag: game_parent_tag) }
+  let!(:hobby) do
+    hobby = create(:hobby, name: "ゲーム")
+    create(:hobby_parent_tag, hobby:, parent_tag: game_parent_tag)
+    hobby
+  end
 
   before do
     create(:room_membership, room:, profile: viewer_profile)
@@ -40,7 +44,11 @@ RSpec.describe "部屋メンバー詳細タブ切り替え", type: :system, js: 
   end
 
   context "説明文が未入力のタブがある場合" do
-    let!(:hobby2) { create(:hobby, name: "釣り", parent_tag: game_parent_tag) }
+    let!(:hobby2) do
+      hobby = create(:hobby, name: "釣り")
+      create(:hobby_parent_tag, hobby:, parent_tag: game_parent_tag)
+      hobby
+    end
 
     before do
       create(:profile_hobby, profile: member_profile, hobby: hobby2, description: nil)

@@ -27,7 +27,7 @@
           <td style="padding: 0.5rem 1rem;">
             <%= form_with url: admin_unclassified_hobby_path(hobby), method: :patch, local: true do |f| %>
               <%= select_tag :parent_tag_id,
-                    options_for_select(@parent_tags.map { |pt| [pt.name, pt.id] }),
+                    grouped_options_for_select(@grouped_parent_tag_options),
                     prompt: "選択してください",
                     style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
               <%= f.submit "分類",
@@ -36,8 +36,11 @@
           </td>
           <td style="padding: 0.5rem 1rem;">
             <%= form_with url: merge_admin_unclassified_hobby_path(hobby), method: :post, local: true do |f| %>
+              <% target_hobby_groups = @all_hobbies_grouped.transform_values do |grouped_hobbies|
+                   grouped_hobbies.reject { |(_, id)| id == hobby.id }
+                 end.reject { |_, grouped_hobbies| grouped_hobbies.empty? } %>
               <%= select_tag :target_hobby_id,
-                    options_for_select(@all_hobbies.reject { |(_, id)| id == hobby.id }),
+                    grouped_options_for_select(target_hobby_groups),
                     prompt: "選択してください",
                     style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
               <%= submit_tag "統合",
