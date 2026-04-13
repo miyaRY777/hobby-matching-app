@@ -3,6 +3,9 @@ class Hobby < ApplicationRecord
 
   scope :unclassified, -> { where(parent_tag: ParentTag.where(slug: "uncategorized")) }
 
+  has_many :hobby_parent_tags, dependent: :destroy
+  has_many :parent_tags, through: :hobby_parent_tags
+
   has_many :profile_hobbies, dependent: :restrict_with_error
   has_many :profiles, through: :profile_hobbies
 

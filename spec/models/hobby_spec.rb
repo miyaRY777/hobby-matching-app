@@ -28,6 +28,26 @@ RSpec.describe Hobby, type: :model do
       expect(hobby).to be_valid
     end
 
+    it "has_many :hobby_parent_tags を持つ" do
+      association = described_class.reflect_on_association(:hobby_parent_tags)
+
+      expect(association.macro).to eq(:has_many)
+    end
+
+    it "has_many :parent_tags through :hobby_parent_tags を持つ" do
+      association = described_class.reflect_on_association(:parent_tags)
+
+      expect(association.macro).to eq(:has_many)
+    end
+
+    it "hobby を削除すると hobby_parent_tags も削除される" do
+      hobby = create(:hobby)
+      parent_tag = create(:parent_tag, room_type: :chat)
+      create(:hobby_parent_tag, hobby:, parent_tag:)
+
+      expect { hobby.destroy }.to change(HobbyParentTag, :count).by(-1)
+    end
+
     it "profile_hobbies が存在する場合は削除できない" do
       hobby = create(:hobby)
       create(:profile_hobby, hobby:)
