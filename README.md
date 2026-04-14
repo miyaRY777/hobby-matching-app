@@ -5,7 +5,7 @@ Discord などのコミュニティで、誰とどんな話題が合うのかを
 
 画面遷移図：
 
-ER図：
+ER図：https://dbdiagram.io/d/69494e7761d95806cf320b26
 
 サービス：https://hobby-matching-app.com/
 
