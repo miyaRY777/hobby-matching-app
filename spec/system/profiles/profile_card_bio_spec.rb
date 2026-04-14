@@ -21,7 +21,7 @@ RSpec.describe "プロフィールカードのbio表示", type: :system, js: tru
       create(:profile, bio: nil)
       visit profiles_path
 
-      expect(page).to have_text("説明文は未入力です")
+      expect(page).to have_text("自己紹介はまだありません")
     end
   end
 end

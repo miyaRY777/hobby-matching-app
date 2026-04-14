@@ -1,36 +1,34 @@
-<div class="transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+<div class="flex h-full flex-col transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
      style="border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); padding: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
-
-  <!-- アバター + ユーザー名 -->
-  <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+  <div class="mb-2 flex items-center gap-3">
     <%= avatar_image_tag(profile.user, size: :small) %>
-    <p style="font-size: 0.875rem; font-weight: 500; color: #d1d5db; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+    <p class="truncate text-sm font-medium text-gray-300">
       <%= profile.user.nickname %>
     </p>
   </div>
 
-  <!-- タグ -->
-  <div style="margin-top: 0.75rem;">
-    <%= render "shared/hobby_tags", hobbies: profile.hobbies, limit: 5 %>
+  <div class="mb-2">
+    <%= render "shared/hobby_tags", hobbies: profile.hobbies, limit: 2 %>
   </div>
 
-  <!-- 自己紹介 -->
-  <p class="line-clamp-3" style="color: #9ca3af; font-size: 0.875rem; line-height: 1.5; white-space: pre-line; margin-top: 0.5rem;">
-    <%= profile.bio.presence || "説明文は未入力です" %>
+  <p class="<%= class_names('line-clamp-3 text-sm leading-relaxed',
+                            'text-gray-400' => profile.bio.present?,
+                            'text-gray-600 italic' => profile.bio.blank?) %>"
+     style="white-space: pre-line;">
+    <%= profile.bio.presence || "自己紹介はまだありません" %>
   </p>
 
-  <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
+  <div class="mt-auto flex items-center gap-4 pt-4">
     <%= link_to "詳細を見る",
                 profile_path(profile),
                 data: { turbo_frame: "_top" },
                 style: "color: #60a5fa; text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
 
-    <% if current_user.own?(profile) %>
+    <% if user_signed_in? && current_user.own?(profile) %>
       <%= link_to "編集する",
                   edit_my_profile_path,
                   data: { turbo_frame: "_top" },
                   style: "color: #60a5fa; text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
     <% end %>
   </div>
-
 </div>
