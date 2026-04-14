@@ -4,18 +4,11 @@ class SharesController < ApplicationController
   rescue_from ActionPolicy::Unauthorized, with: :handle_unauthorized
 
   def show
-    share_link      = ShareLink.includes(:room).find_by!(token: params[:token])
-    @room           = share_link.room
+    @share_link     = ShareLink.includes(:room).find_by!(token: params[:token])
+    @room           = @share_link.room
     @viewer_profile = current_user.profile
 
-    authorize! share_link, to: :show?
-
-    unless allowed_to?(:join?, share_link)
-      flash.now[:alert] = "この部屋は現在ロック中のため参加できません"
-      @memberships = memberships_for_display
-      @jsmind_data = JsmindDataBuilder.new(@room, @memberships).build
-      return render :show
-    end
+    authorize! @share_link, to: :show?
 
     RoomMembership.find_or_create_by!(room: @room, profile: @viewer_profile) if @viewer_profile
     @memberships = memberships_for_display
@@ -31,7 +24,9 @@ class SharesController < ApplicationController
   end
 
   def handle_unauthorized
-    head :gone
+    return head :gone if @share_link&.expired?
+
+    head :not_found
   end
 
   def require_profile!

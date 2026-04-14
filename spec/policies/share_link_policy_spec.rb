@@ -26,6 +26,23 @@ RSpec.describe ShareLinkPolicy do
       end
     end
 
+    context "ロック中の部屋の場合" do
+      before { room.update!(locked: true) }
+
+      it "非メンバー・非オーナーは false を返す" do
+        expect(policy(active_link, viewer_user).show?).to be false
+      end
+
+      it "既存メンバーは true を返す" do
+        create(:room_membership, room: room, profile: viewer_profile)
+        expect(policy(active_link, viewer_user).show?).to be true
+      end
+
+      it "オーナーは true を返す" do
+        expect(policy(active_link, room_owner_user).show?).to be true
+      end
+    end
+
     context "期限切れリンクの場合" do
       it "非メンバーは false を返す" do
         # 閲覧者は未参加かつリンクは期限切れ → アクセス不可

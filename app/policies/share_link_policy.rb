@@ -4,7 +4,10 @@ class ShareLinkPolicy < ApplicationPolicy
 
   # 期限切れでも既存メンバーなら閲覧継続可
   def show?
-    !record.expired? || member?
+    return true if member? || owner?
+    return false if record.expired?
+
+    !record.room.locked?
   end
 
   # ロック中は既存メンバー or オーナーのみ参加可
