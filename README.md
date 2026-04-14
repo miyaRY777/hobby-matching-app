@@ -4,6 +4,7 @@ Discord などのコミュニティで、誰とどんな話題が合うのかを
 趣味プロフィールと共通点の可視化によって、会話のきっかけを自然に作れる体験を目指して開発しました。
 
 ⬇️古い画面遷移図(後で修正)
+
 画面遷移図：https://www.figma.com/design/KU2WJjAFhM8uxK2VB1VLfj/%E5%8D%92%E5%88%B6_%E7%94%BB%E9%9D%A2%E9%81%B7%E7%A7%BB%E5%9B%B3_MVP?node-id=0-1&t=3IPAdcGhFuWJiOvn-1
 
 ER図：https://dbdiagram.io/d/69494e7761d95806cf320b26
