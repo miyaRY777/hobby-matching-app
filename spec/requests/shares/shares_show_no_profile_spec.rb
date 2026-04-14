@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "shares#show", type: :request do
-  it "プロフィールがない場合、部屋に参加できない" do
+  it "プロフィールがない場合、プロフィール作成画面へリダイレクトされる" do
     # 共有リンクを作る
     issuer = create(:profile)
     room = create(:room, issuer_profile: issuer)
@@ -13,16 +13,14 @@ RSpec.describe "shares#show", type: :request do
     # ログイン
     sign_in viewer
 
-    # ★ここに入れる（getの直前）
-    puts "expires_at: #{share_link.reload.expires_at}, now: #{Time.current}"
-
     # 検証
     expect {
       get share_path(share_link.token)
     }.not_to change(RoomMembership, :count)
 
-    expect(response).to have_http_status(:ok)
-    expect(response.body).to include("プロフィール未登録です")
-    expect(response.body).to include(new_my_profile_path)
+    expect(response).to redirect_to(new_my_profile_path)
+
+    follow_redirect!
+    expect(response.body).to include("部屋に入るにはプロフィールを作成してください")
   end
 end

@@ -35,7 +35,7 @@ RSpec.describe "shares#show", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it "プロフィール未登録ユーザーは 410 Gone が返る" do
+    it "プロフィール未登録ユーザーはプロフィール作成ページへリダイレクトされる" do
       issuer = create(:profile)
       room = create(:room, issuer_profile: issuer)
       share_link = create(:share_link, room: room, expires_at: 1.minute.ago)
@@ -47,7 +47,9 @@ RSpec.describe "shares#show", type: :request do
 
       get share_path(share_link.token)
 
-      expect(response).to have_http_status(:gone)
+      # プロフィール未作成ガードが期限切れチェックより先に動作するため、
+      # 410 Gone ではなくプロフィール作成ページへのリダイレクトになる
+      expect(response).to redirect_to(new_my_profile_path)
     end
   end
 end
