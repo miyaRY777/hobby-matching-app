@@ -237,6 +237,32 @@ RSpec.describe "Mypage::Rooms", type: :request do
 
       expect(response).to redirect_to(mypage_root_path)
     end
+
+    it "部屋名が未入力だと作成できない" do
+      user = create(:user)
+      create(:profile, user:)
+      sign_in user
+
+      expect {
+        post mypage_rooms_path, params: { room: { label: "" } }
+      }.not_to change(Room, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("部屋名を入力してください")
+    end
+
+    it "部屋名が51文字以上だと作成できない" do
+      user = create(:user)
+      create(:profile, user:)
+      sign_in user
+
+      expect {
+        post mypage_rooms_path, params: { room: { label: "あ" * 51 } }
+      }.not_to change(Room, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("部屋名は50文字以内で入力してください")
+    end
   end
 
   describe "PATCH /mypage/rooms/:id" do

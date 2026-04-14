@@ -53,6 +53,28 @@ RSpec.describe Room, type: :model do
     end
   end
 
+  describe "label バリデーション" do
+    it "部屋名が空だと無効" do
+      room = build(:room, label: "")
+
+      expect(room).not_to be_valid
+      expect(room.errors[:label]).to include("を入力してください")
+    end
+
+    it "部屋名が50文字以内なら有効" do
+      room = build(:room, label: "あ" * 50)
+
+      expect(room).to be_valid
+    end
+
+    it "部屋名が51文字以上だと無効" do
+      room = build(:room, label: "あ" * 51)
+
+      expect(room).not_to be_valid
+      expect(room.errors[:label]).to include("は50文字以内で入力してください")
+    end
+  end
+
   it "has associations" do
     room = described_class.reflect_on_association(:issuer_profile)
 

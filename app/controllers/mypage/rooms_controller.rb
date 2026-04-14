@@ -3,6 +3,7 @@ class Mypage::RoomsController < ApplicationController
   before_action :set_room, only: %i[edit update destroy lock unlock regenerate_share_link]
 
   def index
+    @new_room = Room.new
     profile = current_user.profile
     unless profile
       @rooms = Room.none
@@ -26,6 +27,13 @@ class Mypage::RoomsController < ApplicationController
   def create
     issuer_profile = current_user.profile
     return redirect_to mypage_root_path unless issuer_profile
+
+    @new_room = Room.new(room_create_params.merge(issuer_profile: issuer_profile))
+    unless @new_room.valid?
+      load_room_lists(issuer_profile)
+      flash.now[:alert] = "部屋を作成できませんでした"
+      return render :index, status: :unprocessable_entity
+    end
 
     # "none" や未指定は nil に正規化し、保存と計算を同一の変数から行う
     raw = params[:expires_in]
@@ -113,5 +121,17 @@ class Mypage::RoomsController < ApplicationController
       format.turbo_stream { flash.now[:notice] = message }
       format.html { redirect_to mypage_rooms_path, notice: message }
     end
+  end
+
+  def load_room_lists(profile)
+    @rooms = profile.issued_rooms
+                    .includes(:share_link, :room_memberships)
+                    .order(created_at: :desc)
+
+    @memberships = profile.room_memberships
+                          .joins(:room)
+                          .where.not(rooms: { issuer_profile_id: profile.id })
+                          .includes(room: [ { issuer_profile: :user }, :room_memberships, :share_link ])
+                          .order("rooms.created_at DESC")
   end
 end
