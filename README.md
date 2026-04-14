@@ -7,7 +7,7 @@ Discord などのコミュニティで、誰とどんな話題が合うのかを
 
 ER図：
 
-サービス：
+サービス：https://hobby-matching-app.com/
 
 ---
 
