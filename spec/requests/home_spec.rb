@@ -30,6 +30,11 @@ RSpec.describe "Home", type: :request do
         expect(response.body).to include("無料で始める")
       end
 
+      it "スクロール誘導の矢印が表示される" do
+        expect(response.body).to include("scroll-indicator")
+        expect(response.body).to include("@keyframes bounce")
+      end
+
       it "フッターが表示される" do
         expect(response.body).to include("利用規約")
         expect(response.body).to include("プライバシーポリシー")

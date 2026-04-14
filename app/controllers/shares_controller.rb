@@ -1,5 +1,6 @@
 class SharesController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_profile!
   rescue_from ActionPolicy::Unauthorized, with: :handle_unauthorized
 
   def show
@@ -31,5 +32,11 @@ class SharesController < ApplicationController
 
   def handle_unauthorized
     head :gone
+  end
+
+  def require_profile!
+    return if current_user.profile
+
+    redirect_to new_my_profile_path, alert: "部屋に入るにはプロフィールを作成してください"
   end
 end

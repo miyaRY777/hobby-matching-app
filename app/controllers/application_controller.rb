@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :warn_incomplete_profile
 
   # 追加：戻り先を保存
   before_action :store_user_location!, if: :storable_location?
@@ -16,6 +17,8 @@ class ApplicationController < ActionController::Base
 
   # 修正：保存したlocationがあればそこへ。なければprofilesへ
   def after_sign_in_path_for(resource)
+    return new_my_profile_path if resource.profile.nil?
+
     stored_location_for(resource) || profiles_path
   end
 
@@ -34,5 +37,17 @@ class ApplicationController < ActionController::Base
 
   def store_user_location!
     store_location_for(:user, request.fullpath)
+  end
+
+  def warn_incomplete_profile
+    return unless user_signed_in?
+
+    profile = current_user.profile
+    return unless profile
+    return if controller_name == "profiles" && action_name.in?(%w[new edit update create])
+
+    if profile.bio.blank? || !profile.hobbies.exists?
+      flash.now[:alert] = "プロフィールのひとことまたはタグが未入力です。編集ページから補完してください。"
+    end
   end
 end

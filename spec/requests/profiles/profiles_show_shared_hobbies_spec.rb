@@ -95,6 +95,7 @@ RSpec.describe "Profiles#show shared hobbies", type: :request do
     expect(response).to have_http_status(:ok)
     # eager load なし: my_profile.hobbies と other_profile.hobbies で個別にSQLが発行され計3回以上
     # eager load あり: @profile と my_profile それぞれの includes で最大2回（IN句でまとめてロード）
-    expect(hobbies_queries.count).to be <= 2
+    # + warn_incomplete_profile の hobbies.exists? で1クエリ追加されるため合計3回以内
+    expect(hobbies_queries.count).to be <= 3
   end
 end

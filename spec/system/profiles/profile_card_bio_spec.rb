@@ -18,7 +18,9 @@ RSpec.describe "プロフィールカードのbio表示", type: :system, js: tru
 
   context "bioが未入力の場合" do
     it "「未入力」と表示される" do
-      create(:profile, bio: nil)
+      # bio は必須バリデーションがあるため validate: false で作成
+      profile = build(:profile, bio: nil)
+      profile.save!(validate: false)
       visit profiles_path
 
       expect(page).to have_text("自己紹介はまだありません")

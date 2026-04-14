@@ -1,6 +1,23 @@
 ja:
   activerecord:
     attributes:
+      profile:
+        bio: "Bio"
+        hobbies_text: "Hobbies text"
+      room:
+        label: "部屋名"
+    errors:
+      models:
+        profile:
+          attributes:
+            bio:
+              blank: "を入力してください"
+        room:
+          attributes:
+            label:
+              blank: "を入力してください"
+              too_long: "は%{count}文字以内で入力してください"
+    attributes:
       room:
         room_types:
           chat: "雑談"
