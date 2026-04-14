@@ -49,7 +49,12 @@ RSpec.describe "プロフィール詳細タグ切り替え", type: :system, js: 
   end
 
   context "bioが未入力の場合" do
-    let!(:owner_profile) { create(:profile, user: owner, bio: nil) }
+    # bio は必須バリデーションがあるため validate: false で既存データ相当を再現
+    let!(:owner_profile) do
+      profile = build(:profile, user: owner, bio: nil)
+      profile.save!(validate: false)
+      profile
+    end
 
     it "「未入力」と表示される" do
       expect(page).to have_text("未入力")

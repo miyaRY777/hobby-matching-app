@@ -21,9 +21,45 @@ RSpec.describe Profile, type: :model do
       expect(profile.errors[:hobbies_text]).to be_present
     end
 
-    it "hobbies_textが未設定の場合はバリデーションをスキップする" do
+    it "新規作成時に hobbies_textが未設定の場合は無効" do
       profile.hobbies_text = nil
-      expect(profile).to be_valid
+      expect(profile).not_to be_valid
+      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+    end
+  end
+
+  describe "bio バリデーション" do
+    it "bio が空だと無効" do
+      profile = build(:profile, bio: "")
+
+      expect(profile).not_to be_valid
+      expect(profile.errors[:bio]).to include("を入力してください")
+    end
+  end
+
+  describe "hobbies_text の必須バリデーション" do
+    it "新規作成時に hobbies_text が空だと無効" do
+      profile = build(:profile)
+      profile.hobbies_text = ""
+
+      expect(profile).not_to be_valid
+      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+    end
+
+    it "新規作成時に hobbies_text が空配列だと無効" do
+      profile = build(:profile)
+      profile.hobbies_text = [].to_json
+
+      expect(profile).not_to be_valid
+      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+    end
+
+    it "更新時に hobbies_text が空配列だと無効" do
+      profile = create(:profile)
+      profile.hobbies_text = [].to_json
+
+      expect(profile).not_to be_valid
+      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
     end
   end
 

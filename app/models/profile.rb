@@ -2,7 +2,7 @@ class Profile < ApplicationRecord
   belongs_to :user
 
   validates :user_id, uniqueness: true
-  validates :bio, length: { maximum: 500 }, allow_blank: true
+  validates :bio, presence: true, length: { maximum: 500 }
 
   has_many :profile_hobbies, dependent: :destroy
   has_many :hobbies, through: :profile_hobbies
@@ -14,6 +14,7 @@ class Profile < ApplicationRecord
 
   MAX_HOBBIES = 10
 
+  validate :hobbies_text_not_empty
   validate :hobbies_json_count_within_limit, if: -> { hobbies_text.present? }
 
   def update_hobbies_from_json(json_str)
@@ -28,6 +29,27 @@ class Profile < ApplicationRecord
   end
 
   private
+
+  def hobbies_text_not_empty
+    if new_record?
+      validate_hobbies_text_presence(hobbies_text)
+      return
+    end
+
+    validate_hobbies_text_presence(hobbies_text) if hobbies_text.present?
+  end
+
+  def validate_hobbies_text_presence(raw_value)
+    if raw_value.blank?
+      errors.add(:hobbies_text, "は1つ以上のタグを追加してください")
+      return
+    end
+
+    tags = JSON.parse(raw_value)
+    errors.add(:hobbies_text, "は1つ以上のタグを追加してください") if tags.empty?
+  rescue JSON::ParserError
+    errors.add(:hobbies_text, "は1つ以上のタグを追加してください")
+  end
 
   def hobbies_json_count_within_limit
     tags = JSON.parse(hobbies_text)
