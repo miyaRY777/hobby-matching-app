@@ -24,6 +24,8 @@
         <%= button_to "ログアウト",
                       destroy_user_session_path,
                       method: :delete,
+                      data: { turbo_confirm: "ログアウトしますか？" },
+                      form: { data: { turbo_confirm: "ログアウトしますか？" } },
                       style: "color: #d1d5db; font-size: 0.875rem; background: none; border: none; cursor: pointer; transition: color 0.2s; line-height: 1;",
                       form_class: "m-0 flex items-center" %>
 
