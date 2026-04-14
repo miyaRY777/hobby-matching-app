@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Shares", type: :request do
   describe "GET /share/:token" do
     context "ロック中の部屋に未参加ユーザーがアクセスした場合" do
-      it "ページは表示されるが RoomMembership は作成されない" do
+      it "404 を返し RoomMembership は作成されない" do
         # ロック中の部屋と共有リンクを準備
         room_owner = create(:user)
         room_owner_profile = create(:profile, user: room_owner)
@@ -20,8 +20,7 @@ RSpec.describe "Shares", type: :request do
           get share_path(share_link.token)
         }.not_to change(RoomMembership, :count)
 
-        # ページは表示されること
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
