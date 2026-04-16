@@ -43,14 +43,14 @@ RSpec.describe "My::Profile", type: :request do
       patch my_profile_path, params: { profile: { bio: "", hobbies_text: } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("Bioを入力してください")
+      expect(response.body).to include("ひとことを入力してください")
     end
 
     it "タグが0個だと更新できない" do
       patch my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: [].to_json } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("Hobbies textは1つ以上のタグを追加してください")
+      expect(response.body).to include("趣味タグを1つ以上追加してください")
     end
   end
 
@@ -70,14 +70,14 @@ RSpec.describe "My::Profile", type: :request do
       post my_profile_path, params: { profile: { bio: "", hobbies_text: } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("Bioを入力してください")
+      expect(response.body).to include("ひとことを入力してください")
     end
 
     it "タグが0個だと作成できない" do
       post my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: [].to_json } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("Hobbies textは1つ以上のタグを追加してください")
+      expect(response.body).to include("趣味タグを1つ以上追加してください")
     end
   end
 

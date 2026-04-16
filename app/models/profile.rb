@@ -41,14 +41,14 @@ class Profile < ApplicationRecord
 
   def validate_hobbies_text_presence(raw_value)
     if raw_value.blank?
-      errors.add(:hobbies_text, "は1つ以上のタグを追加してください")
+      errors.add(:hobbies_text, "を1つ以上追加してください")
       return
     end
 
     tags = JSON.parse(raw_value)
-    errors.add(:hobbies_text, "は1つ以上のタグを追加してください") if tags.empty?
+    errors.add(:hobbies_text, "を1つ以上追加してください") if tags.empty?
   rescue JSON::ParserError
-    errors.add(:hobbies_text, "は1つ以上のタグを追加してください")
+    errors.add(:hobbies_text, "を1つ以上追加してください")
   end
 
   def hobbies_json_count_within_limit
