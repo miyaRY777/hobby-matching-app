@@ -59,6 +59,14 @@
         </svg>
         <span style="font-size: 0.875rem; font-weight: 500; color: #d1d5db;">趣味プロフィール編集</span>
       <% end %>
+    <% else %>
+      <%= link_to new_my_profile_path,
+                  style: "display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); text-decoration: none; transition: all 0.3s;" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" style="height: 2rem; width: 2rem; color: #60a5fa;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span style="font-size: 0.875rem; font-weight: 500; color: #d1d5db;">プロフィールを作成する</span>
+      <% end %>
     <% end %>
 
     <%# 部屋管理 %>

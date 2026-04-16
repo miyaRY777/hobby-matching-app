@@ -24,7 +24,7 @@ RSpec.describe Profile, type: :model do
     it "新規作成時に hobbies_textが未設定の場合は無効" do
       profile.hobbies_text = nil
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
     end
   end
 
@@ -43,7 +43,7 @@ RSpec.describe Profile, type: :model do
       profile.hobbies_text = ""
 
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
     end
 
     it "新規作成時に hobbies_text が空配列だと無効" do
@@ -51,7 +51,7 @@ RSpec.describe Profile, type: :model do
       profile.hobbies_text = [].to_json
 
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
     end
 
     it "更新時に hobbies_text が空配列だと無効" do
@@ -59,7 +59,7 @@ RSpec.describe Profile, type: :model do
       profile.hobbies_text = [].to_json
 
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("は1つ以上のタグを追加してください")
+      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
     end
   end
 

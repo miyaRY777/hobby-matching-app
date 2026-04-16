@@ -1,11 +1,28 @@
 ja:
+  activemodel:
+    attributes:
+      contact_form:
+        name: "お名前"
+        email: "メールアドレス"
+        subject: "件名"
+        body: "お問い合わせ内容"
   activerecord:
     attributes:
+      hobby:
+        name: "趣味タグ"
+      parent_tag:
+        name: "親タグ名"
+        slug: "識別子"
+        room_type: "部屋タイプ"
       profile:
-        bio: "Bio"
-        hobbies_text: "Hobbies text"
+        bio: "ひとこと"
+        hobbies_text: "趣味タグ"
       room:
         label: "部屋名"
+        room_types:
+          chat: "雑談"
+          study: "勉強"
+          game: "ゲーム"
     errors:
       models:
         profile:
@@ -17,9 +34,3 @@ ja:
             label:
               blank: "を入力してください"
               too_long: "は%{count}文字以内で入力してください"
-    attributes:
-      room:
-        room_types:
-          chat: "雑談"
-          study: "勉強"
-          game: "ゲーム"

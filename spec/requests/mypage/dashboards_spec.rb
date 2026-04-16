@@ -1,4 +1,5 @@
 require "rails_helper"
+require "nokogiri"
 
 # /mypage へのアクセス条件とレスポンスの結果を確認すること
 RSpec.describe "Mypage::Dashboards", type: :request do
@@ -30,6 +31,34 @@ RSpec.describe "Mypage::Dashboards", type: :request do
         get mypage_root_path
 
         expect(response.body).to include(edit_my_profile_path)
+      end
+
+      it "プロフィール未作成ならプロフィール作成リンクが表示される" do
+        user = create(:user)
+        sign_in user
+
+        get mypage_root_path
+
+        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-3.gap-4 > a")
+
+        expect(menu_links.map(&:text).map(&:strip)).to include("プロフィールを作成する")
+        expect(response.body).to include(new_my_profile_path)
+        expect(response.body).not_to include("趣味プロフィール編集")
+      end
+
+      it "プロフィール未作成でも部屋管理と設定の導線は表示される" do
+        user = create(:user)
+        sign_in user
+
+        get mypage_root_path
+
+        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-3.gap-4 > a")
+        menu_texts = menu_links.map(&:text).map { |text| text.gsub(/\s+/, " ").strip }
+
+        expect(menu_links.size).to eq(3)
+        expect(menu_texts).to include("プロフィールを作成する")
+        expect(menu_texts).to include("部屋管理 0 部屋")
+        expect(menu_texts).to include("設定")
       end
 
       it "部屋管理ページへのリンクと部屋数が表示される" do
