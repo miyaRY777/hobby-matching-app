@@ -21,12 +21,12 @@ RSpec.describe "プロフィール詳細タグ切り替え", type: :system, js: 
     expect(page).to have_text("毎日やってます")
   end
 
-  it "アクティブなタグを再クリックすると自己紹介に戻る" do
+  it "アクティブなタグを再クリックすると非表示になる" do
     find("[data-testid='toggle-tag']", text: "ゲーム").click
     expect(page).to have_text("毎日やってます")
 
     find("[data-testid='toggle-tag']", text: "ゲーム").click
-    expect(page).to have_text("自己紹介テストです")
+    expect(page).not_to have_text("自己紹介テストです")
     expect(page).not_to have_text("毎日やってます")
   end
 
