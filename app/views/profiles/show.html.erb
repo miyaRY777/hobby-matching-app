@@ -1,84 +1,96 @@
-<div style="width: 100%; max-width: 32rem; margin: 0 auto;">
+<% content_for :no_center, true %>
 
-  <!-- タイトル -->
-  <h1 style="font-size: 1.25rem; font-weight: 700; color: #ffffff; border-bottom: 1px solid rgba(55, 65, 81, 0.4); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-    プロフィール詳細
-  </h1>
+<div class="mx-auto w-full max-w-4xl">
+  <div class="rounded-2xl border border-slate-700/40 bg-white/[0.03] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+    <h1 class="mb-4 text-center text-2xl font-bold text-white">
+      プロフィール詳細
+    </h1>
 
-  <!-- プロフィールカード -->
-  <div style="padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+    <p class="mb-10 text-center text-gray-400">
+      <span class="font-semibold text-white">
+        <%= @profile.user.nickname %>
+      </span>
+      さんのプロフィール
+    </p>
 
-    <!-- アバター + ユーザー名 -->
-    <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-      <%= avatar_image_tag(@profile.user) %>
-      <div>
-        <p style="font-size: 0.875rem; color: #6b7280;">ユーザー名</p>
-        <p style="font-size: 1rem; font-weight: 500; color: #ffffff;">
-          <%= @profile.user.nickname %>
-        </p>
+    <div class="space-y-8">
+      <div class="flex items-center gap-3">
+        <%= avatar_image_tag(@profile.user) %>
+        <div>
+          <p class="text-sm text-slate-500">ユーザー名</p>
+          <p class="text-lg font-semibold text-white">
+            <%= @profile.user.nickname %>
+          </p>
+        </div>
       </div>
-    </div>
 
-    <!-- タグ -->
-    <section style="margin-bottom: 1rem;">
-      <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">趣味</p>
-      <% if @profile.profile_hobbies.any? %>
-        <div data-controller="tag-toggle"
-             data-tag-toggle-bio-value="<%= @profile.bio.presence || '未入力' %>">
-          <%# 説明文データ（非表示） %>
-          <% @profile.profile_hobbies.each do |ph| %>
-            <span class="hidden"
-                  data-tag-toggle-target="description"
-                  data-name="<%= ph.hobby.name %>"><%= ph.description.presence || "未入力" %></span>
-          <% end %>
+      <section>
+        <p class="mb-3 text-sm text-slate-500">趣味</p>
+        <% if @profile.profile_hobbies.any? %>
+          <div data-controller="tabs"
+               data-tabs-default-open-value="true"
+               class="space-y-6">
+            <div class="flex flex-wrap gap-3">
+              <button type="button"
+                      data-testid="toggle-bio"
+                      data-tabs-target="tab"
+                      data-tabs-variant="bio"
+                      data-action="click->tabs#switch"
+                      style="display: inline-flex; align-items: center; justify-content: center; gap: 0.32rem; min-height: 1.9rem; border-radius: 9999px; border: 2px solid rgba(251, 191, 36, 0.85); padding: 0.34rem 0.78rem; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                <span>💬</span>
+                <span>ひとこと</span>
+              </button>
 
-          <ul class="tag-list" aria-label="趣味タグ一覧">
-            <% @profile.profile_hobbies.each do |ph| %>
-              <li>
+              <% @profile.profile_hobbies.each do |ph| %>
                 <button type="button"
                         data-testid="toggle-tag"
-                        data-tag-toggle-target="tag"
-                        data-action="click->tag-toggle#toggle"
-                        data-name="<%= ph.hobby.name %>"
-                        data-active="false"
-                        style="background: #000000; color: #d8b4fe; font-size: 0.875rem; padding: 0.25rem 0.75rem; border-radius: 9999px; cursor: pointer; border: 1px solid #a855f7; box-shadow: 0 0 6px #a855f7; transition: box-shadow 0.2s;">
+                        data-tabs-target="tab"
+                        data-action="click->tabs#switch"
+                        style="display: inline-flex; align-items: center; justify-content: center; min-height: 1.9rem; border-radius: 9999px; border: 2px solid rgba(96, 165, 250, 0.55); padding: 0.34rem 0.82rem; font-size: 0.72rem; font-weight: 600; cursor: pointer;">
                   <%= ph.hobby.name %>
                 </button>
-              </li>
-            <% end %>
-          </ul>
+              <% end %>
+            </div>
 
-          <div data-tag-toggle-target="panel"
-               class="hidden" style="margin-top: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); font-size: 0.875rem; color: #d1d5db; white-space: pre-line;">
+            <div class="min-h-[9rem] rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5">
+              <div data-tabs-target="panel"
+                   class="hidden text-sm leading-8 text-slate-300 whitespace-pre-line"><%= @profile.bio.presence || "未入力" %></div>
+
+              <% @profile.profile_hobbies.each do |ph| %>
+                <div data-tabs-target="panel"
+                     class="hidden text-sm leading-8 text-slate-300 whitespace-pre-line"><%= ph.description.presence || "未入力" %></div>
+              <% end %>
+            </div>
           </div>
-        </div>
-      <% else %>
-        <p class="tag-empty">未登録</p>
-      <% end %>
-    </section>
-
-    <% if current_user != @profile.user %>
-      <section style="margin-bottom: 1rem;">
-        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">共通の趣味</p>
-
-        <% if @shared_hobbies.any? %>
-          <%= render "shared/hobby_tags", hobbies: @shared_hobbies %>
         <% else %>
-          <p style="font-size: 0.875rem; color: #6b7280;">共通の趣味はまだありません</p>
+          <div class="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5">
+            <p class="tag-empty">未登録</p>
+          </div>
         <% end %>
       </section>
-    <% end %>
 
-    <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; align-items: center;">
+      <% if current_user != @profile.user %>
+        <section class="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5">
+          <p class="mb-3 text-sm text-slate-500">共通の趣味</p>
+
+          <% if @shared_hobbies.any? %>
+            <%= render "shared/hobby_tags", hobbies: @shared_hobbies %>
+          <% else %>
+            <p class="text-sm text-slate-500">共通の趣味はまだありません</p>
+          <% end %>
+        </section>
+      <% end %>
+    </div>
+
+    <div class="mt-10 grid gap-3 border-t border-slate-700/50 pt-6 md:grid-cols-2">
+      <%= link_to "プロフィール一覧へ戻る",
+            profiles_path,
+            class: "flex items-center justify-center rounded-2xl border border-slate-600/80 bg-slate-900/60 px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-slate-500 hover:bg-white/5 hover:text-white" %>
+
       <% if current_user == @profile.user %>
         <%= link_to "編集する", edit_my_profile_path,
-              style: "width: 100%; max-width: 20rem; padding: 0.625rem 1.5rem; border-radius: 9999px; background: linear-gradient(to right, #3b82f6, #8b5cf6); color: #ffffff; text-align: center; text-decoration: none; font-size: 0.875rem; font-weight: 500; box-shadow: 0 0 10px #6366f1; transition: box-shadow 0.2s;" %>
+              class: "flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 px-4 py-3 text-base font-semibold text-white no-underline shadow-[0_12px_30px_rgba(37,99,235,0.25)] transition hover:brightness-110" %>
       <% end %>
-
-      <%= link_to "プロフィール一覧へ戻る",
-              profiles_path,
-              style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>
     </div>
   </div>
-
 </div>
