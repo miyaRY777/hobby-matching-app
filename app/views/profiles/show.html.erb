@@ -54,11 +54,13 @@
 
             <div class="min-h-[9rem] rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5">
               <div data-tabs-target="panel"
-                   class="hidden text-sm leading-8 text-slate-300 whitespace-pre-line"><%= @profile.bio.presence || "未入力" %></div>
+                   class="hidden text-sm leading-8 text-slate-300 whitespace-pre-line"
+                   style="white-space: pre-line;"><%= @profile.bio.presence || "未入力" %></div>
 
               <% @profile.profile_hobbies.each do |ph| %>
                 <div data-tabs-target="panel"
-                     class="hidden text-sm leading-8 text-slate-300 whitespace-pre-line"><%= ph.description.presence || "未入力" %></div>
+                     class="hidden text-sm leading-8 text-slate-300 whitespace-pre-line"
+                     style="white-space: pre-line;"><%= ph.description.presence || "未入力" %></div>
               <% end %>
             </div>
           </div>
