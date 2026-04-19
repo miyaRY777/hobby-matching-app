@@ -26,13 +26,13 @@ RSpec.describe "公開部屋一覧", type: :system do
     expect(page).to have_no_text("非公開の部屋")
   end
 
-  it "自分が作成した部屋に作成した部屋バッジが表示される" do
+  it "自分がOwnerにOwnerバッジが表示される" do
     # アクション: 公開部屋一覧ページを開く
     visit rooms_path
 
-    # アサーション: 自分の部屋に作成した部屋バッジが表示される
+    # アサーション: 自分の部屋にOwnerバッジが表示される
     within find("[id='#{ActionView::RecordIdentifier.dom_id(issued_room)}']") do
-      expect(page).to have_text("作成した部屋")
+      expect(page).to have_text("Owner")
     end
   end
 
