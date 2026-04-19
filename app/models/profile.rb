@@ -24,6 +24,14 @@ class Profile < ApplicationRecord
     # パース失敗時は何もしない
   end
 
+  def joined_room_ids
+    room_memberships.pluck(:room_id)
+  end
+
+  def issued_room_ids
+    issued_rooms.pluck(:id)
+  end
+
   def last_joined_room_with_share_link
     room_memberships.eager_load(room: :share_link)
                     .order(created_at: :desc)
