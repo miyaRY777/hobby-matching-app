@@ -24,6 +24,13 @@ class Profile < ApplicationRecord
     # パース失敗時は何もしない
   end
 
+  def last_joined_room_with_share_link
+    room_memberships.eager_load(room: :share_link)
+                    .order(created_at: :desc)
+                    .first
+                    &.room
+  end
+
   def shared_hobbies_with(other_profile)
     hobbies.to_a & other_profile.hobbies.to_a
   end
