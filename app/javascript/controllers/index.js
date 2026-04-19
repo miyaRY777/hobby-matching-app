@@ -39,3 +39,7 @@ application.register("tag-toggle", TagToggleController)
 
 import ToggleController from "./toggle_controller"
 application.register("toggle", ToggleController)
+
+// ヘルプモーダルの開閉制御
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)
