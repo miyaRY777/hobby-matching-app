@@ -34,4 +34,74 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "#recent_room_nav_path" do
+    # 未ログインの場合のテスト
+    context "未ログインの場合" do
+      it "nilを返す" do
+        # アクション＋アサーション：nilユーザーを渡すとnilを返すこと
+        expect(helper.recent_room_nav_path(nil)).to be_nil
+      end
+    end
+
+    # プロフィールなしの場合のテスト
+    context "ログイン済みでプロフィールがない場合" do
+      let(:current_user) { create(:user) }
+
+      it "nilを返す" do
+        # アクション＋アサーション：プロフィールなしユーザーを渡すとnilを返すこと
+        expect(helper.recent_room_nav_path(current_user)).to be_nil
+      end
+    end
+
+    # 参加部屋なしの場合のテスト
+    context "ログイン済み・プロフィールあり・参加部屋なしの場合" do
+      let(:current_user) { create(:user) }
+
+      before do
+        # セットアップ：プロフィールあり・部屋への参加なし
+        create(:profile, user: current_user)
+      end
+
+      it "nilを返す" do
+        # アクション＋アサーション：参加部屋がないのでnilを返すこと
+        expect(helper.recent_room_nav_path(current_user)).to be_nil
+      end
+    end
+
+    # share_linkありの場合のテスト
+    context "参加部屋あり・share_linkがある場合" do
+      let(:current_user) { create(:user) }
+      let(:current_profile) { create(:profile, user: current_user) }
+      let(:recent_room) { create(:room, label: "直近テスト部屋") }
+
+      before do
+        # セットアップ：部屋・membership・share_linkを用意
+        create(:room_membership, profile: current_profile, room: recent_room)
+        create(:share_link, room: recent_room, expires_at: nil, token: "tok123")
+      end
+
+      it "share_pathを返す" do
+        # アクション＋アサーション：share_pathを返すこと
+        expect(helper.recent_room_nav_path(current_user)).to eq(share_path("tok123"))
+      end
+    end
+
+    # share_linkがnilの場合のテスト（edge case）
+    context "参加部屋あり・share_linkがnilの場合" do
+      let(:current_user) { create(:user) }
+      let(:current_profile) { create(:profile, user: current_user) }
+      let(:room_without_link) { create(:room, label: "share_linkなし部屋") }
+
+      before do
+        # セットアップ：share_linkを持たない部屋に参加
+        create(:room_membership, profile: current_profile, room: room_without_link)
+      end
+
+      it "mypage_rooms_pathを返す" do
+        # アクション＋アサーション：フォールバックパスを返すこと
+        expect(helper.recent_room_nav_path(current_user)).to eq(mypage_rooms_path)
+      end
+    end
+  end
 end

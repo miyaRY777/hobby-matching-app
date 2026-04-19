@@ -11,6 +11,16 @@ module ApplicationHelper
     "#{base} #{padding} border border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
   end
 
+  def recent_room_nav_path(user)
+    profile = user&.profile
+    return nil unless profile
+
+    room = profile.last_joined_room_with_share_link
+    return nil unless room
+
+    room.shareable? ? share_path(room.share_link.token) : mypage_rooms_path
+  end
+
   def avatar_image_tag(user, size: :medium)
     sizes = { small: 32, medium: 64 }
     px = sizes[size]

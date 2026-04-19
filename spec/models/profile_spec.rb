@@ -63,6 +63,49 @@ RSpec.describe Profile, type: :model do
     end
   end
 
+  describe "#last_joined_room_with_share_link" do
+    let(:current_user) { create(:user) }
+    let(:current_profile) { create(:profile, user: current_user) }
+
+    # 参加部屋がない場合のテスト
+    context "参加部屋がない場合" do
+      it "nilを返す" do
+        expect(current_profile.last_joined_room_with_share_link).to be_nil
+      end
+    end
+
+    # 複数部屋がある場合のテスト
+    context "複数の部屋に参加している場合" do
+      it "最も直近に参加した部屋を返す" do
+        # セットアップ：異なる時刻に参加した2部屋を用意
+        older_room = create(:room)
+        recent_room = create(:room)
+        create(:room_membership, profile: current_profile, room: older_room, created_at: 2.days.ago)
+        create(:room_membership, profile: current_profile, room: recent_room, created_at: 1.day.ago)
+
+        # アクション＋アサーション：直近の部屋が返ること
+        expect(current_profile.last_joined_room_with_share_link).to eq(recent_room)
+      end
+    end
+
+    # share_link が eager load されているかのテスト
+    context "参加部屋にshare_linkが紐付いている場合" do
+      it "share_linkが追加クエリなしで参照できる" do
+        # セットアップ：部屋とshare_linkを用意
+        room_with_link = create(:room)
+        create(:room_membership, profile: current_profile, room: room_with_link)
+        share_link = create(:share_link, room: room_with_link, expires_at: nil, token: "abc123")
+
+        # アクション
+        result = current_profile.last_joined_room_with_share_link
+
+        # アサーション：share_linkがeager loadされていること
+        expect(result.association(:share_link)).to be_loaded
+        expect(result.share_link).to eq(share_link)
+      end
+    end
+  end
+
   describe "#update_hobbies_from_json" do
     it "JSONからhobbyを作成/取得しdescriptionを保存する" do
       profile = create(:profile)

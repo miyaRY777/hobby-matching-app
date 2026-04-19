@@ -11,4 +11,8 @@ class Room < ApplicationRecord
   has_many :profiles, through: :room_memberships
 
   has_one :share_link, dependent: :destroy
+
+  def shareable?
+    share_link.present?
+  end
 end
