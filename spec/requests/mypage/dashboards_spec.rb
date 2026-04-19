@@ -39,7 +39,7 @@ RSpec.describe "Mypage::Dashboards", type: :request do
 
         get mypage_root_path
 
-        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-3.gap-4 > a")
+        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-4 > a")
 
         expect(menu_links.map(&:text).map(&:strip)).to include("プロフィールを作成する")
         expect(response.body).to include(new_my_profile_path)
@@ -52,12 +52,14 @@ RSpec.describe "Mypage::Dashboards", type: :request do
 
         get mypage_root_path
 
-        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-3.gap-4 > a")
+        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-4 > a")
         menu_texts = menu_links.map(&:text).map { |text| text.gsub(/\s+/, " ").strip }
 
-        expect(menu_links.size).to eq(3)
+        # 4ブロック（プロフィール作成・部屋管理・プロフィール一覧・設定）が表示されている
+        expect(menu_links.size).to eq(4)
         expect(menu_texts).to include("プロフィールを作成する")
         expect(menu_texts).to include("部屋管理 0 部屋")
+        expect(menu_texts).to include("プロフィール一覧")
         expect(menu_texts).to include("設定")
       end
 
@@ -72,6 +74,20 @@ RSpec.describe "Mypage::Dashboards", type: :request do
 
         expect(response.body).to include(mypage_rooms_path)
         expect(response.body).to include("2")
+      end
+
+      it "プロフィール一覧へのリンクが表示される" do
+        current_user = create(:user)
+        sign_in current_user
+
+        # マイページにアクセス
+        get mypage_root_path
+
+        # メニューグリッド内のリンク一覧を取得
+        menu_links = Nokogiri::HTML.parse(response.body).css("div.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-4 > a")
+
+        # プロフィール一覧パスへのリンクがメニュー内に含まれている
+        expect(menu_links.map { |a| a["href"] }).to include(profiles_path)
       end
 
       it "設定ページへのリンクが表示される" do
