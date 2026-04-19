@@ -40,8 +40,8 @@ RSpec.describe "プロフィールヘルプモーダル", type: :system, js: tru
       # モーダルを開く
       find("button[aria-label='プロフィール作成のヘルプを開く']").click
 
-      # バックドロップ（オーバーレイ）をクリック
-      find("[data-testid='help-modal-backdrop']").click
+      # バックドロップをJSで直接クリック（パネルが中心を覆うため execute_script で発火）
+      find("[data-testid='help-modal-backdrop']").execute_script("this.click()")
 
       # モーダルが非表示になること
       expect(page).to have_css("[data-testid='help-modal']", visible: false)
