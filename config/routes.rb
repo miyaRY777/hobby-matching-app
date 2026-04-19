@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   # 他人用（複数）
   resources :profiles, only: %i[index show]
+  resources :rooms, only: %i[index]
 
   resources :hobbies, only: [] do
     collection do
@@ -53,7 +54,7 @@ Rails.application.routes.draw do
         patch :regenerate_share_link
       end
     end
-    resources :room_memberships, only: [ :destroy ]
+    resources :room_memberships, only: [ :create, :destroy ]
   end
 
   devise_scope :user do

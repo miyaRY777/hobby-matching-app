@@ -1,0 +1,5 @@
+<%= turbo_stream.replace dom_id(@room) do %>
+  <%= render "rooms/room", room: @room, joined_room_ids: @joined_room_ids, issued_room_ids: @issued_room_ids %>
+<% end %>
+
+<%= turbo_stream.update "flash", partial: "shared/flash" %>

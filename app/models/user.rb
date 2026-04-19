@@ -17,6 +17,10 @@ class User < ApplicationRecord
     size: { less_than_or_equal_to: 5.megabytes }
 
   # 渡されたレコードの所有者が自分かどうかを判定する
+  def display_name
+    nickname.presence || email
+  end
+
   def own?(record)
     record.present? && record.user_id == id
   end

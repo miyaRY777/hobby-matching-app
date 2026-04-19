@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_19_073135) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_19_180641) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -112,7 +112,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_19_073135) do
     t.datetime "updated_at", null: false
     t.integer "room_type", default: 0, null: false
     t.boolean "locked", default: false, null: false
+    t.integer "room_memberships_count", default: 0, null: false
     t.index ["issuer_profile_id"], name: "index_rooms_on_issuer_profile_id"
+    t.index ["locked"], name: "index_rooms_on_locked"
   end
 
   create_table "share_links", force: :cascade do |t|

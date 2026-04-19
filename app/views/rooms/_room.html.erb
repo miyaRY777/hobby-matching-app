@@ -1,0 +1,55 @@
+<% badge = room_type_badge(room.room_type) %>
+<% creator_name = room.issuer_profile.user.display_name %>
+<% issued = issued_room_ids.include?(room.id) %>
+<% joined = joined_room_ids.include?(room.id) %>
+
+<tr id="<%= dom_id(room) %>" style="border-bottom: 1px solid rgba(55, 65, 81, 0.25);">
+  <td style="padding: 1rem 1.25rem; vertical-align: middle;">
+    <div style="font-size: 0.9375rem; font-weight: 600; color: #ffffff;">
+      <%= room.label.presence || "名無しの部屋" %>
+    </div>
+  </td>
+
+  <td style="padding: 1rem 1.25rem; vertical-align: middle;">
+    <% if badge %>
+      <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= badge[:color] %>; border: 1px solid <%= badge[:border] %>; color: <%= badge[:text] %>;">
+        <%= badge[:label] %>
+      </span>
+    <% end %>
+  </td>
+
+  <td style="padding: 1rem 1.25rem; vertical-align: middle; font-size: 0.875rem; color: #d1d5db;">
+    <%= room.room_memberships.size %> 人
+  </td>
+
+  <td style="padding: 1rem 1.25rem; vertical-align: middle; font-size: 0.875rem; color: #d1d5db;">
+    <%= creator_name %>
+  </td>
+
+  <td style="padding: 1rem 1.25rem; vertical-align: middle;">
+    <% if issued %>
+      <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(124, 58, 237, 0.2); border: 1px solid rgba(167, 139, 250, 0.4); color: #c4b5fd;">
+        Owner
+      </span>
+    <% elsif joined %>
+      <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac;">
+        参加済み
+      </span>
+    <% else %>
+      <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(255,255,255,0.05); border: 1px solid rgba(107, 114, 128, 0.35); color: #cbd5e1;">
+        未参加
+      </span>
+    <% end %>
+  </td>
+
+  <td style="padding: 1rem 1.25rem; vertical-align: middle;">
+    <% unless issued || joined %>
+      <%= button_to "参加する",
+                    mypage_room_memberships_path,
+                    params: { room_id: room.id },
+                    style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
+    <% else %>
+      <span style="font-size: 0.875rem; color: #6b7280;">なし</span>
+    <% end %>
+  </td>
+</tr>
