@@ -60,7 +60,7 @@ RSpec.describe "My::Profile", type: :request do
       patch my_profile_path, params: { profile: { bio: "", hobbies_text: } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("ひとことを入力してください")
+      expect(response.body).to include("自己紹介を入力してください")
     end
 
     it "タグが0個だと更新できない" do
@@ -96,7 +96,7 @@ RSpec.describe "My::Profile", type: :request do
       post my_profile_path, params: { profile: { bio: "", hobbies_text: } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("ひとことを入力してください")
+      expect(response.body).to include("自己紹介を入力してください")
     end
 
     it "タグが0個だと作成できない" do

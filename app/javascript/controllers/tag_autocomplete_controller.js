@@ -246,13 +246,14 @@ export default class extends Controller {
 
     this.dropdownTarget.innerHTML = `
       <li data-testid="new-tag-section" class="new-tag-section">
-        <div style="margin-bottom:0.5rem;">「${this.#escapeHtml(query)}」を新しいタグとして追加する</div>
-        <div style="margin-bottom:0.5rem;color:#9ca3af;font-size:0.8rem;">近い分類を選ぶと、あとで見つけやすくなります</div>
+        <div style="margin-bottom:0.75rem;">「${this.#escapeHtml(query)}」を新しいタグとして追加する</div>
+        <div style="margin-top:0.5rem;margin-bottom:0.25rem;font-size:0.8rem;font-weight:600;color:#e2e8f0;">親タグ</div>
         <select data-testid="new-tag-parent-select"
                 id="new-tag-parent-select"
                 class="new-tag-select">
           ${options}
         </select>
+        <div style="margin-top:0.35rem;margin-bottom:0.5rem;color:#9ca3af;font-size:0.8rem;">近い分類を選ぶと、あとで見つけやすくなります</div>
         <div style="display:flex;gap:0.5rem;">
           <button type="button"
                   class="new-tag-confirm-btn"

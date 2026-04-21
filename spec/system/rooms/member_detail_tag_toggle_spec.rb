@@ -30,8 +30,8 @@ RSpec.describe "部屋メンバー詳細タブ切り替え", type: :system, js: 
     expect(page).to have_text("毎日やってます")
   end
 
-  it "「ひとこと」タブをクリックすると自己紹介が表示される" do
-    find("[data-tabs-target='tab']", text: "ひとこと").click
+  it "「自己紹介」タブをクリックすると自己紹介が表示される" do
+    find("[data-tabs-target='tab']", text: "自己紹介").click
     expect(page).to have_text("メンバー自己紹介です")
     expect(page).to have_css("[data-tabs-target='panel'].hidden", text: "毎日やってます", visible: false)
   end
@@ -44,11 +44,11 @@ RSpec.describe "部屋メンバー詳細タブ切り替え", type: :system, js: 
     expect(page).to have_no_css("[data-tabs-target='panel']:not(.hidden)")
   end
 
-  it "選択中の「ひとこと」タブを再クリックすると説明エリアが閉じる" do
-    find("[data-tabs-target='tab']", text: "ひとこと").click
+  it "選択中の「自己紹介」タブを再クリックすると説明エリアが閉じる" do
+    find("[data-tabs-target='tab']", text: "自己紹介").click
     expect(page).to have_text("メンバー自己紹介です")
 
-    find("[data-tabs-target='tab']", text: "ひとこと").click
+    find("[data-tabs-target='tab']", text: "自己紹介").click
     expect(page).to have_no_css("[data-tabs-target='panel']:not(.hidden)")
   end
 

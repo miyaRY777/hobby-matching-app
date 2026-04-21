@@ -38,10 +38,13 @@ RSpec.describe ProfileHobbiesUpdater do
         .not_to change(Hobby, :count)
     end
 
-    it "タグ名をdowncaseで正規化して保存する" do
+    it "タグ名の表示名（大文字小文字）を保持して保存する" do
+      # アクション：大文字を含む名前で保存
       described_class.call(profile, [ { name: "Ruby", description: "" } ])
 
-      expect(profile.hobbies.pluck(:name)).to include("ruby")
+      # アサーション：name は元の表記を保持し、normalized_name が小文字になる
+      expect(profile.hobbies.pluck(:name)).to include("Ruby")
+      expect(profile.hobbies.first.normalized_name).to eq("ruby")
     end
 
     it "重複タグは1件のみ保存する" do

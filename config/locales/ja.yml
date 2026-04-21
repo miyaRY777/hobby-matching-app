@@ -15,7 +15,7 @@ ja:
         slug: "識別子"
         room_type: "部屋タイプ"
       profile:
-        bio: "ひとこと"
+        bio: "自己紹介"
         hobbies_text: "趣味タグ"
       room:
         label: "部屋名"
