@@ -110,20 +110,22 @@
            aria-hidden="true"
            data-tag-autocomplete-target="chipList"></div>
 
-      <%# テキスト入力 %>
-      <input type="text"
-             id="tag-input"
-             placeholder="タグを入力（2文字以上で候補表示）"
-             autocomplete="off"
-             data-testid="tag-input"
-             data-tag-autocomplete-target="input"
-             data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
-             class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">
+      <%# テキスト入力 + ドロップダウンを relative でラップしてドロップダウンの幅を入力欄に合わせる %>
+      <div class="relative">
+        <input type="text"
+               id="tag-input"
+               placeholder="タグを入力（2文字以上で候補表示）"
+               autocomplete="off"
+               data-testid="tag-input"
+               data-tag-autocomplete-target="input"
+               data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
+               class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">
 
-      <%# オートコンプリート候補ドロップダウン %>
-      <ul data-tag-autocomplete-target="dropdown"
-          class="hidden absolute z-10 mt-1 w-full rounded-lg max-h-60 overflow-auto"
-          style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
+        <%# オートコンプリート候補ドロップダウン %>
+        <ul data-tag-autocomplete-target="dropdown"
+            class="hidden absolute z-10 mt-1 w-full rounded-lg max-h-60 overflow-auto"
+            style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
+      </div>
 
       <%# 説明文入力エリア（tag-descriptionコントローラが管理）%>
       <div class="mt-5" data-tag-description-target="container"></div>
