@@ -99,7 +99,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
   end
 
   describe "bio入力欄" do
-    # bioはデフォルトの「ひとこと」タブに表示される
+    # bioはデフォルトの「自己紹介」タブに表示される
 
     it "bio入力欄が表示される" do
       expect(page).to have_field("profile[bio]")

@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     return if controller_name == "profiles" && action_name.in?(%w[new edit update create])
 
     if profile.bio.blank? || !profile.hobbies.exists?
-      flash.now[:alert] = "プロフィールのひとことまたはタグが未入力です。編集ページから補完してください。"
+      flash.now[:alert] = "プロフィールの自己紹介またはタグが未入力です。編集ページから補完してください。"
     end
   end
 end

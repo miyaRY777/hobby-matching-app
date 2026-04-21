@@ -23,18 +23,18 @@
       <button type="button"
               data-tabs-target="tab"
               data-action="click->tabs#switch"
-              class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">ひとこと</button>
+              class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">自己紹介</button>
       <button type="button"
               data-tabs-target="tab"
               data-action="click->tabs#switch"
               class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">タグ</button>
     </div>
 
-    <%# ひとことパネル %>
+    <%# 自己紹介パネル %>
     <div data-tabs-target="panel"
          class="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6">
       <div data-controller="char-counter" data-char-counter-max-value="500">
-        <%= f.label :bio, "ひとこと（500字以内）",
+        <%= f.label :bio, "自己紹介（500字以内）",
               class: "mb-2 block text-sm font-semibold text-slate-200" %>
         <p class="mb-4 text-sm leading-relaxed text-slate-400">
           好きなことや話しかけやすい話題を書いておくと、共通点のある相手に見つけてもらいやすくなります。
@@ -86,7 +86,7 @@
 
         <div data-toggle-target="content"
              data-testid="tag-help-content"
-             class="mb-4 rounded-xl border border-slate-700/50 bg-slate-900/60 p-4 text-sm leading-relaxed text-slate-300">
+             class="hidden mb-4 rounded-xl border border-slate-700/50 bg-slate-900/60 p-4 text-sm leading-relaxed text-slate-300">
           <p class="mb-2 font-semibold text-slate-200">親タグとは？</p>
           <p class="mb-3">趣味タグを大きなカテゴリでまとめるラベルです。親タグを選ぶと、部屋のマインドマップで近い趣味どうしがまとまって表示されやすくなります。</p>
           <div class="mb-3 rounded-lg border border-slate-700/40 bg-slate-950/40 px-4 py-4 text-sm">

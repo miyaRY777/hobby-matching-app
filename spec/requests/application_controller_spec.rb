@@ -36,7 +36,7 @@ RSpec.describe "ApplicationController", type: :request do
 
       get profiles_path
 
-      expect(response.body).to include("プロフィールのひとことまたはタグが未入力です。編集ページから補完してください。")
+      expect(response.body).to include("プロフィールの自己紹介またはタグが未入力です。編集ページから補完してください。")
     end
 
     it "タグがないプロフィールでは警告バナーが表示される" do
@@ -47,7 +47,7 @@ RSpec.describe "ApplicationController", type: :request do
 
       get profiles_path
 
-      expect(response.body).to include("プロフィールのひとことまたはタグが未入力です。編集ページから補完してください。")
+      expect(response.body).to include("プロフィールの自己紹介またはタグが未入力です。編集ページから補完してください。")
     end
 
     it "プロフィール編集画面では警告バナーを表示しない" do
@@ -58,7 +58,7 @@ RSpec.describe "ApplicationController", type: :request do
 
       get edit_my_profile_path
 
-      expect(response.body).not_to include("プロフィールのひとことまたはタグが未入力です。編集ページから補完してください。")
+      expect(response.body).not_to include("プロフィールの自己紹介またはタグが未入力です。編集ページから補完してください。")
     end
   end
 end
