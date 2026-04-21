@@ -1,23 +1,33 @@
 import { Controller } from "@hotwired/stimulus"
 
+const ROOM_TYPE_LABELS = {
+  chat: "雑談系",
+  study: "学習系",
+  game: "ゲーム系"
+}
+
 export default class extends Controller {
   static targets = ["input", "hiddenField", "chipList", "dropdown", "count"]
   static values = {
     url: String,
-    max: { type: Number, default: 10 }
+    max: { type: Number, default: 10 },
+    parentTags: { type: Object, default: {} }
   }
 
   #debounceTimer = null
-  // chips: [{ name: String, description: String }]
+  // chips: [{ name, normalized_name, description, parent_tag_id, parent_tag_name }]
   #chips = []
   #activeIndex = -1
+  #pendingNewTag = null
 
   connect() {
     const existing = this.hiddenFieldTarget.value
     if (existing) {
       try {
         const parsed = JSON.parse(existing)
-        parsed.forEach(tag => this.#addChip(tag.name, tag.description || ""))
+        parsed.forEach(tag => {
+          this.#addChip(tag.name, tag.description || "", null, tag.parent_tag_name || null)
+        })
       } catch {
         // JSON でない場合は無視
       }
@@ -31,6 +41,8 @@ export default class extends Controller {
       this.#closeDropdown()
       return
     }
+
+    this.#triggerNewTagFlow(q)
     this.#debounceTimer = setTimeout(() => this.#fetchSuggestions(q), 300)
   }
 
@@ -51,17 +63,11 @@ export default class extends Controller {
     } else if (event.key === "Enter") {
       event.preventDefault()
       if (isOpen && this.#activeIndex >= 0) {
-        const name = items[this.#activeIndex].dataset.name
-        this.#addChip(name, "")
-        this.inputTarget.value = ""
-        this.#closeDropdown()
+        const item = items[this.#activeIndex]
+        this.#selectExistingTag(item.dataset.name, item.dataset.parentTagName || null)
       } else {
         const q = this.inputTarget.value.trim()
-        if (q) {
-          this.#addChip(q, "")
-          this.inputTarget.value = ""
-          this.#closeDropdown()
-        }
+        if (q) this.#triggerNewTagFlow(q)
       }
     } else if (event.key === "Escape") {
       this.#closeDropdown()
@@ -69,15 +75,45 @@ export default class extends Controller {
   }
 
   selectSuggestion(event) {
-    const name = event.currentTarget.dataset.name
-    this.#addChip(name, "")
+    const { name, parentTagName } = event.currentTarget.dataset
+    this.#selectExistingTag(name, parentTagName || null)
+  }
+
+  confirmNewTag() {
+    if (!this.#pendingNewTag) return
+
+    const select = this.dropdownTarget.querySelector("[data-testid='new-tag-parent-select']")
+    const selectedOption = select?.options[select.selectedIndex]
+    const parentTagId = selectedOption?.value ? parseInt(selectedOption.value, 10) : null
+    const parentTagName = selectedOption?.value ? selectedOption.text : null
+
+    this.#addChip(this.#pendingNewTag, "", parentTagId, parentTagName)
     this.inputTarget.value = ""
+    this.#pendingNewTag = null
+    this.#closeDropdown()
+  }
+
+  skipParentTag() {
+    if (!this.#pendingNewTag) return
+
+    this.#addChip(this.#pendingNewTag, "", null, null)
+    this.inputTarget.value = ""
+    this.#pendingNewTag = null
     this.#closeDropdown()
   }
 
   removeChip(event) {
     const name = event.currentTarget.dataset.name
-    this.#chips = this.#chips.filter(c => c.name !== name)
+    this.#removeChipByName(name)
+  }
+
+  removeTag(event) {
+    const { name } = event.detail
+    this.#removeChipByName(name)
+  }
+
+  #removeChipByName(name) {
+    this.#chips = this.#chips.filter(chip => chip.name !== name)
     this.#renderChips()
     this.#syncHiddenField()
     this.#dispatchChipsChanged()
@@ -86,43 +122,57 @@ export default class extends Controller {
     }
   }
 
-  // tag-description コントローラから説明文更新を受け取る
   updateDescription(event) {
     const { name, description } = event.detail
-    const chip = this.#chips.find(c => c.name === name)
+    const chip = this.#chips.find(currentChip => currentChip.name === name)
+
     if (chip) {
       chip.description = description
       this.#syncHiddenField()
     }
   }
 
-  // private
+  #selectExistingTag(name, parentTagName) {
+    this.#addChip(name, "", null, parentTagName || null)
+    this.inputTarget.value = ""
+    this.#closeDropdown()
+  }
 
-  #addChip(name, description = "") {
-    const normalized = name.toLowerCase()
-    if (this.#chips.find(c => c.name === normalized)) return
+  #triggerNewTagFlow(query) {
+    if (this.#chips.find(chip => chip.normalized_name === this.#normalizeName(query))) return
+
+    this.#pendingNewTag = query
+    this.#renderNewTagUI(query)
+  }
+
+  #addChip(name, description = "", parentTagId = null, parentTagName = null) {
+    const displayName = name.trim()
+    const normalizedName = this.#normalizeName(displayName)
+
+    if (!displayName) return
+    if (this.#chips.find(chip => chip.normalized_name === normalizedName)) return
     if (this.#chips.length >= this.maxValue) return
-    this.#chips.push({ name: normalized, description })
+
+    this.#chips.push({
+      name: displayName,
+      normalized_name: normalizedName,
+      description,
+      parent_tag_id: parentTagId,
+      parent_tag_name: parentTagName
+    })
     this.#renderChips()
     this.#syncHiddenField()
     this.#dispatchChipsChanged()
+
     if (this.#chips.length >= this.maxValue) {
       this.inputTarget.disabled = true
     }
   }
 
   #renderChips() {
-    this.chipListTarget.innerHTML = this.#chips.map(chip => `
-      <span data-testid="chip"
-            style="display: inline-flex; align-items: center; gap: 0.25rem; border-radius: 9999px; background: rgba(96, 165, 250, 0.15); padding: 0.25rem 0.75rem; font-size: 0.875rem; color: #60a5fa;">
-        ${this.#escapeHtml(chip.name)}
-        <button type="button"
-                data-action="click->tag-autocomplete#removeChip"
-                data-name="${this.#escapeHtml(chip.name)}"
-                style="margin-left: 0.25rem; color: #60a5fa; background: none; border: none; cursor: pointer; line-height: 1;"
-                aria-label="${this.#escapeHtml(chip.name)}を削除">×</button>
-      </span>
-    `).join("")
+    if (this.hasChipListTarget) {
+      this.chipListTarget.innerHTML = ""
+    }
 
     if (this.hasCountTarget) {
       this.countTarget.textContent = `${this.#chips.length} / ${this.maxValue}件`
@@ -130,7 +180,9 @@ export default class extends Controller {
   }
 
   #syncHiddenField() {
-    this.hiddenFieldTarget.value = JSON.stringify(this.#chips)
+    this.hiddenFieldTarget.value = JSON.stringify(
+      this.#chips.map(({ name, description, parent_tag_id }) => ({ name, description, parent_tag_id }))
+    )
   }
 
   #dispatchChipsChanged() {
@@ -140,34 +192,82 @@ export default class extends Controller {
     }))
   }
 
-  async #fetchSuggestions(q) {
-    const url = `${this.urlValue}?q=${encodeURIComponent(q)}`
+  async #fetchSuggestions(query) {
+    if (this.#chips.find(chip => chip.normalized_name === this.#normalizeName(query))) {
+      this.#closeDropdown()
+      return
+    }
+
+    const url = `${this.urlValue}?q=${encodeURIComponent(query)}`
+
     try {
-      const res = await fetch(url, {
-        headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }
+      const response = await fetch(url, {
+        headers: { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" }
       })
-      const names = await res.json()
-      this.#renderDropdown(names)
+      const hobbies = await response.json()
+
+      if (hobbies.length > 0) {
+        this.#renderDropdown(hobbies)
+      } else {
+        this.#triggerNewTagFlow(query)
+      }
     } catch {
       this.#closeDropdown()
     }
   }
 
-  #renderDropdown(names) {
-    if (names.length === 0) {
-      this.#closeDropdown()
-      return
-    }
-    this.dropdownTarget.innerHTML = names.map(name => `
+  #renderDropdown(hobbies) {
+    this.dropdownTarget.innerHTML = hobbies.map(hobby => `
       <li data-testid="autocomplete-item"
-          data-name="${this.#escapeHtml(name)}"
-          data-action="click->tag-autocomplete#selectSuggestion"
-          style="cursor: pointer; padding: 0.5rem 1rem; font-size: 0.875rem; color: #d1d5db; transition: background 0.15s;"
-          onmouseenter="this.style.background='rgba(96, 165, 250, 0.15)'"
-          onmouseleave="this.style.background='transparent'">
-        ${this.#escapeHtml(name)}
+          class="autocomplete-item"
+          data-name="${this.#escapeHtml(hobby.name)}"
+          data-parent-tag-name="${this.#escapeHtml(hobby.parent_tag_name || "")}"
+          data-action="click->tag-autocomplete#selectSuggestion">
+        <span>${this.#escapeHtml(hobby.name)}</span>
+        ${hobby.parent_tag_name
+          ? `<span data-testid="autocomplete-badge" class="autocomplete-badge">${this.#escapeHtml(hobby.parent_tag_name)}</span>`
+          : ""}
       </li>
     `).join("")
+    this.dropdownTarget.classList.remove("hidden")
+  }
+
+  #renderNewTagUI(query) {
+    const options = Object.entries(this.parentTagsValue).flatMap(([roomType, tags]) => {
+      const tagList = Array.isArray(tags) ? tags : []
+      if (tagList.length === 0) return []
+
+      return [
+        `<optgroup label="${ROOM_TYPE_LABELS[roomType] || roomType}">`,
+        ...tagList.map(parentTag => `<option value="${parentTag.id}">${this.#escapeHtml(parentTag.name)}</option>`),
+        "</optgroup>"
+      ]
+    }).join("")
+
+    this.dropdownTarget.innerHTML = `
+      <li data-testid="new-tag-section" class="new-tag-section">
+        <div style="margin-bottom:0.5rem;">「${this.#escapeHtml(query)}」を新しいタグとして追加する</div>
+        <div style="margin-bottom:0.5rem;color:#9ca3af;font-size:0.8rem;">近い分類を選ぶと、あとで見つけやすくなります</div>
+        <select data-testid="new-tag-parent-select"
+                id="new-tag-parent-select"
+                class="new-tag-select">
+          ${options}
+        </select>
+        <div style="display:flex;gap:0.5rem;">
+          <button type="button"
+                  class="new-tag-confirm-btn"
+                  data-action="click->tag-autocomplete#confirmNewTag">
+            追加する
+          </button>
+          <button type="button"
+                  class="new-tag-skip-btn"
+                  data-testid="skip-parent-tag"
+                  data-action="click->tag-autocomplete#skipParentTag">
+            わからない
+          </button>
+        </div>
+      </li>
+    `
     this.dropdownTarget.classList.remove("hidden")
   }
 
@@ -175,24 +275,25 @@ export default class extends Controller {
     this.dropdownTarget.innerHTML = ""
     this.dropdownTarget.classList.add("hidden")
     this.#activeIndex = -1
+    this.#pendingNewTag = null
   }
 
   #updateActiveItem(items) {
-    items.forEach((item, i) => {
-      if (i === this.#activeIndex) {
-        item.style.background = "rgba(96, 165, 250, 0.15)"
-      } else {
-        item.style.background = "transparent"
-      }
+    items.forEach((item, index) => {
+      item.style.background = index === this.#activeIndex ? "rgba(96,165,250,0.15)" : "transparent"
     })
   }
 
-  #escapeHtml(str) {
-    return str
+  #escapeHtml(value) {
+    return String(value)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;")
+  }
+
+  #normalizeName(value) {
+    return String(value).normalize("NFKC").trim().toLowerCase()
   }
 }

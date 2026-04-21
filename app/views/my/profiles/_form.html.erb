@@ -59,7 +59,8 @@
          data-controller="tag-description tag-autocomplete"
          data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
          data-tag-autocomplete-max-value="10"
-         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription">
+         data-tag-autocomplete-parent-tags-value="<%= @parent_tags_json %>"
+         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription tag-remove-request->tag-autocomplete#removeTag">
 
       <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
@@ -79,8 +80,9 @@
              value="<%= @hobbies_text %>"
              data-tag-autocomplete-target="hiddenField">
 
-      <%# チップ表示エリア %>
-      <div class="mb-4 flex min-h-9 flex-wrap gap-2"
+      <%# 表示上はカードを唯一の表現にし、hidden field と件数だけ tag-autocomplete が管理する %>
+      <div class="hidden"
+           aria-hidden="true"
            data-tag-autocomplete-target="chipList"></div>
 
       <%# テキスト入力 %>
