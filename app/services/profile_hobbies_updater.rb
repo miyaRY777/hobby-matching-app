@@ -5,7 +5,7 @@ class ProfileHobbiesUpdater
       .map do |tag|
         {
           name:         Hobby.normalize(tag[:name]),
-          display_name: tag[:name].to_s.strip,
+          original_name: tag[:name].to_s.strip,
           description:  tag[:description].to_s,
           parent_tag_id: tag[:parent_tag_id]
         }
@@ -44,7 +44,7 @@ class ProfileHobbiesUpdater
       normalized.each do |tag|
         hobby = existing_hobbies[tag[:name]] ||
                 Hobby.find_or_create_by!(normalized_name: tag[:name]) do |h|
-                  h.name = tag[:display_name]
+                  h.name = tag[:original_name]
                 end
         classify_if_newly_created(hobby, preloaded_parent_tags[tag[:parent_tag_id]])
 
