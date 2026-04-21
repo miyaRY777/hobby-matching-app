@@ -62,16 +62,41 @@
          data-tag-autocomplete-parent-tags-value="<%= @parent_tags_json %>"
          data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription tag-remove-request->tag-autocomplete#removeTag">
 
-      <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h2 class="text-sm font-semibold text-slate-200">趣味タグ</h2>
-          <p class="mt-1 text-sm leading-relaxed text-slate-400">
-            まずは気軽に 2〜5 個ほど登録すると、プロフィールの雰囲気が伝わりやすくなります。
-          </p>
+      <div data-controller="toggle">
+        <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-semibold text-slate-200">趣味タグ</h2>
+              <button type="button"
+                      data-action="click->toggle#toggle"
+                      data-testid="tag-help-toggle"
+                      class="text-xs text-blue-400 underline underline-offset-2 transition hover:text-blue-300">
+                <span data-toggle-target="openText">親タグとは？</span>
+                <span data-toggle-target="closeText" class="hidden">閉じる</span>
+              </button>
+            </div>
+            <p class="mt-1 text-sm leading-relaxed text-slate-400">
+              まずは気軽に 2〜5 個ほど登録すると、プロフィールの雰囲気が伝わりやすくなります。
+            </p>
+          </div>
+          <div data-tag-autocomplete-target="count"
+               data-testid="tag-count"
+               class="text-xs font-medium tracking-wide text-slate-500">0 / 10件</div>
         </div>
-        <div data-tag-autocomplete-target="count"
-             data-testid="tag-count"
-             class="text-xs font-medium tracking-wide text-slate-500">0 / 10件</div>
+
+        <div data-toggle-target="content"
+             data-testid="tag-help-content"
+             class="mb-4 rounded-xl border border-slate-700/50 bg-slate-900/60 p-4 text-sm leading-relaxed text-slate-300">
+          <p class="mb-2 font-semibold text-slate-200">親タグとは？</p>
+          <p class="mb-3">趣味タグを大きなカテゴリでまとめるラベルです。親タグを選ぶと、部屋のマインドマップで近い趣味どうしがまとまって表示されやすくなります。</p>
+          <div class="mb-3 rounded-lg border border-slate-700/40 bg-slate-950/40 px-4 py-4 text-sm">
+            <p class="mb-3 text-xs font-semibold tracking-wide text-slate-500">マインドマップのイメージ</p>
+            <%= image_tag "profile_tag_help_mindmap.png",
+                  alt: "部屋名を起点に親タグと子タグが枝分かれするマインドマップの例",
+                  class: "block w-full rounded-xl border border-slate-700/40 shadow-[0_10px_30px_rgba(0,0,0,0.25)]" %>
+          </div>
+          <p class="text-slate-400">迷った場合は「わからない」を選んでも大丈夫です。あとから変えられるので、まずは近そうなものを選べば十分です。</p>
+        </div>
       </div>
 
       <%# hidden field: サーバーに送信される値 %>
