@@ -48,8 +48,8 @@
     </div>
   </div>
 
-  <%# メニュー %>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+  <%# メニュー（1行目：2カラム） %>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
     <%# 趣味プロフィール %>
     <% if current_user.profile %>
       <%= link_to edit_my_profile_path,
@@ -69,6 +69,18 @@
       <% end %>
     <% end %>
 
+    <%# プロフィール一覧 %>
+    <%= link_to profiles_path,
+                style: "display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); text-decoration: none; transition: all 0.3s;" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" style="height: 2rem; width: 2rem; color: #60a5fa;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span style="font-size: 0.875rem; font-weight: 500; color: #d1d5db;">プロフィール一覧</span>
+    <% end %>
+  </div>
+
+  <%# メニュー（2行目：3カラム） %>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
     <%# 部屋管理 %>
     <% rooms_count = current_user.profile&.issued_rooms&.count || 0 %>
     <%= link_to mypage_rooms_path,
@@ -88,15 +100,6 @@
       </svg>
       <span style="font-size: 0.875rem; font-weight: 500; color: #d1d5db;">公開部屋一覧</span>
       <span style="font-size: 0.75rem; color: #6b7280;">参加できる部屋を見る</span>
-    <% end %>
-
-    <%# プロフィール一覧 %>
-    <%= link_to profiles_path,
-                style: "display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); text-decoration: none; transition: all 0.3s;" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" style="height: 2rem; width: 2rem; color: #60a5fa;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-      <span style="font-size: 0.875rem; font-weight: 500; color: #d1d5db;">プロフィール一覧</span>
     <% end %>
 
     <%# 設定 %>

@@ -9,18 +9,17 @@ RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true
     visit edit_my_profile_path
     click_on "タグ"
 
-    # chip が DOM に追加されるまで待ってから次のタグを入力する（JS タイミング対策）
-    fill_in "tag-input", with: "rails"
-    find("[data-testid='tag-input']").send_keys(:return)
-    expect(page).to have_css("[data-testid='chip']", text: "rails")
+    fill_in "tag-input", with: "Ruby Rails"
+    find("[data-testid='skip-parent-tag']").click
+    expect(page).to have_text("Ruby Rails")
 
-    fill_in "tag-input", with: "ruby"
-    find("[data-testid='tag-input']").send_keys(:return)
-    expect(page).to have_css("[data-testid='chip']", text: "ruby")
+    fill_in "tag-input", with: "Ruby"
+    find("[data-testid='skip-parent-tag']").click
+    expect(page).to have_text("Ruby")
 
     click_button "更新する"
 
-    expect(page).to have_content("rails")
-    expect(page).to have_content("ruby")
+    expect(page).to have_content("Ruby Rails")
+    expect(page).to have_content("Ruby")
   end
 end

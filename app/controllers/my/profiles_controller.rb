@@ -2,6 +2,7 @@ class My::ProfilesController < ApplicationController
   before_action :authenticate_user!
   before_action :redirect_if_profile_exists, only: %i[new create]
   before_action :set_profile, only: %i[edit update destroy]
+  before_action :set_parent_tags, only: %i[new create edit update]
 
   def new
     @profile = current_user.build_profile
@@ -23,9 +24,10 @@ class My::ProfilesController < ApplicationController
   end
 
   def edit
-    @hobbies_text = @profile.profile_hobbies.includes(:hobby).map do |ph|
-      { name: ph.hobby.name, description: ph.description.to_s }
-    end.to_json
+    @hobbies_text = @profile.profile_hobbies
+                           .includes(hobby: { hobby_parent_tags: :parent_tag })
+                           .map { |profile_hobby| serialize_profile_hobby(profile_hobby) }
+                           .to_json
   end
 
   def update
@@ -60,5 +62,18 @@ class My::ProfilesController < ApplicationController
   def set_profile
     @profile = current_user.profile
     redirect_to new_my_profile_path, alert: "プロフィールを作成してください" unless @profile
+  end
+
+  def serialize_profile_hobby(profile_hobby)
+    { name: profile_hobby.hobby.name, description: profile_hobby.description.to_s }
+      .merge(profile_hobby.hobby.primary_parent_tag_info)
+  end
+
+  def set_parent_tags
+    @parent_tags_json = ParentTag.where.not(slug: "uncategorized")
+                                 .order(:room_type, :position)
+                                 .group_by(&:room_type)
+                                 .transform_values { |tags| tags.map { |t| { id: t.id, name: t.name } } }
+                                 .to_json
   end
 end

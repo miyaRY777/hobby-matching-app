@@ -3,13 +3,18 @@ class HobbiesController < ApplicationController
 
   def autocomplete
     q = params[:q].to_s.strip
+    return render json: [] if q.length < 2
 
-    if q.length < 2
-      render json: []
-      return
-    end
+    hobbies = Hobby.where("normalized_name LIKE ?", "#{Hobby.normalize(q)}%")
+                   .includes(hobby_parent_tags: :parent_tag)
+                   .limit(10)
 
-    hobbies = Hobby.where("name LIKE ?", "#{q.downcase}%").limit(10).pluck(:name)
-    render json: hobbies
+    render json: hobbies.map { |hobby| serialize_hobby(hobby) }
+  end
+
+  private
+
+  def serialize_hobby(hobby)
+    { name: hobby.name }.merge(hobby.primary_parent_tag_info)
   end
 end
