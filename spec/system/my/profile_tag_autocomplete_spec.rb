@@ -12,43 +12,51 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
   end
 
   describe "タグの追加" do
-    it "Enterキーで新規タグをチップとして追加できる" do
+    it "新規タグを追加セクションから説明カードとして追加できる" do
       fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='tag-input']").send_keys(:return)
+      find("[data-testid='skip-parent-tag']").click
 
-      expect(page).to have_css("[data-testid='chip']", text: "ゲーム")
+      expect(page).to have_text("ゲーム")
+      expect(page).to have_css("[data-testid='description-toggle']", count: 1)
     end
 
     it "同一タグは重複追加できない" do
-      2.times do
-        fill_in "tag-input", with: "ゲーム"
-        find("[data-testid='tag-input']").send_keys(:return)
-      end
+      fill_in "tag-input", with: "ゲーム"
+      find("[data-testid='skip-parent-tag']").click
 
-      expect(page).to have_css("[data-testid='chip']", text: "ゲーム", count: 1)
+      fill_in "tag-input", with: "ゲーム"
+      expect(page).to have_text("ゲーム")
+      expect(page).to have_css("[data-testid='description-toggle']", count: 1)
+    end
+
+    it "入力した表示名の大文字小文字を保ったままカードに追加できる" do
+      fill_in "tag-input", with: "Ruby Rails"
+      find("[data-testid='skip-parent-tag']").click
+
+      expect(page).to have_css("[data-testid='tag-child-chip']", text: "Ruby Rails")
     end
 
     it "10個追加するとinputが無効化される" do
       10.times do |i|
         fill_in "tag-input", with: "タグ#{i}"
-        find("[data-testid='tag-input']").send_keys(:return)
+        find("[data-testid='skip-parent-tag']").click
       end
 
-      expect(page).to have_css("[data-testid='chip']", count: 10)
+      expect(page).to have_css("[data-testid='description-toggle']", count: 10)
       expect(find("[data-testid='tag-input']")[:disabled]).to eq("true")
     end
   end
 
   describe "タグの削除" do
-    it "×ボタンでチップを削除できる" do
+    it "カードの×ボタンでタグを削除できる" do
       # タグを追加してから削除する
       fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='tag-input']").send_keys(:return)
-      expect(page).to have_css("[data-testid='chip']", text: "ゲーム")
+      find("[data-testid='skip-parent-tag']").click
+      expect(page).to have_text("ゲーム")
 
-      find("[data-testid='chip']", text: "ゲーム").find("button").click
+      find("button[aria-label='ゲームを削除']", visible: :all).click
 
-      expect(page).not_to have_css("[data-testid='chip']", text: "ゲーム")
+      expect(page).not_to have_text("ゲーム")
     end
   end
 
@@ -61,11 +69,11 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       expect(page).to have_css("[data-testid='autocomplete-item']", text: "ゲーム")
     end
 
-    it "候補を選択するとチップになり入力欄がクリアされる" do
+    it "候補を選択するとカードになり入力欄がクリアされる" do
       fill_in "tag-input", with: "ゲー"
       find("[data-testid='autocomplete-item']", text: "ゲーム").click
 
-      expect(page).to have_css("[data-testid='chip']", text: "ゲーム")
+      expect(page).to have_text("ゲーム")
       expect(find("[data-testid='tag-input']").value).to eq("")
     end
 
@@ -77,20 +85,21 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
   end
 
   describe "フォーム送信" do
-    it "チップのタグが保存される" do
+    it "カードのタグが保存される" do
       fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='tag-input']").send_keys(:return)
+      find("[data-testid='skip-parent-tag']").click
       click_button "更新する"
 
+      expect(page).to have_current_path(profile_path(current_profile))
       expect(page).to have_content("ゲーム")
       expect(current_profile.reload.hobbies.pluck(:name)).to include("ゲーム")
     end
   end
 
-  describe "Turbo再表示時のチップ復元" do
-    it "バリデーションエラー後もチップが復元される" do
+  describe "Turbo再表示時のカード復元" do
+    it "バリデーションエラー後もカードが復元される" do
       fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='tag-input']").send_keys(:return)
+      find("[data-testid='skip-parent-tag']").click
 
       # hidden fieldを11個分のタグ（上限超過）に書き換えてバリデーションエラーを発生させる
       over_limit = ([ { name: "ゲーム", description: "" } ] + (1..10).map { |i| { name: "tag#{i}", description: "" } }).to_json
@@ -99,7 +108,8 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
 
       # バリデーションエラー後はタブがリセットされるため、タグタブを再度クリックする
       click_on "タグ"
-      expect(page).to have_css("[data-testid='chip']")
+      expect(page).to have_css("[data-testid='description-toggle']")
+      expect(page).to have_text("ゲーム")
     end
   end
 
@@ -110,15 +120,15 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
 
     it "タグ追加時にカウンターが更新される" do
       fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='tag-input']").send_keys(:return)
+      find("[data-testid='skip-parent-tag']").click
 
       expect(page).to have_css("[data-testid='tag-count']", text: "1 / 10件")
     end
 
     it "タグ削除時にカウンターが更新される" do
       fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='tag-input']").send_keys(:return)
-      find("[data-testid='chip']", text: "ゲーム").find("button").click
+      find("[data-testid='skip-parent-tag']").click
+      find("button[aria-label='ゲームを削除']", visible: :all).click
 
       expect(page).to have_css("[data-testid='tag-count']", text: "0 / 10件")
     end

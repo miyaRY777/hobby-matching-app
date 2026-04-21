@@ -117,6 +117,56 @@ RSpec.describe ProfileHobbiesUpdater do
       end
     end
 
+    context "parent_tag_id の処理" do
+      let(:programming) do
+        create(:parent_tag, name: "プログラミング", slug: "programming", room_type: :study)
+      end
+
+      it "新規タグ + 有効な parent_tag_id では HobbyParentTag が作成される" do
+        described_class.call(profile, [ { name: "newlang", description: "", parent_tag_id: programming.id } ])
+
+        hobby = Hobby.find_by(normalized_name: "newlang")
+        expect(hobby.hobby_parent_tags.find_by(room_type: :study)&.parent_tag).to eq(programming)
+      end
+
+      it "既存の未分類タグに parent_tag_id を渡しても HobbyParentTag は作成されない" do
+        create(:hobby, name: "existingtag")
+
+        described_class.call(profile, [ { name: "existingtag", description: "", parent_tag_id: programming.id } ])
+
+        hobby = Hobby.find_by(normalized_name: "existingtag")
+        expect(hobby.hobby_parent_tags).to be_empty
+      end
+
+      it "既存の分類済みタグに別の parent_tag_id を渡しても分類は変更されない" do
+        game_tag = create(:parent_tag, name: "FPS", slug: "fps", room_type: :game)
+        hobby = create(:hobby, name: "apex")
+        create(:hobby_parent_tag, hobby:, parent_tag: game_tag)
+
+        described_class.call(profile, [ { name: "apex", description: "", parent_tag_id: programming.id } ])
+
+        expect(hobby.reload.hobby_parent_tags.find_by(room_type: :game)&.parent_tag).to eq(game_tag)
+        expect(hobby.hobby_parent_tags.find_by(room_type: :study)).to be_nil
+      end
+
+      it "不正な parent_tag_id でも保存は成功する" do
+        expect {
+          described_class.call(profile, [ { name: "sometag", description: "", parent_tag_id: 99_999 } ])
+        }.not_to raise_error
+
+        hobby = Hobby.find_by(normalized_name: "sometag")
+        expect(hobby).not_to be_nil
+        expect(hobby.hobby_parent_tags).to be_empty
+      end
+
+      it "parent_tag_id が nil のときは HobbyParentTag を作成しない" do
+        described_class.call(profile, [ { name: "unknowntag", description: "", parent_tag_id: nil } ])
+
+        hobby = Hobby.find_by(normalized_name: "unknowntag")
+        expect(hobby.hobby_parent_tags).to be_empty
+      end
+    end
+
     context "削除対象の判定" do
       it "normalized_name で削除対象を判定する" do
         hobby_rails = create(:hobby, name: "rails")
