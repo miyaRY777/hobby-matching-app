@@ -2,7 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["tab", "panel"]
-  static values = { defaultOpen: { type: Boolean, default: true } }
+  static values = {
+    defaultOpen: { type: Boolean, default: true },
+    toggleable: { type: Boolean, default: true }
+  }
 
   connect() {
     this.activeIndex = null
@@ -20,7 +23,7 @@ export default class extends Controller {
     if (index === -1) return
 
     if (this.activeIndex === index) {
-      this.deactivate()
+      if (this.toggleableValue) this.deactivate()
       return
     }
 

@@ -1,6 +1,35 @@
 require "rails_helper"
 
 RSpec.describe "ログイン画面", type: :system do
+  describe "ログイン後のリダイレクト" do
+    let(:password) { "password123" }
+
+    it "プロフィールあり：ログイン後にマイページへ遷移する" do
+      # プロフィール登録済みユーザーでログイン
+      current_user = create(:user, password: password)
+      create(:profile, user: current_user)
+
+      fill_in "user_email", with: current_user.email
+      fill_in "user_password", with: password
+      click_button "ログイン"
+
+      # マイページへ遷移することを確認
+      expect(page).to have_current_path(mypage_root_path)
+    end
+
+    it "プロフィールなし：ログイン後にプロフィール作成画面へ遷移する" do
+      # プロフィール未登録ユーザーでログイン
+      current_user = create(:user, password: password)
+
+      fill_in "user_email", with: current_user.email
+      fill_in "user_password", with: password
+      click_button "ログイン"
+
+      # プロフィール作成画面へ遷移することを確認
+      expect(page).to have_current_path(new_my_profile_path)
+    end
+  end
+
   before { visit new_user_session_path }
 
   it "「パスワードをお忘れですか？」リンクが表示される" do

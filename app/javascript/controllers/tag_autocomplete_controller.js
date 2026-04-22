@@ -254,6 +254,7 @@ export default class extends Controller {
           ${options}
         </select>
         <div style="margin-top:0.35rem;margin-bottom:0.5rem;color:#9ca3af;font-size:0.8rem;">近い分類を選ぶと、あとで見つけやすくなります</div>
+        <div style="margin-top:0.25rem;margin-bottom:0.5rem;color:#f87171;font-size:0.75rem;">※ プロフィールを更新すると、親タグはご自身では変更できなくなります。変更が必要な場合は管理者にお問い合わせください。</div>
         <div style="display:flex;gap:0.5rem;">
           <button type="button"
                   class="new-tag-confirm-btn"
