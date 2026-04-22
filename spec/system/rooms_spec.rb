@@ -80,6 +80,10 @@ RSpec.describe "公開部屋一覧", type: :system, js: true do
     end
 
     expect(page).to have_css("[data-testid='room-modal-#{unjoined_room.id}']", visible: true)
+    modal_display = page.evaluate_script(<<~JS)
+      window.getComputedStyle(document.querySelector("[data-testid='room-modal-#{unjoined_room.id}']")).display
+    JS
+    expect(modal_display).to eq("flex")
     expect(page).to have_text("未参加の部屋")
   end
 
