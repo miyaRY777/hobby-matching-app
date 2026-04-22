@@ -3,7 +3,7 @@ class RoomsController < ApplicationController
 
   def index
     @rooms = Room.unlocked
-                 .includes(issuer_profile: :user, room_memberships: :profile)
+                 .includes(issuer_profile: :user, room_memberships: { profile: :user })
                  .order(created_at: :desc)
 
     profile = current_user.profile

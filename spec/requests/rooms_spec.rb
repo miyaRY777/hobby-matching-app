@@ -35,12 +35,13 @@ RSpec.describe "Rooms", type: :request do
 
   describe "POST /mypage/room_memberships" do
     context "ログインしている場合" do
-      it "公開部屋に参加できる" do
+      it "共有リンクがある公開部屋に参加すると共有ページへリダイレクトする" do
         # セットアップ: ログインユーザーと公開部屋を用意
         current_user = create(:user)
         current_profile = create(:profile, user: current_user)
         owner_profile = create(:profile)
         room = create(:room, issuer_profile: owner_profile, locked: false)
+        share_link = create(:share_link, room:, token: "joined-room-token", expires_at: 1.year.from_now)
         sign_in current_user
 
         # アクション: 部屋参加リクエストを送る
@@ -48,8 +49,23 @@ RSpec.describe "Rooms", type: :request do
           post mypage_room_memberships_path, params: { room_id: room.id }
         }.to change(RoomMembership, :count).by(1)
 
-        # アサーション: 参加情報が作成されて一覧に戻る
-        expect(response).to redirect_to(rooms_path)
+        # アサーション: 参加情報が作成されて共有ページへ遷移する
+        expect(response).to redirect_to(share_path(share_link.token))
+        expect(RoomMembership.exists?(room:, profile: current_profile)).to be true
+      end
+
+      it "共有リンクがない公開部屋に参加するとマイページの部屋一覧へリダイレクトする" do
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        owner_profile = create(:profile)
+        room = create(:room, issuer_profile: owner_profile, locked: false)
+        sign_in current_user
+
+        expect {
+          post mypage_room_memberships_path, params: { room_id: room.id }
+        }.to change(RoomMembership, :count).by(1)
+
+        expect(response).to redirect_to(mypage_rooms_path)
         expect(RoomMembership.exists?(room:, profile: current_profile)).to be true
       end
 
