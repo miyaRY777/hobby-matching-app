@@ -81,6 +81,14 @@ RSpec.describe "My::Profile", type: :request do
   end
 
   describe "POST /my/profile" do
+    it "作成成功後にマイページへリダイレクトする" do
+      hobbies_text = [ { name: "ゲーム", description: "" } ].to_json
+
+      post my_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+
+      expect(response).to redirect_to(mypage_root_path)
+    end
+
     it "11個のタグで作成するとバリデーションエラーになりタグデータが保持される" do
       hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
 

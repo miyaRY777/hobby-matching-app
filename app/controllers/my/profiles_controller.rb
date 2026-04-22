@@ -16,7 +16,7 @@ class My::ProfilesController < ApplicationController
       @profile.save!
       @profile.update_hobbies_from_json(@profile.hobbies_text)
     end
-    redirect_to profile_path(@profile), notice: "プロフィールを作成しました"
+    redirect_to mypage_root_path, notice: "プロフィールを作成しました"
   rescue ActiveRecord::RecordInvalid
     @hobbies_text = @profile.hobbies_text
     flash.now[:alert] = "プロフィールを作成できませんでした"
