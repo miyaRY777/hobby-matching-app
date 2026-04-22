@@ -5,7 +5,7 @@ require "nokogiri"
 RSpec.describe "Mypage::Dashboards", type: :request do
   def dashboard_menu_links(response_body)
     document = Nokogiri::HTML.parse(response_body)
-    document.css("div[style*='grid-template-columns'] > a")
+    document.css("#dashboard-menu > a")
   end
 
   describe "GET /mypage" do
