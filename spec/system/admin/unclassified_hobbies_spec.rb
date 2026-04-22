@@ -90,38 +90,35 @@ RSpec.describe "Admin 未分類タグ管理", type: :system do
     end
   end
 
-  describe "統合" do
-    let!(:source_rails_hobby) { create(:hobby, name: "rails") }
-    let!(:target_rails_hobby) { create(:hobby, name: "Rails") }
-    let!(:source_hobby_owner_profile) { create(:profile) }
+  describe "削除", js: true do
+    let!(:unused_hobby) { create(:hobby, name: "unused-tag") }
+    let!(:used_hobby) { create(:hobby, name: "used-tag") }
+    let!(:owner_profile) { create(:profile) }
 
     before do
-      create(:profile_hobby, profile: source_hobby_owner_profile, hobby: source_rails_hobby)
+      create(:profile_hobby, profile: owner_profile, hobby: used_hobby)
       visit admin_unclassified_hobbies_path
     end
 
-    it "統合するとフラッシュが表示される" do
-      within "[data-hobby-id='#{source_rails_hobby.id}']" do
-        select "Rails", from: "target_hobby_id"
-        click_button "統合"
+    it "usage_count が 0 のタグに削除ボタンが表示される" do
+      within "[data-hobby-id='#{unused_hobby.id}']" do
+        expect(page).to have_button "削除"
       end
-      expect(page).to have_content "統合しました"
     end
 
-    it "統合後にprofile_hobbiesがtargetに付け替えられる" do
-      within "[data-hobby-id='#{source_rails_hobby.id}']" do
-        select "Rails", from: "target_hobby_id"
-        click_button "統合"
+    it "usage_count が 1 以上のタグに削除ボタンが表示されず「使用中」と表示される" do
+      within "[data-hobby-id='#{used_hobby.id}']" do
+        expect(page).not_to have_button "削除"
+        expect(page).to have_content "使用中"
       end
-      expect(ProfileHobby.where(hobby_id: target_rails_hobby.id, profile_id: source_hobby_owner_profile.id)).to exist
     end
 
-    it "統合後にsource hobbyが削除される" do
-      within "[data-hobby-id='#{source_rails_hobby.id}']" do
-        select "Rails", from: "target_hobby_id"
-        click_button "統合"
+    it "削除後にタグが一覧から消えてフラッシュが表示される" do
+      within "[data-hobby-id='#{unused_hobby.id}']" do
+        accept_confirm { click_button "削除" }
       end
-      expect(Hobby.find_by(id: source_rails_hobby.id)).to be_nil
+      expect(page).not_to have_css("[data-hobby-id='#{unused_hobby.id}']")
+      expect(page).to have_content "削除しました"
     end
   end
 

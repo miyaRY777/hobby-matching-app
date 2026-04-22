@@ -8,7 +8,6 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
     @hobbies = scope
     @parent_tags = ParentTag.order(:room_type, :position)
     @grouped_parent_tag_options = build_grouped_parent_tag_options
-    @all_hobbies_grouped = build_all_hobbies_grouped
   end
 
   def update
@@ -20,15 +19,13 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
     redirect_to admin_unclassified_hobbies_path, alert: "分類に失敗しました"
   end
 
-  def merge
-    source = Hobby.unclassified.find(params[:id])
-    target = Hobby.find(params[:target_hobby_id])
-    result = Admin::HobbyMergeService.call(source:, target:)
-    if result.success?
-      redirect_to admin_unclassified_hobbies_path, notice: "統合しました"
-    else
-      redirect_to admin_unclassified_hobbies_path, alert: result.error
-    end
+  def destroy
+    @hobby = Hobby.unclassified.find(params[:id])
+    # UI側でも usage_count == 0 のときのみボタン表示しているが、直接リクエストへの二重防御として rescue を残している
+    @hobby.destroy!
+    redirect_to admin_unclassified_hobbies_path, notice: "削除しました"
+  rescue ActiveRecord::RecordNotDestroyed
+    redirect_to admin_unclassified_hobbies_path, alert: "削除できませんでした（使用中のタグは削除できません）"
   end
 
   private
@@ -40,18 +37,5 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
         @parent_tags.select { |pt| pt.room_type == room_type }.map { |pt| [ pt.name, pt.id ] }
       ]
     end
-  end
-
-  def build_all_hobbies_grouped
-    grouped_hobbies = Hobby.includes(:hobby_parent_tags)
-                           .order(:name)
-                           .each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |hobby, hash|
-      hash[hobby.primary_room_type] << [ hobby.name, hobby.id ]
-    end
-
-    ParentTag.room_types.keys
-             .append("unclassified")
-             .index_with { |room_type| grouped_hobbies[room_type] }
-             .reject { |_, hobbies| hobbies.empty? }
   end
 end

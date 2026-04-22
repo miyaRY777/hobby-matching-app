@@ -15,7 +15,7 @@
         <th style="padding: 0.5rem 1rem;">使用回数</th>
         <th style="padding: 0.5rem 1rem;">ユーザー数</th>
         <th style="padding: 0.5rem 1rem;">分類</th>
-        <th style="padding: 0.5rem 1rem;">統合</th>
+        <th style="padding: 0.5rem 1rem;">削除</th>
       </tr>
     </thead>
     <tbody>
@@ -31,20 +31,18 @@
                     prompt: "選択してください",
                     style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
               <%= f.submit "分類",
-                    style: "margin-left: 0.25rem; background: #2563eb; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" %>
+                    style: "margin-left: 0.5rem; background: #2563eb; color: white; border: none; padding: 0.375rem 1rem; border-radius: 0.25rem; cursor: pointer; font-weight: bold;" %>
             <% end %>
           </td>
           <td style="padding: 0.5rem 1rem;">
-            <%= form_with url: merge_admin_unclassified_hobby_path(hobby), method: :post, local: true do |f| %>
-              <% target_hobby_groups = @all_hobbies_grouped.transform_values do |grouped_hobbies|
-                   grouped_hobbies.reject { |(_, id)| id == hobby.id }
-                 end.reject { |_, grouped_hobbies| grouped_hobbies.empty? } %>
-              <%= select_tag :target_hobby_id,
-                    grouped_options_for_select(target_hobby_groups),
-                    prompt: "選択してください",
-                    style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.25rem;" %>
-              <%= submit_tag "統合",
-                    style: "margin-left: 0.25rem; background: #dc2626; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" %>
+            <% if hobby.unused? %>
+              <%= button_to "削除",
+                    admin_unclassified_hobby_path(hobby),
+                    method: :delete,
+                    data: { turbo_confirm: "「#{hobby.name}」を削除しますか？この操作は取り消せません。" },
+                    style: "background: #dc2626; color: white; border: none; padding: 0.375rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" %>
+            <% else %>
+              <span style="color: #6b7280; font-size: 0.875rem;">使用中</span>
             <% end %>
           </td>
         </tr>

@@ -13,6 +13,10 @@ class Hobby < ApplicationRecord
     { parent_tag_name: primary&.parent_tag&.name, room_type: primary&.room_type }
   end
 
+  def unused?
+    usage_count.to_i == 0
+  end
+
   has_many :profile_hobbies, dependent: :restrict_with_error
   has_many :profiles, through: :profile_hobbies
 
