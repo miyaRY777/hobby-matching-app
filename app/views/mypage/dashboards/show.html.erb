@@ -1,5 +1,18 @@
 <% content_for :no_center, true %>
 
+<style>
+  #dashboard-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    #dashboard-menu {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+</style>
+
 <div style="max-width: 48rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
   <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin-bottom: 2rem;">マイページ</h1>
 
