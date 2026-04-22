@@ -117,37 +117,39 @@ RSpec.describe "Admin::UnclassifiedHobbiesController", type: :request do
     end
   end
 
-  describe "POST /admin/unclassified_hobbies/:id/merge" do
-    let!(:source_hobby) { create(:hobby, name: "rails-merge-source") }
-    let!(:target_hobby) { create(:hobby, name: "rails-merge-target") }
-    let!(:source_hobby_owner_profile) { create(:profile) }
-
-    before do
-      create(:profile_hobby, profile: source_hobby_owner_profile, hobby: source_hobby)
-    end
-
+  describe "DELETE /admin/unclassified_hobbies/:id" do
     context "管理者の場合" do
       before { sign_in admin_user }
 
-      it "profile_hobbies が付け替えられ source が削除されて一覧にリダイレクトされる" do
-        post merge_admin_unclassified_hobby_path(source_hobby),
-             params: { target_hobby_id: target_hobby.id }
-
-        aggregate_failures do
-          expect(
-            ProfileHobby.where(hobby_id: target_hobby.id, profile_id: source_hobby_owner_profile.id)
-          ).to exist
-          expect(Hobby.find_by(id: source_hobby.id)).to be_nil
-          expect(response).to redirect_to(admin_unclassified_hobbies_path)
+      context "usage_count が 0 の場合" do
+        it "削除されて一覧にリダイレクトされる" do
+          delete admin_unclassified_hobby_path(unclassified_hobby)
+          aggregate_failures do
+            expect(Hobby.find_by(id: unclassified_hobby.id)).to be_nil
+            expect(response).to redirect_to(admin_unclassified_hobbies_path)
+          end
         end
       end
 
-      it "source と target が同じ場合は alert とともにリダイレクトされる" do
-        post merge_admin_unclassified_hobby_path(source_hobby),
-             params: { target_hobby_id: source_hobby.id }
-        expect(response).to redirect_to(admin_unclassified_hobbies_path)
-        follow_redirect!
-        expect(response.body).to include("統合元と統合先が同じです")
+      context "usage_count が 1 以上の場合" do
+        let!(:owner_profile) { create(:profile) }
+
+        before { create(:profile_hobby, profile: owner_profile, hobby: unclassified_hobby) }
+
+        it "削除されずに alert でリダイレクトされる" do
+          delete admin_unclassified_hobby_path(unclassified_hobby)
+          aggregate_failures do
+            expect(Hobby.find_by(id: unclassified_hobby.id)).not_to be_nil
+            expect(response).to redirect_to(admin_unclassified_hobbies_path)
+          end
+        end
+      end
+
+      context "分類済み hobby の場合" do
+        it "404 を返す" do
+          delete admin_unclassified_hobby_path(classified_hobby)
+          expect(response).to have_http_status(:not_found)
+        end
       end
     end
 
@@ -157,8 +159,7 @@ RSpec.describe "Admin::UnclassifiedHobbiesController", type: :request do
       before { sign_in normal_user }
 
       it "root_path にリダイレクトされる" do
-        post merge_admin_unclassified_hobby_path(source_hobby),
-             params: { target_hobby_id: target_hobby.id }
+        delete admin_unclassified_hobby_path(unclassified_hobby)
         expect(response).to redirect_to(root_path)
       end
     end

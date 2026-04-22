@@ -66,10 +66,6 @@ Rails.application.routes.draw do
     root "dashboards#show"
     resources :parent_tags, only: %i[index new create edit update destroy]
     resources :hobbies, only: %i[new create edit update destroy]
-    resources :unclassified_hobbies, only: [ :index, :update ] do
-      member do
-        post :merge
-      end
-    end
+    resources :unclassified_hobbies, only: [ :index, :update, :destroy ]
   end
 end
