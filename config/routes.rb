@@ -67,5 +67,6 @@ Rails.application.routes.draw do
     resources :parent_tags, only: %i[index new create edit update destroy]
     resources :hobbies, only: %i[new create edit update destroy]
     resources :unclassified_hobbies, only: [ :index, :update, :destroy ]
+    resources :hobby_merges, only: %i[new create]
   end
 end
