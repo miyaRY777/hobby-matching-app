@@ -1,0 +1,29 @@
+<div style="max-width: 48rem; margin: 0 auto;">
+  <h1 style="font-size: 1.5rem; font-weight: bold; color: #f9fafb; margin-bottom: 1.5rem;">趣味タグ統合</h1>
+
+  <%= form_with url: admin_hobby_merges_path,
+                data: { turbo_confirm: "選択したタグを統合しますか？この操作は取り消せません。" } do |f| %>
+    <div style="margin-bottom: 1.5rem;">
+      <label for="source_hobby_id" style="color: #d1d5db; display: block; margin-bottom: 0.5rem;">
+        統合元タグ（削除されます）
+      </label>
+      <%= select_tag :source_hobby_id,
+                     grouped_options_for_select(@grouped_hobby_options),
+                     prompt: "選択してください",
+                     style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.375rem 0.75rem; border-radius: 0.25rem; width: 100%;" %>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+      <label for="target_hobby_id" style="color: #d1d5db; display: block; margin-bottom: 0.5rem;">
+        統合先タグ（残ります）
+      </label>
+      <%= select_tag :target_hobby_id,
+                     grouped_options_for_select(@grouped_hobby_options),
+                     prompt: "選択してください",
+                     style: "background: #1f2937; color: #f9fafb; border: 1px solid #374151; padding: 0.375rem 0.75rem; border-radius: 0.25rem; width: 100%;" %>
+    </div>
+
+    <%= f.submit "統合する",
+                 style: "background: #dc2626; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 0.25rem; cursor: pointer; font-weight: bold;" %>
+  <% end %>
+</div>
