@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   # 静的ページ
   get "terms", to: "pages#terms"
   get "privacy", to: "pages#privacy"
+  get "guide", to: "pages#guide"
 
   # お問い合わせ
   resources :contacts, only: %i[new create]

@@ -1,0 +1,201 @@
+<% content_for :no_center, "true" %>
+<% content_for :full_width, true %>
+
+<div style="min-height: 100vh; padding: 3rem 1.5rem 4rem; position: relative; overflow: hidden;">
+
+  <%# 背景装飾アイコン %>
+  <div style="position: absolute; inset: 0; pointer-events: none; user-select: none; overflow: hidden;">
+    <span style="position: absolute; top: 8%; left: 5%; font-size: 1.75rem; opacity: 0.06; color: #93c5fd;">🎸</span>
+    <span style="position: absolute; top: 14%; left: 12%; font-size: 1.25rem; opacity: 0.05; color: #a78bfa;">⚽</span>
+    <span style="position: absolute; top: 6%; right: 10%; font-size: 1.5rem; opacity: 0.06; color: #93c5fd;">🎵</span>
+    <span style="position: absolute; top: 20%; right: 5%; font-size: 1.25rem; opacity: 0.05; color: #a78bfa;">📷</span>
+    <span style="position: absolute; top: 40%; left: 3%; font-size: 1rem; opacity: 0.05; color: #60a5fa;">✦</span>
+    <span style="position: absolute; top: 60%; right: 4%; font-size: 1rem; opacity: 0.05; color: #818cf8;">✦</span>
+    <span style="position: absolute; bottom: 20%; left: 8%; font-size: 1.25rem; opacity: 0.05; color: #93c5fd;">🎮</span>
+    <span style="position: absolute; bottom: 10%; right: 8%; font-size: 1.25rem; opacity: 0.05; color: #a78bfa;">📚</span>
+    <span style="position: absolute; top: 3%; left: 40%; font-size: 0.75rem; opacity: 0.07; color: #60a5fa;">✕</span>
+    <span style="position: absolute; top: 5%; right: 30%; font-size: 0.75rem; opacity: 0.07; color: #818cf8;">✕</span>
+  </div>
+
+  <div style="max-width: 56rem; margin: 0 auto; position: relative; z-index: 1;">
+
+    <%# ヘッダー %>
+    <div style="text-align: center; margin-bottom: 3.5rem;">
+      <span style="display: inline-block; border: 1px solid rgba(99, 102, 241, 0.5); border-radius: 9999px; padding: 0.3rem 1rem; font-size: 0.8125rem; color: #a5b4fc; margin-bottom: 1.25rem; background: rgba(99, 102, 241, 0.08);">使い方ガイド</span>
+      <h1 style="font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 800; color: #ffffff; margin: 0 0 0.75rem; line-height: 1.25; letter-spacing: -0.02em;">共有ページのマインドマップ表示までの流れ</h1>
+      <p style="font-size: 1rem; color: #94a3b8; margin: 0;">簡単４ステップで、趣味のつながりを可視化しよう</p>
+    </div>
+
+    <%# タイムライン %>
+    <div style="display: flex; gap: 2rem;">
+
+      <%# 左：STEPインジケーター %>
+      <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0; padding-top: 2rem;">
+
+        <%# STEP 1 %>
+        <div style="width: 3.5rem; height: 3.5rem; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); flex-shrink: 0;">
+          <span style="font-size: 0.5rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.05em;">STEP</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #ffffff; line-height: 1;">1</span>
+        </div>
+        <div style="width: 2px; height: 8rem; background: linear-gradient(to bottom, rgba(79,70,229,0.6), rgba(99,102,241,0.3)); margin: 0.375rem 0;"></div>
+        <div style="font-size: 1.25rem; color: #6366f1; opacity: 0.7;">↓</div>
+        <div style="width: 2px; height: 1rem; background: linear-gradient(to bottom, rgba(99,102,241,0.3), rgba(99,102,241,0.5)); margin: 0.375rem 0;"></div>
+
+        <%# STEP 2 %>
+        <div style="width: 3.5rem; height: 3.5rem; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); flex-shrink: 0;">
+          <span style="font-size: 0.5rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.05em;">STEP</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #ffffff; line-height: 1;">2</span>
+        </div>
+        <div style="width: 2px; height: 8rem; background: linear-gradient(to bottom, rgba(99,102,241,0.6), rgba(139,92,246,0.3)); margin: 0.375rem 0;"></div>
+        <div style="font-size: 1.25rem; color: #8b5cf6; opacity: 0.7;">↓</div>
+        <div style="width: 2px; height: 1rem; background: linear-gradient(to bottom, rgba(139,92,246,0.3), rgba(139,92,246,0.5)); margin: 0.375rem 0;"></div>
+
+        <%# STEP 3 %>
+        <div style="width: 3.5rem; height: 3.5rem; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #a855f7); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.2); flex-shrink: 0;">
+          <span style="font-size: 0.5rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.05em;">STEP</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #ffffff; line-height: 1;">3</span>
+        </div>
+        <div style="width: 2px; height: 11rem; background: linear-gradient(to bottom, rgba(124,58,237,0.6), rgba(168,85,247,0.3)); margin: 0.375rem 0;"></div>
+        <div style="font-size: 1.25rem; color: #a855f7; opacity: 0.7;">↓</div>
+        <div style="width: 2px; height: 1rem; background: linear-gradient(to bottom, rgba(168,85,247,0.3), rgba(168,85,247,0.5)); margin: 0.375rem 0;"></div>
+
+        <%# STEP 4 %>
+        <div style="width: 3.5rem; height: 3.5rem; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #ec4899); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2); flex-shrink: 0;">
+          <span style="font-size: 0.5rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.05em;">STEP</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #ffffff; line-height: 1;">4</span>
+        </div>
+
+      </div>
+
+      <%# 右：カード列 %>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <%# STEP 1 カード %>
+        <div style="background: linear-gradient(180deg, rgba(28,33,58,0.96), rgba(18,23,48,0.94)); border: 1px solid rgba(99,102,241,0.25); border-radius: 1.25rem; padding: 1.75rem; display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; box-shadow: 0 8px 32px rgba(2,6,23,0.4);">
+          <div>
+            <h2 style="font-size: 1.375rem; font-weight: 700; color: #ffffff; margin: 0 0 0.625rem;">アカウント登録・ログイン</h2>
+            <p style="font-size: 0.9375rem; color: #94a3b8; line-height: 1.7; margin: 0 0 1rem;">メールアドレスまたはSNSアカウントで<br>登録・ログインします。</p>
+            <div style="display: flex; gap: 0.625rem; align-items: center; flex-wrap: wrap;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); font-size: 1rem;">✉️</span>
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); font-size: 1rem;">G</span>
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); font-size: 1rem;">🐦</span>
+            </div>
+          </div>
+          <%# 右側イラスト: ログイン画面モック %>
+          <div style="width: 9rem; flex-shrink: 0; background: rgba(15,23,42,0.8); border: 1px solid rgba(99,102,241,0.3); border-radius: 0.875rem; padding: 0.875rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.25rem; margin-bottom: 0.25rem;">
+              <span style="width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #ef4444; display: block;"></span>
+              <span style="width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #f59e0b; display: block;"></span>
+              <span style="width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #22c55e; display: block;"></span>
+            </div>
+            <div style="height: 0.375rem; background: rgba(99,102,241,0.3); border-radius: 9999px; width: 80%;"></div>
+            <div style="height: 0.375rem; background: rgba(99,102,241,0.2); border-radius: 9999px; width: 60%;"></div>
+            <div style="height: 1.5rem; background: linear-gradient(135deg, #4f46e5, #7c3aed); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin-top: 0.25rem;">
+              <span style="font-size: 0.625rem; font-weight: 700; color: white;">ログイン</span>
+            </div>
+          </div>
+        </div>
+
+        <%# STEP 2 カード %>
+        <div style="background: linear-gradient(180deg, rgba(28,33,58,0.96), rgba(18,23,48,0.94)); border: 1px solid rgba(139,92,246,0.25); border-radius: 1.25rem; padding: 1.75rem; display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; box-shadow: 0 8px 32px rgba(2,6,23,0.4);">
+          <div>
+            <h2 style="font-size: 1.375rem; font-weight: 700; color: #ffffff; margin: 0 0 0.625rem;">趣味プロフィールを作成</h2>
+            <p style="font-size: 0.9375rem; color: #94a3b8; line-height: 1.7; margin: 0 0 1rem;">興味のあるタグを選択したり、<br>好きなジャンルを登録して、あなたの<br>趣味プロフィールを作成します。</p>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <% %w[アニメ 音楽 旅行 ゲーム 読書].each do |tag| %>
+                <span style="font-size: 0.75rem; color: #a5b4fc; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 9999px; padding: 0.2rem 0.625rem;">#<%= tag %></span>
+              <% end %>
+              <span style="font-size: 0.75rem; color: #64748b; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 9999px; padding: 0.2rem 0.625rem;">...</span>
+            </div>
+          </div>
+          <%# 右側イラスト: タグ選択グリッド %>
+          <div style="width: 9rem; flex-shrink: 0; background: rgba(15,23,42,0.8); border: 1px solid rgba(139,92,246,0.3); border-radius: 0.875rem; padding: 0.875rem;">
+            <div style="font-size: 0.625rem; color: #a5b4fc; margin-bottom: 0.5rem; font-weight: 600;">趣味のタグを選択</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.375rem;">
+              <% [["🎮", "ゲーム"], ["🎵", "音楽"], ["📷", "写真"], ["✈️", "旅行"]].each do |icon, label| %>
+                <div style="background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 0.375rem; padding: 0.25rem 0.375rem; display: flex; align-items: center; gap: 0.25rem;">
+                  <span style="font-size: 0.625rem;"><%= icon %></span>
+                  <span style="font-size: 0.5rem; color: #e2e8f0;"><%= label %></span>
+                  <span style="margin-left: auto; font-size: 0.5rem; color: #22c55e;">✓</span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <%# STEP 3 カード %>
+        <div style="background: linear-gradient(180deg, rgba(28,33,58,0.96), rgba(18,23,48,0.94)); border: 1px solid rgba(168,85,247,0.25); border-radius: 1.25rem; padding: 1.75rem; display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; box-shadow: 0 8px 32px rgba(2,6,23,0.4);">
+          <div>
+            <h2 style="font-size: 1.375rem; font-weight: 700; color: #ffffff; margin: 0 0 0.625rem;">部屋を作成して共有する</h2>
+            <p style="font-size: 0.9375rem; color: #94a3b8; line-height: 1.7; margin: 0 0 1rem;">新しく部屋を作る、または公開部屋に参加します。<br>その後、共有リンクを発行して、URLをコピーして<br>友達に送ります。</p>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); font-size: 1rem;">＋</span>
+                <span style="font-size: 0.625rem; color: #94a3b8; text-align: center;">部屋を作る<br>または参加</span>
+              </div>
+              <span style="color: #475569; font-size: 0.875rem;">→</span>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); font-size: 1rem;">🔗</span>
+                <span style="font-size: 0.625rem; color: #94a3b8; text-align: center;">共有リンクを<br>発行</span>
+              </div>
+              <span style="color: #475569; font-size: 0.875rem;">→</span>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); font-size: 1rem;">📤</span>
+                <span style="font-size: 0.625rem; color: #94a3b8; text-align: center;">URLをコピー<br>して送る</span>
+              </div>
+            </div>
+          </div>
+          <%# 右側イラスト: 部屋 + 共有リンク %>
+          <div style="width: 10rem; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(168,85,247,0.3); border-radius: 0.75rem; padding: 0.75rem;">
+              <div style="font-size: 0.5625rem; color: #a5b4fc; font-weight: 600; margin-bottom: 0.375rem;">マイ部屋</div>
+              <div style="background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); border-radius: 0.5rem; padding: 0.375rem 0.5rem; display: flex; align-items: center; gap: 0.375rem;">
+                <span style="font-size: 0.75rem;">🎮</span>
+                <span style="font-size: 0.5rem; color: #e2e8f0;">みんなの趣味部屋</span>
+              </div>
+            </div>
+            <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(168,85,247,0.3); border-radius: 0.75rem; padding: 0.75rem;">
+              <div style="font-size: 0.5625rem; color: #a5b4fc; font-weight: 600; margin-bottom: 0.375rem;">共有リンク</div>
+              <div style="display: flex; gap: 0.25rem; align-items: center;">
+                <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.25rem; padding: 0.25rem 0.375rem; font-size: 0.4375rem; color: #64748b; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">hobbymatching.com/share/...</div>
+                <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 0.25rem; padding: 0.25rem 0.375rem; font-size: 0.4375rem; font-weight: 700; color: white; white-space: nowrap;">コピー</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <%# STEP 4 カード %>
+        <div style="background: linear-gradient(180deg, rgba(28,33,58,0.96), rgba(18,23,48,0.94)); border: 1px solid rgba(236,72,153,0.2); border-radius: 1.25rem; padding: 1.75rem; display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; box-shadow: 0 8px 32px rgba(2,6,23,0.4);">
+          <div>
+            <h2 style="font-size: 1.375rem; font-weight: 700; color: #ffffff; margin: 0 0 0.625rem;">マインドマップ表示</h2>
+            <p style="font-size: 0.9375rem; color: #94a3b8; line-height: 1.7; margin: 0;">共有ページにアクセスすると、参加者の趣味が<br>マインドマップとして可視化されます。<br>共通の趣味を見つけて、会話を楽しみましょう！</p>
+          </div>
+          <%# 右側イラスト: マインドマップ %>
+          <div style="width: 9rem; flex-shrink: 0; background: rgba(15,23,42,0.8); border: 1px solid rgba(236,72,153,0.2); border-radius: 0.875rem; padding: 0.875rem; position: relative; height: 7rem; display: flex; align-items: center; justify-content: center;">
+            <div style="position: relative; width: 100%; height: 100%;">
+              <%# 中央ノード %>
+              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #4f46e5, #7c3aed); border-radius: 9999px; padding: 0.25rem 0.5rem; font-size: 0.5rem; font-weight: 700; color: white; white-space: nowrap; z-index: 2; box-shadow: 0 0 12px rgba(99,102,241,0.5);">共通の趣味</div>
+              <%# 周辺ノード %>
+              <div style="position: absolute; top: 5%; left: 50%; transform: translateX(-50%); background: rgba(239,68,68,0.8); border-radius: 9999px; padding: 0.2rem 0.4rem; font-size: 0.4375rem; color: white; white-space: nowrap;">アニメ</div>
+              <div style="position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); background: rgba(34,197,94,0.8); border-radius: 9999px; padding: 0.2rem 0.4rem; font-size: 0.4375rem; color: white; white-space: nowrap;">ゲーム</div>
+              <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); background: rgba(59,130,246,0.8); border-radius: 9999px; padding: 0.2rem 0.4rem; font-size: 0.4375rem; color: white; white-space: nowrap;">旅行</div>
+              <div style="position: absolute; top: 50%; left: 0; transform: translateY(-50%); background: rgba(168,85,247,0.8); border-radius: 9999px; padding: 0.2rem 0.4rem; font-size: 0.4375rem; color: white; white-space: nowrap;">読書</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <%# CTA %>
+    <div style="margin-top: 2.5rem; background: linear-gradient(135deg, rgba(28,33,58,0.9), rgba(30,27,60,0.9)); border: 1px solid rgba(99,102,241,0.3); border-radius: 1.25rem; padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; box-shadow: 0 8px 32px rgba(2,6,23,0.4);">
+      <p style="font-size: 1.0625rem; font-weight: 600; color: #ffffff; margin: 0;">
+        <span style="margin-right: 0.5rem;">✨</span>さあ、趣味をつなげて新しい出会いを見つけましょう！
+      </p>
+      <%= link_to rooms_path, style: "display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; font-size: 0.9375rem; font-weight: 700; padding: 0.75rem 1.75rem; border-radius: 0.75rem; text-decoration: none; white-space: nowrap; box-shadow: 0 4px 20px rgba(79,70,229,0.4); transition: transform 0.2s;" do %>
+        公開部屋一覧へ <span>›</span>
+      <% end %>
+    </div>
+
+  </div>
+</div>

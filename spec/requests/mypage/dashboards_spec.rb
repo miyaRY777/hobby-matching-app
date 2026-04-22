@@ -5,7 +5,7 @@ require "nokogiri"
 RSpec.describe "Mypage::Dashboards", type: :request do
   def dashboard_menu_links(response_body)
     document = Nokogiri::HTML.parse(response_body)
-    document.css("div[style*='grid-template-columns'] > a")
+    document.css("#dashboard-menu > a")
   end
 
   describe "GET /mypage" do
@@ -60,13 +60,14 @@ RSpec.describe "Mypage::Dashboards", type: :request do
         menu_links = dashboard_menu_links(response.body)
         menu_texts = menu_links.map(&:text).map { |text| text.gsub(/\s+/, " ").strip }
 
-        # 5ブロック（プロフィール作成・部屋管理・公開部屋一覧・プロフィール一覧・設定）が表示されている
-        expect(menu_links.size).to eq(5)
+        # 6ブロック（プロフィール作成・プロフィール一覧・使い方・部屋管理・公開部屋一覧・設定）が表示されている
+        expect(menu_links.size).to eq(6)
         expect(menu_texts).to include("プロフィールを作成する")
         expect(menu_texts).to include("部屋管理 0 部屋")
         expect(menu_texts.any? { |t| t.include?("公開部屋一覧") }).to be true
         expect(menu_texts).to include("プロフィール一覧")
         expect(menu_texts).to include("設定")
+        expect(menu_texts).to include("使い方")
       end
 
       it "部屋管理ページへのリンクと部屋数が表示される" do
