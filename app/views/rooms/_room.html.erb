@@ -2,11 +2,13 @@
 <% creator_name = room.issuer_profile.user.display_name %>
 <% issued = issued_room_ids.include?(room.id) %>
 <% joined = joined_room_ids.include?(room.id) %>
+<% room_label = room.label.presence || "名無しの部屋" %>
+<% members = room.room_memberships.map { |membership| membership.profile.user.display_name } %>
 
 <tr id="<%= dom_id(room) %>" style="border-bottom: 1px solid rgba(55, 65, 81, 0.25);">
   <td style="padding: 1rem 1.25rem; vertical-align: middle;">
     <div style="font-size: 0.9375rem; font-weight: 600; color: #ffffff;">
-      <%= room.label.presence || "名無しの部屋" %>
+      <%= room_label %>
     </div>
   </td>
 
@@ -44,10 +46,63 @@
 
   <td style="padding: 1rem 1.25rem; vertical-align: middle;">
     <% unless issued || joined %>
-      <%= button_to "参加する",
-                    mypage_room_memberships_path,
-                    params: { room_id: room.id },
-                    style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
+      <div data-controller="modal">
+        <button type="button"
+                data-action="click->modal#open"
+                style="display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);">
+          参加する
+        </button>
+
+        <div data-modal-target="panel"
+             data-testid="room-modal-<%= room.id %>"
+             class="hidden"
+             style="position: fixed; inset: 0; z-index: 50; align-items: center; justify-content: center; padding: 1rem;">
+          <div data-action="click->modal#close"
+               style="position: absolute; inset: 0; background: rgba(0,0,0,0.6);"></div>
+
+          <div style="position: relative; width: 100%; max-width: 32rem; margin: 1rem; border-radius: 1rem; border: 1px solid rgba(55,65,81,0.6); background: #1f2937; padding: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+              <h2 style="font-size: 1.125rem; font-weight: 700; color: #ffffff; margin: 0;"><%= room_label %></h2>
+              <button type="button"
+                      data-action="click->modal#close"
+                      style="background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1.5rem; line-height: 1; padding: 0.25rem;">×</button>
+            </div>
+
+            <dl style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; margin-bottom: 1.25rem; font-size: 0.875rem;">
+              <dt style="color: #9ca3af;">種別</dt>
+              <dd style="color: #d1d5db; margin: 0;"><%= badge&.dig(:label) || "未分類" %></dd>
+              <dt style="color: #9ca3af;">参加人数</dt>
+              <dd style="color: #d1d5db; margin: 0;"><%= room.room_memberships.size %> 人</dd>
+              <dt style="color: #9ca3af;">作成者</dt>
+              <dd style="color: #d1d5db; margin: 0;"><%= creator_name %></dd>
+            </dl>
+
+            <div style="margin-bottom: 1.5rem;">
+              <p style="font-size: 0.8125rem; color: #9ca3af; margin: 0 0 0.5rem 0;">参加者</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.375rem;">
+                <% members.each do |member_name| %>
+                  <span style="display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(107,114,128,0.3); color: #d1d5db; font-size: 0.8125rem;">
+                    <%= member_name %>
+                  </span>
+                <% end %>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button"
+                      data-action="click->modal#close"
+                      style="flex: 1; padding: 0.625rem 1rem; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(107,114,128,0.4); color: #d1d5db; font-size: 0.875rem; cursor: pointer;">
+                一覧に戻る
+              </button>
+              <%= form_with url: mypage_room_memberships_path, method: :post, local: true, style: "flex: 1;" do |f| %>
+                <%= f.hidden_field :room_id, value: room.id %>
+                <%= f.submit "参加する",
+                      style: "width: 100%; padding: 0.625rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; color: #ffffff; font-size: 0.875rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.3);" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
     <% else %>
       <span style="font-size: 0.875rem; color: #6b7280;">なし</span>
     <% end %>
