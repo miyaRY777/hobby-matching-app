@@ -12,6 +12,9 @@ module ApplicationHelper
   end
 
   def recent_room_nav_path(user)
+    token = cookies[:recent_room_token]
+    return share_path(token) if token.present?
+
     profile = user&.profile
     return nil unless profile
 

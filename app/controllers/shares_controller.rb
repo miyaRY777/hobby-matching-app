@@ -9,6 +9,7 @@ class SharesController < ApplicationController
     @viewer_profile = current_user.profile
 
     authorize! @share_link, to: :show?
+    cookies[:recent_room_token] = { value: params[:token], expires: 1.year.from_now }
 
     RoomMembership.find_or_create_by!(room: @room, profile: @viewer_profile) if @viewer_profile
     @memberships = memberships_for_display

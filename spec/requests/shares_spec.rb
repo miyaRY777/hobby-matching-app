@@ -102,6 +102,21 @@ RSpec.describe "Shares", type: :request do
 
         expect(response).to have_http_status(:ok)
       end
+
+      it "recent_room_token Cookieにトークンがセットされる" do
+        room_owner = create(:user)
+        room_owner_profile = create(:profile, user: room_owner)
+        unlocked_room = create(:room, issuer_profile: room_owner_profile, locked: false)
+        share_link = create(:share_link, room: unlocked_room, expires_at: 1.year.from_now, token: "cookietoken")
+
+        guest_user = create(:user)
+        create(:profile, user: guest_user)
+        sign_in guest_user
+
+        get share_path(share_link.token)
+
+        expect(response.cookies["recent_room_token"]).to eq("cookietoken")
+      end
     end
   end
 end

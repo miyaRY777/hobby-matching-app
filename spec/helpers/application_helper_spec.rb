@@ -36,6 +36,14 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   describe "#recent_room_nav_path" do
+    context "Cookieにトークンがセットされている場合" do
+      it "Cookieのトークンでshare_pathを返す" do
+        allow(helper).to receive(:cookies).and_return({ recent_room_token: "tok456" }.with_indifferent_access)
+
+        expect(helper.recent_room_nav_path(nil)).to eq(share_path("tok456"))
+      end
+    end
+
     # 未ログインの場合のテスト
     context "未ログインの場合" do
       it "nilを返す" do
