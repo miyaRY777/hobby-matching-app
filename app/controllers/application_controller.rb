@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     return new_my_profile_path if resource.profile.nil?
 
-    stored_location_for(resource) || profiles_path
+    stored_location_for(resource) || mypage_root_path
   end
 
   def configure_permitted_parameters
