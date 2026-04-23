@@ -109,23 +109,25 @@
           </tr>
         </thead>
         <tbody id="rooms_tbody">
-          <% if @rooms.empty? && @memberships.empty? %>
+          <% if @combined.empty? %>
             <tr>
               <td colspan="7" style="padding: 2rem 1rem; color: #6b7280; text-align: center;">
                 まだ部屋がありません。上のフォームから部屋を作成してみましょう。
               </td>
             </tr>
           <% else %>
-            <% @rooms.each do |room| %>
-              <%= render "mypage/rooms/room", room: room, link: room.share_link %>
-            <% end %>
-            <% @memberships.each do |membership| %>
-              <%= render "mypage/rooms/joined_room", membership: membership %>
+            <% @combined.each do |item| %>
+              <% if item.is_a?(Room) %>
+                <%= render "mypage/rooms/room", room: item, link: item.share_link %>
+              <% else %>
+                <%= render "mypage/rooms/joined_room", membership: item %>
+              <% end %>
             <% end %>
           <% end %>
         </tbody>
       </table>
     </div>
+    <%= paginate @combined %>
   </section>
 
   <div style="margin-top: 1.5rem;">
