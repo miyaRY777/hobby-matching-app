@@ -4,4 +4,5 @@
       <%= render "profile_card", profile: profile %>
     <% end %>
   </div>
+  <%= paginate profiles, params: { q: params[:q], mode: params[:mode] } %>
 <% end %>

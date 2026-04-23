@@ -3,6 +3,7 @@ class ProfilesController < ApplicationController
 
   def index
     @profiles = ProfileSearchQuery.call(q: params[:q], mode: params[:mode])
+               .page(params[:page]).per(8)
 
     if turbo_frame_request?
       render partial: "profiles/profile_list", locals: { profiles: @profiles }
