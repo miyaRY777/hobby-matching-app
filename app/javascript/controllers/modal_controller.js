@@ -3,15 +3,32 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["panel"]
 
-  // モーダルを開き、背景スクロールを無効化する
+  connect() {
+    this.boundHandleKeydown = this.handleKeydown.bind(this)
+  }
+
+  disconnect() {
+    document.removeEventListener("keydown", this.boundHandleKeydown)
+    document.body.classList.remove("overflow-hidden")
+  }
+
   open() {
     this.panelTarget.classList.remove("hidden")
     document.body.classList.add("overflow-hidden")
+    document.addEventListener("keydown", this.boundHandleKeydown)
   }
 
-  // モーダルを閉じ、背景スクロールを復元する
   close() {
     this.panelTarget.classList.add("hidden")
     document.body.classList.remove("overflow-hidden")
+    document.removeEventListener("keydown", this.boundHandleKeydown)
+  }
+
+  closeOnSuccess(event) {
+    if (event.detail.success) this.close()
+  }
+
+  handleKeydown(event) {
+    if (event.key === "Escape") this.close()
   }
 }
