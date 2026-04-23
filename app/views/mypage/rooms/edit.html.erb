@@ -1,1 +1,7 @@
-<%= render "form", room: @room %>
+<div style="max-width: 36rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
+  <h1 style="font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 1.5rem;">部屋を編集</h1>
+  <%= render "form", room: @room %>
+  <div style="margin-top: 1rem;">
+    <%= link_to "部屋管理に戻る", mypage_rooms_path, style: "font-size: 0.875rem; color: #6b7280; text-decoration: none;" %>
+  </div>
+</div>

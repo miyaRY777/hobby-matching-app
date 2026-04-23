@@ -41,7 +41,7 @@ RSpec.describe "Mypage::Rooms", type: :request do
         expect(response.body).to include("公開中")
       end
 
-      it "ロック中の部屋に「ロック中」バッジが表示される" do
+      it "ロック中の部屋に「非公開」バッジが表示される" do
         # ロック中の部屋を準備
         current_user = create(:user)
         current_profile = create(:profile, user: current_user)
@@ -50,8 +50,8 @@ RSpec.describe "Mypage::Rooms", type: :request do
 
         get mypage_rooms_path
 
-        # 「ロック中」バッジが表示されること
-        expect(response.body).to include("ロック中")
+        # 「非公開」バッジが表示されること
+        expect(response.body).to include("非公開")
       end
 
       it "他人の部屋は表示されない" do

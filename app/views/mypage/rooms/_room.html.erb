@@ -1,48 +1,87 @@
 <% badge = room_type_badge(room.room_type) %>
 <% lock_badge = lock_status_badge(room) %>
 
-<%= turbo_frame_tag dom_id(room) do %>
-  <div style="padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; gap: 1rem; min-height: 100%;">
+<tr id="<%= dom_id(room) %>" style="border-bottom: 1px solid rgba(55, 65, 81, 0.3);">
 
-    <%# ヘッダー：部屋名 + バッジ + ︙メニュー %>
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
-      <div style="min-width: 0; flex: 1;">
-        <h3 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin: 0 0 0.5rem 0;">
-          <%= room.label.presence || "名無しの部屋" %>
-        </h3>
+  <%# 部屋名 %>
+  <td style="padding: 0.875rem 1rem; color: #ffffff; font-weight: 600; white-space: nowrap;">
+    <%= room.label.presence || "名無しの部屋" %>
+  </td>
 
-        <%# バッジ横並び %>
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <% if badge %>
-            <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= badge[:color] %>; border: 1px solid <%= badge[:border] %>; color: <%= badge[:text] %>;">
-              <%= badge[:label] %>
-            </span>
-          <% end %>
+  <%# タイプバッジ %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <% if badge %>
+      <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= badge[:color] %>; border: 1px solid <%= badge[:border] %>; color: <%= badge[:text] %>;">
+        <%= badge[:label] %>
+      </span>
+    <% end %>
+  </td>
 
-          <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= lock_badge[:color] %>; border: 1px solid <%= lock_badge[:border] %>; color: <%= lock_badge[:text] %>;">
-            <%= lock_badge[:label] %>
+  <%# 役割バッジ：管理者 %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(96, 165, 250, 0.4); color: #93c5fd;">
+      管理中
+    </span>
+  </td>
+
+  <%# ロック状態 %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= lock_badge[:color] %>; border: 1px solid <%= lock_badge[:border] %>; color: <%= lock_badge[:text] %>;">
+      <%= lock_badge[:label] %>
+    </span>
+  </td>
+
+  <%# リンク状態 + Copyボタン %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <% if link.present? %>
+      <% if link.expired? %>
+        <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5;">
+          期限切れ
+        </span>
+      <% else %>
+        <div style="display: flex; align-items: center; gap: 0.5rem;" data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
+          <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac;">
+            有効
           </span>
-
-          <% if link.present? %>
-            <% if link.expired? %>
-              <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5;">
-                期限切れ
-              </span>
-            <% else %>
-              <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac;">
-                有効
-              </span>
-            <% end %>
-          <% end %>
+          <button type="button"
+                  data-clipboard-target="button"
+                  data-action="click->clipboard#copy"
+                  style="display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #60a5fa; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 0.375rem; cursor: pointer;">
+            Copy
+          </button>
         </div>
-      </div>
+      <% end %>
+    <% else %>
+      <span style="color: #6b7280;">―</span>
+    <% end %>
+  </td>
 
-      <%# ︙メニュー %>
-      <div data-controller="dropdown" style="position: relative; flex-shrink: 0;">
+  <%# 参加人数 %>
+  <td style="padding: 0.875rem 1rem; color: #9ca3af; white-space: nowrap;">
+    <%= room.room_memberships.length %> 人
+  </td>
+
+  <%# 操作 %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <% if link.present? %>
+        <%= link_to "部屋を見る",
+                    share_path(link.token),
+                    target: "_blank",
+                    style: "display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: 1px solid rgba(167,139,250,0.4); color: #c4b5fd; font-size: 0.875rem; text-decoration: none;" %>
+      <% end %>
+
+      <%= link_to "編集",
+                  edit_mypage_room_path(room),
+                  data: { turbo_frame: "_top" },
+                  style: "display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; text-decoration: none; font-size: 0.8125rem;" %>
+
+      <%# ドロップダウンメニュー %>
+      <div data-controller="dropdown" style="position: relative;">
         <button
           type="button"
           data-action="click->dropdown#toggle"
-          style="display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; cursor: pointer;"
+          style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.375rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; cursor: pointer;"
           aria-label="その他の操作"
         >
           &#8942;
@@ -51,80 +90,33 @@
         <div
           data-dropdown-target="menu"
           class="hidden"
-          style="position: absolute; top: calc(100% + 0.5rem); right: 0; z-index: 10; min-width: 11rem; padding: 0.5rem; border-radius: 0.75rem; background: #111827; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 10px 24px rgba(0,0,0,0.35);"
+          style="position: absolute; top: calc(100% + 0.25rem); right: 0; z-index: 10; min-width: 10rem; padding: 0.5rem; border-radius: 0.75rem; background: #111827; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 10px 24px rgba(0,0,0,0.35);"
         >
           <% if link.present? %>
             <%= link_to "再発行",
                         regenerate_share_link_mypage_room_path(room),
                         data: { turbo_method: :patch, turbo_confirm: "招待リンクを再発行しますか？古いURLは無効になります。" },
-                        style: "display: block; width: fit-content; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #fbbf24; text-decoration: none; font-size: 0.875rem;" %>
+                        style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #fbbf24; text-decoration: none; font-size: 0.875rem;" %>
           <% end %>
 
           <% if room.locked? %>
             <%= link_to "解除する",
                         unlock_mypage_room_path(room),
                         data: { turbo_method: :patch, turbo_confirm: "この部屋のロックを解除しますか？" },
-                        style: "display: block; width: fit-content; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #86efac; text-decoration: none; font-size: 0.875rem;" %>
+                        style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #86efac; text-decoration: none; font-size: 0.875rem;" %>
           <% else %>
             <%= link_to "ロックする",
                         lock_mypage_room_path(room),
                         data: { turbo_method: :patch, turbo_confirm: "この部屋をロックしますか？" },
-                        style: "display: block; width: fit-content; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #fca5a5; text-decoration: none; font-size: 0.875rem;" %>
+                        style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #fca5a5; text-decoration: none; font-size: 0.875rem;" %>
           <% end %>
 
           <%= link_to "削除",
                       mypage_room_path(room),
                       data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
-                      style: "display: block; width: fit-content; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #ef4444; text-decoration: none; font-size: 0.875rem;" %>
+                      style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #ef4444; text-decoration: none; font-size: 0.875rem;" %>
         </div>
       </div>
     </div>
-
-    <%# メタ情報：人数・有効期限 %>
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: #9ca3af;">
-      <p style="margin: 0;">参加人数: <%= room.room_memberships.size %> 人</p>
-
-      <% if link.present? && link.expires_at.present? %>
-        <p style="margin: 0;">
-          有効期限: <%= link.expires_at.in_time_zone.strftime("%Y/%m/%d %H:%M") %>
-        </p>
-      <% end %>
-    </div>
-
-    <%# 主操作：部屋を見る / 編集 %>
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: auto;">
-      <% if link.present? %>
-        <%= link_to "部屋を見る",
-                    share_path(link.token),
-                    target: "_blank",
-                    style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #ffffff; text-decoration: none; font-size: 0.875rem; font-weight: 600;" %>
-      <% end %>
-
-      <%= link_to "編集",
-                  edit_mypage_room_path(room),
-                  data: { turbo_frame: dom_id(room) },
-                  style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
-    </div>
-
-    <%# 共有リンク：下段・省略表示 %>
-    <% if link.present? %>
-      <div data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>" style="padding-top: 0.75rem; border-top: 1px solid rgba(55, 65, 81, 0.35);">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
-          <div style="min-width: 0;">
-            <p style="margin: 0 0 0.25rem 0; font-size: 0.75rem; color: #6b7280;">共有リンク</p>
-            <p style="margin: 0; font-size: 0.8125rem; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 18rem;">
-              <%= share_url(link.token) %>
-            </p>
-          </div>
-
-          <button type="button"
-                  data-clipboard-target="button"
-                  data-action="click->clipboard#copy"
-                  style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.75rem; font-weight: 500; color: #60a5fa; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 0.375rem; cursor: pointer; flex-shrink: 0;">
-            Copy
-          </button>
-        </div>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+  </td>
+</tr>

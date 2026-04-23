@@ -1,47 +1,56 @@
 <% room = membership.room %>
-<% issuer = room.issuer_profile&.user %>
 <% link = room.share_link %>
 <% badge = room_type_badge(room.room_type) %>
 
-<div id="<%= dom_id(membership) %>" style="padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column;">
-  <%# 部屋タイプバッジ %>
-  <% if badge %>
-    <span style="display: inline-block; align-self: flex-start; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; margin-bottom: 0.5rem; background: <%= badge[:color] %>; border: 1px solid <%= badge[:border] %>; color: <%= badge[:text] %>;">
-      <%= badge[:label] %>
-    </span>
-  <% end %>
+<tr id="<%= dom_id(membership) %>" style="border-bottom: 1px solid rgba(55, 65, 81, 0.3);">
 
   <%# 部屋名 %>
-  <h3 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin-bottom: 0.75rem;">
+  <td style="padding: 0.875rem 1rem; color: #ffffff; font-weight: 600; white-space: nowrap;">
     <%= room.label.presence || "名無しの部屋" %>
-  </h3>
+  </td>
 
-  <%# 作成者 %>
-  <% if issuer %>
-    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-      <%= avatar_image_tag(issuer, size: :small) %>
-      <span style="font-size: 0.875rem; color: #d1d5db;"><%= issuer.nickname %></span>
-    </div>
-  <% end %>
+  <%# タイプバッジ %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <% if badge %>
+      <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= badge[:color] %>; border: 1px solid <%= badge[:border] %>; color: <%= badge[:text] %>;">
+        <%= badge[:label] %>
+      </span>
+    <% end %>
+  </td>
+
+  <%# 役割バッジ：参加者 %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(75, 85, 99, 0.3); border: 1px solid rgba(107, 114, 128, 0.4); color: #9ca3af;">
+      参加中
+    </span>
+  </td>
+
+  <%# ロック（参加者は表示なし） %>
+  <td style="padding: 0.875rem 1rem; color: #6b7280;">―</td>
+
+  <%# リンク（参加者は表示なし） %>
+  <td style="padding: 0.875rem 1rem; color: #6b7280;">―</td>
 
   <%# 参加人数 %>
-  <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1rem;">
-    参加人数: <%= room.room_memberships.size %> 人
-  </p>
+  <td style="padding: 0.875rem 1rem; color: #9ca3af; white-space: nowrap;">
+    <%= room.room_memberships.length %> 人
+  </td>
 
   <%# 操作 %>
-  <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; font-size: 0.875rem; width: 100%; margin-top: auto;">
-    <% if link.present? %>
-      <%= link_to "部屋を見る",
-                  share_path(link.token),
-                  target: "_blank",
-                  style: "color: #a78bfa; text-decoration: none;" %>
-    <% end %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <% if link.present? %>
+        <%= link_to "部屋を見る",
+                    share_path(link.token),
+                    target: "_blank",
+                    style: "display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: 1px solid rgba(167,139,250,0.4); color: #c4b5fd; font-size: 0.875rem; text-decoration: none;" %>
+      <% end %>
 
-    <%= button_to "退出",
-                  mypage_room_membership_path(membership),
-                  method: :delete,
-                  data: { turbo_confirm: "本当に退出しますか？" },
-                  style: "padding: 0.25rem 0.75rem; border-radius: 0.375rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; font-size: 0.875rem; cursor: pointer;" %>
-  </div>
-</div>
+      <%= button_to "退出",
+                    mypage_room_membership_path(membership),
+                    method: :delete,
+                    data: { turbo_confirm: "本当に退出しますか？" },
+                    style: "padding: 0.375rem 0.75rem; border-radius: 0.375rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; font-size: 0.8125rem; cursor: pointer;" %>
+    </div>
+  </td>
+</tr>
