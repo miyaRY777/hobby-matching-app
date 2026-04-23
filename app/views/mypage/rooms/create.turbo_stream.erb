@@ -1,4 +1,4 @@
-<%= turbo_stream.prepend "rooms_list" do %>
+<%= turbo_stream.prepend "rooms_tbody" do %>
   <%= render "mypage/rooms/room", room: @room, link: @room.share_link %>
 <% end %>
 
