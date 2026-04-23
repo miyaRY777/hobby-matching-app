@@ -1,73 +1,100 @@
 <% content_for :no_center, true %>
 
 <div style="max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
-  <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin-bottom: 2rem;">部屋管理</h1>
 
-  <%# 作成フォーム（折りたたみ） %>
-  <div data-controller="toggle" style="margin-bottom: 2.5rem;">
-    <button
-      type="button"
-      data-action="click->toggle#toggle"
-      style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: 0.75rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.9375rem; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);"
-    >
-      <span data-toggle-target="openText">+ 部屋を新規作成</span>
-      <span data-toggle-target="closeText" class="hidden">− フォームを閉じる</span>
-    </button>
-
-    <div data-toggle-target="content" style="max-width: 28rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); margin-top: 1rem;">
-      <h2 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">新しい部屋を作成</h2>
-
-      <% room = @new_room %>
-      <%= form_with model: room, url: mypage_rooms_path do |f| %>
-        <% if room.errors.any? %>
-          <div style="margin-bottom: 1rem; border-radius: 0.5rem; border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); padding: 0.75rem 1rem; color: #fca5a5; font-size: 0.875rem;">
-            <% room.errors.each do |error| %>
-              <% message = error.attribute == :label ? "部屋名#{error.message}" : error.full_message %>
-              <div><%= message %></div>
-            <% end %>
-          </div>
-        <% end %>
-
-        <div style="margin-bottom: 1rem;">
-          <%= f.label :label, "部屋名", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-          <%= f.text_field :label,
-                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <%= f.label :room_type, "タイプ", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-          <%= f.select :room_type,
-                [["雑談", "chat"], ["勉強", "study"], ["ゲーム", "game"]],
-                { selected: "chat" },
-                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <%= f.label :locked, "公開設定", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-          <%= f.select :locked,
-                [["公開", false], ["ロック", true]],
-                { selected: false },
-                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <%= label_tag :expires_in, "招待リンクの有効期限", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
-          <%= select_tag :expires_in,
-                options_for_select([["1時間", "1h"], ["24時間", "24h"], ["3日", "3d"], ["7日", "7d"], ["期限なし", "none"]], "24h"),
-                style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
-        </div>
-
-        <%= f.submit "部屋を作成",
-              style: "padding: 0.5rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
-      <% end %>
+  <%# 作成ボタン＋モーダル（部屋一覧見出しと横並び） %>
+  <div data-controller="modal" data-action="turbo:submit-end->modal#closeOnSuccess" style="margin-bottom: 2.5rem;">
+    <%# 見出し行：部屋一覧 + 新規作成ボタン %>
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem;">
+      <h2 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin: 0;">部屋一覧</h2>
+      <button
+        type="button"
+        data-action="click->modal#open"
+        style="padding: 0.375rem 0.875rem; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(167,139,250,0.4); color: #c4b5fd; font-size: 0.8125rem; font-weight: 500; cursor: pointer;"
+      >
+        + 新規作成
+      </button>
     </div>
-  </div>
+    <p style="font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem;">管理中・参加中の部屋をまとめて表示します。</p>
+
+    <%# モーダルオーバーレイ（hidden クラスで表示制御。inline に display を書かない） %>
+    <div data-modal-target="panel" data-testid="room-create-modal" class="hidden" style="position: fixed; inset: 0; z-index: 50;">
+      <%# 背景（クリックで閉じる） %>
+      <div
+        data-testid="room-create-modal-backdrop"
+        data-action="click->modal#close"
+        style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6);"
+      ></div>
+
+      <%# センタリング用ラッパー %>
+      <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; z-index: 10;">
+
+      <%# モーダル本体 %>
+      <div style="width: 100%; max-width: 28rem; margin: 1rem; padding: 1.5rem; border-radius: 0.75rem; background: #1f2937; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+        <%# ヘッダー %>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+          <h2 style="font-size: 1.125rem; font-weight: 600; color: #ffffff; margin: 0;">新しい部屋を作成</h2>
+          <button
+            type="button"
+            data-action="click->modal#close"
+            data-testid="room-create-modal-close"
+            style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 1.25rem; line-height: 1; padding: 0.25rem;"
+            aria-label="モーダルを閉じる"
+          >×</button>
+        </div>
+
+        <%# フォーム（turbo_frame でバリデーションエラーをインライン表示） %>
+        <%= turbo_frame_tag "new_room_form" do %>
+          <%= form_with model: @new_room, url: mypage_rooms_path do |f| %>
+            <% if @new_room&.errors&.any? %>
+              <div style="margin-bottom: 1rem; border-radius: 0.5rem; border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); padding: 0.75rem 1rem; color: #fca5a5; font-size: 0.875rem;">
+                <% @new_room.errors.each do |error| %>
+                  <% message = error.attribute == :label ? "部屋名#{error.message}" : error.full_message %>
+                  <div><%= message %></div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <div style="margin-bottom: 1rem;">
+              <%= f.label :label, "部屋名", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+              <%= f.text_field :label,
+                    style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <%= f.label :room_type, "タイプ", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+              <%= f.select :room_type,
+                    [["雑談", "chat"], ["勉強", "study"], ["ゲーム", "game"]],
+                    { selected: "chat" },
+                    style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <%= f.label :locked, "公開設定", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+              <%= f.select :locked,
+                    [["公開", false], ["非公開", true]],
+                    { selected: false },
+                    style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <%= label_tag :expires_in, "招待リンクの有効期限", style: "display: block; font-size: 0.875rem; font-weight: 500; color: #d1d5db; margin-bottom: 0.375rem;" %>
+              <%= select_tag :expires_in,
+                    options_for_select([["1時間", "1h"], ["24時間", "24h"], ["3日", "3d"], ["7日", "7d"], ["期限なし", "none"]], "24h"),
+                    style: "width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(55, 65, 81, 0.6); color: #ffffff; font-size: 0.875rem; outline: none; box-sizing: border-box;" %>
+            </div>
+
+            <%= f.submit "部屋を作成",
+                  style: "width: 100%; padding: 0.625rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);" %>
+          <% end %>
+        <% end %>
+      </div>
+      </div><%# /センタリング用ラッパー %>
+    </div><%# /モーダルオーバーレイ %>
+  </div><%# /data-controller="modal" %>
 
   <%# 部屋一覧テーブル %>
   <section style="margin-bottom: 3rem;">
-    <h2 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">部屋一覧</h2>
-    <p style="font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem;">管理中・参加中の部屋をまとめて表示します。</p>
-
     <div style="overflow-x: auto;">
       <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
         <thead>
