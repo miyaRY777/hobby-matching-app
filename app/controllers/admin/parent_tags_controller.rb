@@ -3,16 +3,17 @@ class Admin::ParentTagsController < Admin::BaseController
   before_action :set_parent_tag_options, only: %i[index new create edit update]
 
   def index
-    scope = ParentTag.classified.includes(:hobbies).order(:room_type, :position, :id)
-    scope = scope.where(room_type: params[:room_type]) if params[:room_type].present?
-    scope = scope.where(id: params[:parent_tag_id]) if params[:parent_tag_id].present?
+    base_scope = ParentTag.classified.includes(:hobbies).order(:position, :id)
+    base_scope = base_scope.where(room_type: params[:room_type]) if params[:room_type].present?
+    base_scope = base_scope.where(id: params[:parent_tag_id]) if params[:parent_tag_id].present?
 
-    @parent_tags = scope.to_a
-    hobby_ids = @parent_tags.flat_map { |parent_tag| parent_tag.hobbies.map(&:id) }
-
-    @usage_counts = ProfileHobby.where(hobby_id: hobby_ids).group(:hobby_id).count
-    @parent_tags_by_room_type = @parent_tags.group_by(&:room_type)
     @room_type_options = ParentTag.room_types.keys
+    @parent_tags_by_room_type = @room_type_options.each_with_object({}) do |rt, hash|
+      hash[rt] = base_scope.where(room_type: rt).page(params[:"#{rt}_page"]).per(10)
+    end
+
+    hobby_ids = @parent_tags_by_room_type.values.flat_map { |tags| tags.flat_map { |t| t.hobbies.map(&:id) } }
+    @usage_counts = ProfileHobby.where(hobby_id: hobby_ids).group(:hobby_id).count
   end
 
   def new
