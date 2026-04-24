@@ -35,7 +35,7 @@
     <div id="flash" style="position: fixed; top: 3rem; left: 0; right: 0; z-index: 40; padding: 0.5rem 1rem;">
         <%= render 'shared/flash' %>
     </div>
-    <main class="<%= content_for?(:landing) ? '' : content_for?(:full_width) ? 'py-8 px-4' : "container mx-auto py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>" style="<%= content_for?(:landing) ? '' : "margin-top: 7rem; position: relative; display: flex; flex-direction: column; #{content_for?(:fixed_main) ? 'height: calc(100vh - 7rem); overflow-y: hidden;' : ''}" %>">
+    <main class="<%= content_for?(:landing) ? '' : content_for?(:full_width) ? 'py-8 px-4' : "container mx-auto py-8 px-5 #{content_for?(:no_center) ? '' : 'flex items-center justify-center'}" %>" style="<%= content_for?(:landing) ? '' : "margin-top: 7rem; position: relative; display: flex; flex-direction: column; #{content_for?(:fixed_main) ? 'height: calc(100vh - 7rem); overflow-y: hidden;' : 'min-height: calc(100vh - 7rem);'}" %>">
       <% unless content_for?(:landing) %>
         <%# 背景の装飾 %>
         <div style="position: absolute; inset: 0; opacity: 0.15; pointer-events: none; z-index: 0;">
