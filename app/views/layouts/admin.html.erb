@@ -22,7 +22,7 @@
     <div style="position: fixed; top: 3rem; left: 0; right: 0; z-index: 40; padding: 0.5rem 1rem;">
       <%= render "shared/flash" %>
     </div>
-    <main style="padding: 2rem 1.5rem; margin-top: 1rem;">
+    <main style="padding: 2rem 1.5rem; margin-top: 1rem; display: flex; flex-direction: column; min-height: calc(100vh - 3rem);">
       <%= yield %>
     </main>
   </body>
