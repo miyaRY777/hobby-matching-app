@@ -5,6 +5,7 @@ class RoomsController < ApplicationController
     @rooms = Room.unlocked
                  .includes(issuer_profile: :user, room_memberships: { profile: :user })
                  .order(created_at: :desc)
+                 .page(params[:page]).per(10)
 
     profile = current_user.profile
     @joined_room_ids = profile&.joined_room_ids || []

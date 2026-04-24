@@ -31,7 +31,7 @@
     <% create_parent_path = new_admin_parent_tag_path(room_type:) %>
     <% first_parent_tag = room_parent_tags.first %>
 
-    <section style="margin-bottom: 2rem;">
+    <section data-room-type="<%= room_type %>" style="margin-bottom: 2rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
         <h2 style="font-size: 1.125rem; color: #f9fafb; margin: 0;"><%= room_type %></h2>
         <div style="display: flex; gap: 0.5rem;">
@@ -85,6 +85,9 @@
           <% end %>
         </tbody>
       </table>
+      <div style="min-height: 2.5rem;">
+        <%= paginate room_parent_tags, param_name: :"#{room_type}_page" %>
+      </div>
     </section>
   <% end %>
 </div>

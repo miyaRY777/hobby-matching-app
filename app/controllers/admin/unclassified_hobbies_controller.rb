@@ -5,7 +5,7 @@ class Admin::UnclassifiedHobbiesController < Admin::BaseController
                  .select("hobbies.*, COUNT(DISTINCT profile_hobbies.id) AS usage_count, COUNT(DISTINCT profile_hobbies.profile_id) AS user_count")
                  .group("hobbies.id")
     scope = scope.where("hobbies.name LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:q])}%") if params[:q].present?
-    @hobbies = scope
+    @hobbies = scope.page(params[:page]).per(10)
     @parent_tags = ParentTag.order(:room_type, :position)
     @grouped_parent_tag_options = build_grouped_parent_tag_options
   end

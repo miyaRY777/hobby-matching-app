@@ -1,7 +1,8 @@
-<%= turbo_frame_tag "profile_list" do %>
-  <div class="grid grid-cols-1 gap-6 items-stretch sm:grid-cols-2 lg:grid-cols-4">
+<%= turbo_frame_tag "profile_list", style: "display: flex; flex-direction: column; flex: 1;" do %>
+  <div class="grid grid-cols-1 gap-6 items-stretch sm:grid-cols-2 lg:grid-cols-4" style="flex: 1; align-content: start;">
     <% profiles.each do |profile| %>
       <%= render "profile_card", profile: profile %>
     <% end %>
   </div>
+  <%= paginate profiles, params: { q: params[:q], mode: params[:mode] } %>
 <% end %>

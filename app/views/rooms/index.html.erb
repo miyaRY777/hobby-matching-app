@@ -1,6 +1,6 @@
 <% content_for :no_center, true %>
 
-<div style="max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
+<div style="max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem; flex: 1; min-height: 0; display: flex; flex-direction: column;">
   <div style="display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
     <div>
       <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin: 0 0 0.5rem 0;">公開部屋一覧</h1>
@@ -10,8 +10,8 @@
     <%= link_to "部屋管理へ", mypage_rooms_path, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.625rem 1rem; border-radius: 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
   </div>
 
-  <section>
-    <div style="overflow-x: auto; border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+  <section style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
+    <div style="flex: 1; min-height: 0; overflow: auto; border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
       <table style="width: 100%; min-width: 760px; border-collapse: collapse;">
         <thead>
           <tr style="background: rgba(255,255,255,0.02);">
@@ -39,6 +39,7 @@
         </tbody>
       </table>
     </div>
+    <%= paginate @rooms %>
   </section>
 
 </div>
