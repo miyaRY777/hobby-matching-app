@@ -1,9 +1,9 @@
 <% content_for :no_center, true %>
 
-<div style="max-width: 72rem; margin: 0 auto; padding: 2.5rem 1.5rem;">
+<div style="max-width: 72rem; margin: 0 auto; padding: 1.5rem 1.5rem; flex: 1; min-height: 0; display: flex; flex-direction: column;">
 
   <%# 作成ボタン＋モーダル（部屋一覧見出しと横並び） %>
-  <div data-controller="modal" data-action="turbo:submit-end->modal#closeOnSuccess" style="margin-bottom: 2.5rem;">
+  <div data-controller="modal" data-action="turbo:submit-end->modal#closeOnSuccess" style="margin-bottom: 1rem;">
     <%# 見出し行：部屋一覧 + 新規作成ボタン %>
     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem;">
       <h2 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin: 0;">部屋一覧</h2>
@@ -94,8 +94,8 @@
   </div><%# /data-controller="modal" %>
 
   <%# 部屋一覧テーブル %>
-  <section style="margin-bottom: 3rem;">
-    <div style="overflow-x: auto;">
+  <section style="flex: 1; min-height: 0; display: flex; flex-direction: column; margin-bottom: 3rem;">
+    <div style="flex: 1; min-height: 0; overflow: auto;">
       <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
         <thead>
           <tr style="border-bottom: 1px solid rgba(55, 65, 81, 0.5);">

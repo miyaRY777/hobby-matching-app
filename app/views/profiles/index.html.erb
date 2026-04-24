@@ -1,4 +1,4 @@
-<div class="w-full max-w-7xl mx-auto flex flex-col gap-6">
+<div class="w-full max-w-7xl mx-auto flex flex-col gap-6 flex-1">
   <h1 style="font-size: 1.5rem; font-weight: 600; color: #ffffff; margin-bottom: 1rem;">プロフィール一覧</h1>
 
   <!-- 検索フォーム -->
@@ -9,7 +9,7 @@
   <!-- カードグリッド：4列 -->
   <div id="profile_list_loading_container"
        aria-busy="false"
-       style="position: relative;">
+       style="position: relative; flex: 1; display: flex; flex-direction: column;">
     <div data-loading-target="indicator"
          id="profile_list_loading_indicator"
          data-testid="profile-list-loading"
