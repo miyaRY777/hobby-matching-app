@@ -100,7 +100,7 @@
 ## quiz
 
 - 開始前に、出題候補ノートの `#要復習` 個数と `review_log` 件数が一致しているか確認する
-- 開始前チェックは `ruby /Users/miyary777/workspace/miyaRY777/knowledge-base/scripts/review_tag_sync.rb --note PATH --action check --date YYYY-MM-DD` を優先して使う
+- 開始前チェックは `ruby /Users/miyary777/workspace/30-knowledge/scripts/review_tag_sync.rb --note PATH --action check --date YYYY-MM-DD` を優先して使う
 - 不一致があれば、出題前にどちらを正とするかユーザーに確認する
 - タグ指定があれば絞り込む
 - 複数問なら同じノートを重複させない
@@ -117,7 +117,7 @@
 - `review_log` は必ずノート末尾に置く
 - `review_log` の日付は古い順に並べる
 - `review_log` が空になったら HTML コメントごと削除し、`#要復習` も 0 個にする
-- 正誤確定後の更新は手編集より `ruby /Users/miyary777/workspace/miyaRY777/knowledge-base/scripts/review_tag_sync.rb --note PATH --action wrong|correct --date YYYY-MM-DD` を優先する
+- 正誤確定後の更新は手編集より `ruby /Users/miyary777/workspace/30-knowledge/scripts/review_tag_sync.rb --note PATH --action wrong|correct --date YYYY-MM-DD` を優先する
 - タグを付けたら、どのノートを更新したかユーザーに伝える
 - タグを外したときも、どのノートを更新したかユーザーに伝える
 
@@ -154,7 +154,7 @@
 ## month_quiz
 
 - 開始前に、出題候補ノートの `#要復習` 個数と `review_log` 件数が一致しているか確認する
-- 開始前チェックは `ruby /Users/miyary777/workspace/miyaRY777/knowledge-base/scripts/review_tag_sync.rb --note PATH --action check --date YYYY-MM-DD` を優先して使う
+- 開始前チェックは `ruby /Users/miyary777/workspace/30-knowledge/scripts/review_tag_sync.rb --note PATH --action check --date YYYY-MM-DD` を優先して使う
 - 不一致があれば、出題前にどちらを正とするかユーザーに確認する
 - 直近 1 ヶ月で追加または更新した notes を対象にする
 - 土日に実施する
@@ -173,7 +173,7 @@
 - `review_log` は必ずノート末尾に置く
 - `review_log` の日付は古い順に並べる
 - `review_log` が空になったら HTML コメントごと削除し、`#要復習` も 0 個にする
-- 正誤確定後の更新は手編集より `ruby /Users/miyary777/workspace/miyaRY777/knowledge-base/scripts/review_tag_sync.rb --note PATH --action wrong|correct --date YYYY-MM-DD` を優先する
+- 正誤確定後の更新は手編集より `ruby /Users/miyary777/workspace/30-knowledge/scripts/review_tag_sync.rb --note PATH --action wrong|correct --date YYYY-MM-DD` を優先する
 - タグを付けたら、どのノートを更新したかユーザーに伝える
 - タグを外したときも、どのノートを更新したかユーザーに伝える
 - 終了後は要復習候補だけを短い復習メモにまとめてもよい

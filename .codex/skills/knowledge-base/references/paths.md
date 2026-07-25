@@ -2,7 +2,7 @@
 
 ## リポジトリ
 
-- `/Users/miyary777/workspace/miyaRY777/knowledge-base`
+- `/Users/miyary777/workspace/30-knowledge`
 
 ## 主なディレクトリ
 

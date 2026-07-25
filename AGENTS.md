@@ -135,11 +135,11 @@
 ## knowledge-base の扱い
 
 - `knowledge-base` のノート運用や質問応答を行うときは、knowledge-base スキルの手順に従う
-- 対象リポジトリは `/Users/miyary777/workspace/miyaRY777/knowledge-base`
+- 対象リポジトリは `/Users/miyary777/workspace/30-knowledge`
 - `capture / distill / moc / ask / search / quiz / weekly-review` を Codex 向けに再現している
 
 ## knowledge-base の扱い
 
 - `knowledge-base` のノート運用や質問応答を行うときは、knowledge-base スキルの手順に従う
-- 対象リポジトリは `/Users/miyary777/workspace/miyaRY777/knowledge-base`
+- 対象リポジトリは `/Users/miyary777/workspace/30-knowledge`
 - `capture / distill / moc / ask / search / quiz / weekly-review` を Codex 向けに再現している

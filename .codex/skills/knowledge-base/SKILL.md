@@ -1,6 +1,6 @@
 ---
 name: knowledge-base
-description: Use when working with the local knowledge-base repository, answering questions from notes, searching notes, capturing inbox memos, distilling inbox files into atomic notes, building MOCs, running quiz-style review, or generating a weekly review for the knowledge base at /Users/miyary777/workspace/miyaRY777/knowledge-base.
+description: Use when working with the local knowledge-base repository, answering questions from notes, searching notes, capturing inbox memos, distilling inbox files into atomic notes, building MOCs, running quiz-style review, or generating a weekly review for the knowledge base at /Users/miyary777/workspace/30-knowledge.
 ---
 
 # Knowledge Base Skill
@@ -8,7 +8,7 @@ description: Use when working with the local knowledge-base repository, answerin
 このスキルは `knowledge-base` リポジトリの Claude 用運用を Codex 向けに置き換える。
 
 対象パス:
-- `/Users/miyary777/workspace/miyaRY777/knowledge-base`
+- `/Users/miyary777/workspace/30-knowledge`
 
 まず読むもの:
 - 運用の全体像が必要なら `references/workflows.md`
