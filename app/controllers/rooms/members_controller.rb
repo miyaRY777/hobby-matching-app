@@ -20,7 +20,7 @@ module Rooms
       # 1. 表示対象プロフィールを取得
       # user / hobbies を eager load して N+1 クエリを防ぐ
       # --------------------------------------------------
-      @profile = Profile.includes(:user, profile_hobbies: { hobby: :hobby_parent_tags }).find(params[:id])
+      @profile = @room.profiles.includes(:user, profile_hobbies: { hobby: :hobby_parent_tags }).find(params[:id])
 
       # --------------------------------------------------
       # 2. 部屋のroom_typeに一致する親タグを持つ子タグのみ抽出

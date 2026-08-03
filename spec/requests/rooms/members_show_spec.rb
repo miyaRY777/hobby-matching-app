@@ -36,6 +36,15 @@ RSpec.describe "Rooms::Members#show", type: :request do
 
       expect(response).to have_http_status(:ok)
     end
+
+    it "部屋メンバーが部屋外プロフィールIDを指定すると404を返す" do
+      outside_profile = create(:profile, user: create(:user))
+      sign_in room_owner_user
+
+      get room_member_path(room_id: room.id, id: outside_profile.id)
+
+      expect(response).to have_http_status(:not_found)
+    end
   end
 
   describe "@room_related_phs" do
