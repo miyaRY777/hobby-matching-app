@@ -60,16 +60,18 @@
       </div>
 
       <div class="min-w-0">
-        <div class="mb-4 flex min-h-[48px] items-center">
-          <span class="text-lg font-semibold tracking-wide text-slate-200">詳細</span>
-        </div>
-        <div class="min-h-[624px] rounded-[24px] border border-white/10 bg-slate-900/25 p-4 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
-          <turbo-frame id="member_detail">
-            <div class="w-full rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] px-6 py-10 text-center text-sm text-slate-400 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
-              左のマインドマップからメンバーを選択してください
+        <turbo-frame id="member_detail">
+          <%= render "rooms/members/detail_heading", summary_text: nil %>
+          <div class="flex h-[624px] min-h-0 min-h-[624px] flex-col rounded-[24px] border border-white/10 bg-slate-900/25 p-4 shadow-[0_18px_40px_rgba(2,6,23,0.22)]"
+               data-testid="member-detail-panel">
+            <div class="min-h-0 flex-1 overflow-y-auto"
+                 data-testid="member-detail-scroll-area">
+              <div class="w-full rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] px-6 py-10 text-center text-sm text-slate-400 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
+                左のマインドマップからメンバーを選択してください
+              </div>
             </div>
-          </turbo-frame>
-        </div>
+          </div>
+        </turbo-frame>
       </div>
     </div>
   </div>

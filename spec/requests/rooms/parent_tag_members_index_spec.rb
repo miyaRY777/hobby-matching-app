@@ -43,7 +43,7 @@ RSpec.describe "Rooms::ParentTagMembers#index", type: :request do
 
       get room_parent_tag_members_path(room_id: room.id, parent_tag_id: parent_tag.id)
 
-      expect(response.body).to include("ゲームに関連するユーザー 2人")
+      expect(response.body).to include("関連ユーザー：2人")
       expect(response.body).to include("first_user")
       expect(response.body).not_to include("second_user")
       expect(response.body).to include("次へ")
@@ -85,7 +85,9 @@ RSpec.describe "Rooms::ParentTagMembers#index", type: :request do
     it "対象者がいなければ空状態を表示する" do
       get room_parent_tag_members_path(room_id: room.id, parent_tag_id: parent_tag.id)
 
+      expect(response.body).to include("関連ユーザー：0人")
       expect(response.body).to include("該当するユーザーはいません")
+      expect(response.body).not_to include('data-testid="member-detail-pagination"')
     end
   end
 

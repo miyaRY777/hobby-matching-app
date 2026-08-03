@@ -15,6 +15,7 @@
 - マインドマップ、右ペインの外枠寸法、ユーザー抽出条件、カードに表示する趣味タグの条件は変更しない。
 - DBスキーマ、ルーティング、認証・認可、1ページ1人の仕様は変更しない。
 - 親タグ選択、ページ移動、個別ユーザー選択では `member_detail` Turbo Frameだけを更新する。
+- バッジの背景色は `#2563EB`（`rgb(37, 99, 235)`）、文字色は `#FFFFFF`（`rgb(255, 255, 255)`）に固定し、コード例の `bg-[rgb(37,99,235)] text-white` と一致させる。
 - 既存の未追跡ファイルを編集、ステージ、コミットしない。
 - 確認コマンドは `docker compose exec web` 経由で実行する。
 
@@ -28,10 +29,12 @@
 - Modify: `app/views/rooms/members/show.html.erb`
 - Modify: `app/views/rooms/parent_tag_members/index.html.erb`
 - Test: `spec/system/rooms/parent_tag_members_spec.rb`
-- Test: `spec/system/rooms/share_layout_stability_spec.rb`
+- Test: `spec/requests/rooms/parent_tag_members_index_spec.rb`
+- Modify: `docs/superpowers/specs/2026-08-03-parent-tag-detail-layout-design.md`
+- Modify: `docs/superpowers/plans/2026-08-03-parent-tag-detail-layout.md`
 
 **Interfaces:**
-- Consumes: `member_detail` Turbo Frameの既存`src`更新、`@parent_tag.name`、`@profiles.total_count`、`@profile`、`@room_related_phs`、Kaminariの`paginate`。
+- Consumes: `member_detail` Turbo Frameの既存`src`更新、`@profiles.total_count`、`@profile`、`@room_related_phs`、Kaminariの`paginate`。
 - Produces: `rooms/members/detail_heading` partial。local `summary_text`は`String`または`nil`。`nil`では`詳細`だけ、文字列では`詳細`の右に青いバッジを描画する。
 - Produces: `[data-testid="member-detail-panel"]` は高さ624pxの右ペイン外枠、`[data-testid="member-detail-scroll-area"]` は縦スクロール領域、`[data-testid="member-detail-pagination"]` は下部固定領域。
 
@@ -55,7 +58,7 @@ within("turbo-frame#member_detail") do
   expect(page).to have_css("[data-testid='member-detail-heading']", text: "詳細")
   expect(page).to have_css(
     "[data-testid='parent-tag-member-summary']",
-    text: "ゲームに関連するユーザー 2人"
+    text: "関連ユーザー：2人"
   )
 
   click_link "次へ ›"
@@ -63,7 +66,7 @@ within("turbo-frame#member_detail") do
   expect(page).to have_text("demo_user2")
   expect(page).to have_css(
     "[data-testid='parent-tag-member-summary']",
-    text: "ゲームに関連するユーザー 2人"
+    text: "関連ユーザー：2人"
   )
 end
 ```
@@ -123,7 +126,7 @@ Expected: FAIL。`data-testid='member-detail-heading'`、`parent-tag-member-summ
      data-testid="member-detail-heading">
   <span class="text-lg font-semibold tracking-wide text-slate-200">詳細</span>
   <% if summary_text.present? %>
-    <span class="inline-flex items-center rounded-full border border-blue-400/40 bg-blue-500/15 px-3 py-1 text-sm font-semibold text-blue-300"
+    <span class="inline-flex items-center rounded-full border border-blue-400 bg-[rgb(37,99,235)] px-3 py-1 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(37,99,235,0.25)]"
           data-testid="parent-tag-member-summary">
       <%= summary_text %>
     </span>
@@ -176,7 +179,7 @@ Expected: FAIL。`data-testid='member-detail-heading'`、`parent-tag-member-summ
 ```erb
 <turbo-frame id="member_detail">
   <%= render "rooms/members/detail_heading",
-             summary_text: "#{@parent_tag.name}に関連するユーザー #{@profiles.total_count}人" %>
+             summary_text: "関連ユーザー：#{@profiles.total_count}人" %>
 
   <div class="flex h-[624px] min-h-0 flex-col gap-4 rounded-[24px] border border-white/10 bg-slate-900/25 p-4 shadow-[0_18px_40px_rgba(2,6,23,0.22)]"
        data-testid="member-detail-panel">
@@ -237,7 +240,7 @@ Expected: RSpec 0 failures、RuboCop 0 offenses、JavaScript/CSS build exit 0、
 
 - [ ] **Step 10: コミット前にユーザー確認を取り、承認後にコミットする**
 
-対象ファイルを次の5ファイルに限定する。
+対象ファイルを次の8ファイルに限定する。
 
 ```bash
 git add \
@@ -245,10 +248,13 @@ git add \
   app/views/shares/show.html.erb \
   app/views/rooms/members/show.html.erb \
   app/views/rooms/parent_tag_members/index.html.erb \
-  spec/system/rooms/parent_tag_members_spec.rb
+  spec/system/rooms/parent_tag_members_spec.rb \
+  spec/requests/rooms/parent_tag_members_index_spec.rb \
+  docs/superpowers/specs/2026-08-03-parent-tag-detail-layout-design.md \
+  docs/superpowers/plans/2026-08-03-parent-tag-detail-layout.md
 git diff --cached --check
 git diff --cached --stat
 git commit -m "fix: 親タグ詳細の見出しとページネーションを調整 #282"
 ```
 
-Expected: ユーザー所有の未追跡ファイルを含まず、上記5ファイルだけをコミットする。
+Expected: ユーザー所有の未追跡ファイルを含まず、上記8ファイルだけをコミットする。

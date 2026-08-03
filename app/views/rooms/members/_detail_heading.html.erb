@@ -1,0 +1,10 @@
+<div class="mb-4 flex min-h-[48px] flex-wrap items-center gap-3"
+     data-testid="member-detail-heading">
+  <span class="text-lg font-semibold tracking-wide text-slate-200">詳細</span>
+  <% if summary_text.present? %>
+    <span class="inline-flex items-center rounded-full border border-blue-400 bg-[rgb(37,99,235)] px-3 py-1 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(37,99,235,0.25)]"
+          data-testid="parent-tag-member-summary">
+      <%= summary_text %>
+    </span>
+  <% end %>
+</div>
