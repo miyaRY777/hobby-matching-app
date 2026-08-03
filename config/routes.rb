@@ -39,6 +39,9 @@ Rails.application.routes.draw do
   get "/share/:token", to: "shares#show", as: :share
 
   get "/rooms/:room_id/members/:id", to: "rooms/members#show", as: :room_member
+  get "/rooms/:room_id/parent_tags/:parent_tag_id/members",
+      to: "rooms/parent_tag_members#index",
+      as: :room_parent_tag_members
 
   namespace :my do
     # 自分用（単数）
