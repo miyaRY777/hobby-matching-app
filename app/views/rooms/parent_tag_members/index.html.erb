@@ -1,22 +1,21 @@
 <turbo-frame id="member_detail">
   <%= render "rooms/members/detail_heading",
-             summary_text: "関連ユーザー：#{@profiles.total_count}人" %>
+             summary_text: "関連ユーザー：#{@profile_cards.size}人" %>
 
-  <div class="flex h-[624px] min-h-0 min-h-[624px] flex-col gap-4 rounded-[24px] border border-white/10 bg-slate-900/25 p-4 shadow-[0_18px_40px_rgba(2,6,23,0.22)]"
+  <div class="flex h-[624px] min-h-0 min-h-[624px] flex-col rounded-[24px] border border-white/10 bg-slate-900/25 p-4 shadow-[0_18px_40px_rgba(2,6,23,0.22)]"
        data-testid="member-detail-panel">
-    <div class="min-h-0 flex-1 overflow-y-auto"
-         data-testid="member-detail-scroll-area">
-      <% if @profile %>
-        <%= render "rooms/members/card", profile: @profile, room_related_phs: @room_related_phs %>
+    <div class="min-h-0 flex-1 space-y-4 overflow-y-auto"
+         data-testid="member-detail-scroll-area"
+         style="overscroll-behavior-y: contain;">
+      <% if @profile_cards.any? %>
+        <% @profile_cards.each do |card| %>
+          <%= render "rooms/members/card",
+                     profile: card[:profile],
+                     room_related_phs: card[:room_related_phs] %>
+        <% end %>
       <% else %>
         <p class="text-slate-400">該当するユーザーはいません</p>
       <% end %>
     </div>
-
-    <% if @profiles.total_pages > 1 %>
-      <div class="shrink-0" data-testid="member-detail-pagination">
-        <%= paginate @profiles %>
-      </div>
-    <% end %>
   </div>
 </turbo-frame>
