@@ -6,15 +6,13 @@ module Rooms
     before_action :set_parent_tag
 
     def index
-      profiles = RoomParentTagProfilesQuery.call(room: @room, parent_tag: @parent_tag)
-      @profiles = profiles.page(params[:page]).per(1)
-
-      if @profiles.out_of_range? && @profiles.total_pages.positive?
-        @profiles = profiles.page(@profiles.total_pages).per(1)
+      profiles = RoomParentTagProfilesQuery.call(room: @room, parent_tag: @parent_tag).to_a
+      @profile_cards = profiles.map do |profile|
+        {
+          profile:,
+          room_related_phs: room_related_profile_hobbies(profile)
+        }
       end
-
-      @profile = @profiles.first
-      @room_related_phs = room_related_profile_hobbies(@profile)
     end
 
     private
