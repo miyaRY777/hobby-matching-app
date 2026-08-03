@@ -56,6 +56,14 @@ RSpec.describe JsmindDataBuilder do
         expect(user_node[:data][:url]).to eq "/rooms/#{chat_room.id}/members/#{current_profile.id}"
       end
 
+      it "親タグノードに関連ユーザー一覧URLが設定される" do
+        parent_tag_node = result[:data][:children].find { |node| node[:topic] == "アニメ" }
+
+        expect(parent_tag_node.dig(:data, :url)).to eq(
+          "/rooms/#{chat_room.id}/parent_tags/#{chat_parent_tag.id}/members"
+        )
+      end
+
       it "「その他」ノードが表示されない" do
         expect(result[:data][:children].map { |n| n[:topic] }).not_to include("その他")
       end
