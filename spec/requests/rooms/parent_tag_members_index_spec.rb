@@ -52,6 +52,8 @@ RSpec.describe "Rooms::ParentTagMembers#index", type: :request do
       expect(response.body.scan("data-profile-id=\"#{second_profile.id}\"").size).to eq(1)
       expect(response.body.scan("data-profile-id=\"#{third_profile.id}\"").size).to eq(1)
       expect(response.body).not_to include("member-detail-pagination", "次へ", "前へ")
+      expect(response.body).to include('data-testid="member-detail-scroll-area"')
+      expect(response.body).to include("dark-scrollbar")
     end
 
     it "カードには選択親タグ以外も含めた雑談カテゴリーの趣味を表示する" do

@@ -39,4 +39,16 @@ RSpec.describe "shares/show.html.erb", type: :view do
       expect(rendered).not_to include("プロフィール未登録です")
     end
   end
+
+  context "スクロール領域を描画する場合" do
+    let(:locked) { false }
+    let(:viewer_profile) { create(:profile) }
+
+    it "共有ページ限定のスクロールバー用クラスを付与する" do
+      render
+
+      expect(rendered).to have_css("#jsmind_container.dark-scrollbar-host")
+      expect(rendered).to have_css('[data-testid="member-detail-scroll-area"].dark-scrollbar')
+    end
+  end
 end

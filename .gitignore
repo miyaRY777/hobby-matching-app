@@ -41,5 +41,6 @@
 
 # Local dev tools
 /.playwright-mcp/
+/.worktrees/
 /docs/plans/
 /test-screenshot.png
