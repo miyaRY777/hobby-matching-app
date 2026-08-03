@@ -35,6 +35,8 @@ RSpec.describe "Rooms::Members#show", type: :request do
       get room_member_path(room_id: room.id, id: room_owner_profile.id)
 
       expect(response).to have_http_status(:ok)
+      expect(response.body).to include('data-testid="member-detail-scroll-area"')
+      expect(response.body).to include("dark-scrollbar")
     end
 
     it "部屋メンバーが部屋外プロフィールIDを指定すると404を返す" do
