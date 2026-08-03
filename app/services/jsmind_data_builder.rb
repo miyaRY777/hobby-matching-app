@@ -33,6 +33,12 @@ class JsmindDataBuilder
       {
         id:       "pt_#{parent_tag.id}",
         topic:    parent_tag.name,
+        data:     {
+          url: room_parent_tag_members_path(
+            room_id: @room.id,
+            parent_tag_id: parent_tag.id
+          )
+        },
         children: user_nodes_for(profiles, "pt_#{parent_tag.id}")
       }
     end
