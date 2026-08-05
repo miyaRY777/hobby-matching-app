@@ -91,7 +91,7 @@ export default class extends Controller {
                     data-action="input->tag-description#onDescriptionInput"
                     placeholder="例：マイクラ歴3年で、建築メインで遊んでいます！"
                     maxlength="200"
-                    rows="3"
+                    rows="4"
                     class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm leading-7 text-white outline-none resize-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">${this.#escapeHtml(chip.description || "")}</textarea>
           <div data-testid="description-counter"
                class="mt-2 text-right text-xs font-medium tracking-wide text-slate-500">${(chip.description || "").length} / 200字</div>
