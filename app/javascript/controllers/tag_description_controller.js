@@ -13,7 +13,9 @@ export default class extends Controller {
     const content = button.closest("[data-testid='tag-card']")
                           ?.querySelector("[data-description-content]")
     if (!content) return
-    content.classList.toggle("hidden")
+
+    const isHidden = content.classList.toggle("hidden")
+    button.textContent = isHidden ? "説明を開く" : "説明を閉じる"
   }
 
   onDescriptionInput(event) {
@@ -80,10 +82,10 @@ export default class extends Controller {
                     data-action="click->tag-description#onToggle"
                     data-testid="description-toggle"
                     class="shrink-0 border-none cursor-pointer"
-                    style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1.2;padding:0.35rem 0.7rem;border-radius:9999px;background:rgba(59,130,246,0.14);color:#bfdbfe;border:1px solid rgba(96,165,250,0.22);font-size:0.75rem;font-weight:600;">説明を追加</button>
+                    style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1.2;padding:0.35rem 0.7rem;border-radius:9999px;background:rgba(59,130,246,0.14);color:#bfdbfe;border:1px solid rgba(96,165,250,0.22);font-size:0.75rem;font-weight:600;">説明を閉じる</button>
           </div>
         </div>
-        <div data-description-content class="hidden border-t border-slate-700/60 px-4 pb-4 pt-4">
+        <div data-description-content class="border-t border-slate-700/60 px-4 pb-4 pt-4">
           <textarea data-testid="description-input"
                     data-name="${this.#escapeHtml(chip.name)}"
                     data-action="input->tag-description#onDescriptionInput"

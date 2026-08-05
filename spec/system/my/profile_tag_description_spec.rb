@@ -21,21 +21,35 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       expect(page).to have_css("[data-testid='tag-child-chip']", text: "ゲーム")
     end
 
-    it "デフォルトでは説明文入力欄は非表示" do
-      # ✏️クリック前は説明文入力欄が見えない
+    it "新規タグ追加直後から説明文入力欄が表示される" do
       fill_in "tag-input", with: "ゲーム"
       find("[data-testid='skip-parent-tag']").click
-
-      expect(page).not_to have_css("[data-testid='description-input']")
-    end
-
-    it "✏️ボタンをクリックすると説明文入力欄が表示される" do
-      # ✏️クリック後に説明文入力欄が展開される
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
-      find("[data-testid='description-toggle']").click
 
       expect(page).to have_css("[data-testid='description-input']")
+      expect(page).to have_button("説明を閉じる")
+    end
+
+    it "既存タグも説明文入力欄が開いた状態で復元される" do
+      hobby = create(:hobby, name: "ゲーム")
+      create(:profile_hobby, profile: current_profile, hobby:, description: "毎日遊びます")
+      visit edit_my_profile_path
+      click_on "タグ"
+
+      expect(find("[data-testid='description-input']").value).to eq("毎日遊びます")
+      expect(page).to have_button("説明を閉じる")
+    end
+
+    it "ボタンで説明文入力欄と文言を交互に切り替える" do
+      fill_in "tag-input", with: "ゲーム"
+      find("[data-testid='skip-parent-tag']").click
+
+      click_button "説明を閉じる"
+      expect(page).not_to have_css("[data-testid='description-input']")
+      expect(page).to have_button("説明を開く")
+
+      click_button "説明を開く"
+      expect(page).to have_css("[data-testid='description-input']")
+      expect(page).to have_button("説明を閉じる")
     end
 
     it "カードを削除すると説明編集ボタンも消える" do
@@ -54,10 +68,9 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     before { click_on "タグ" }
 
     it "説明文を入力して保存すると反映される" do
-      # タグ追加 → ✏️クリック → 説明入力 → 保存
+      # タグ追加 → 説明入力 → 保存
       fill_in "tag-input", with: "ゲーム"
       find("[data-testid='skip-parent-tag']").click
-      find("[data-testid='description-toggle']").click
       find("[data-testid='description-input']").fill_in with: "毎日やってます"
       click_button "更新する"
 
@@ -90,7 +103,6 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       # 入力内容がエラー後もそのまま残る
       fill_in "tag-input", with: "ゲーム"
       find("[data-testid='skip-parent-tag']").click
-      find("[data-testid='description-toggle']").click
       find("[data-testid='description-input']").fill_in with: "毎日やってます"
 
       expect(page).to have_text("ゲーム")
