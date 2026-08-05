@@ -108,7 +108,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
 
       # バリデーションエラー後はタブがリセットされるため、タグタブを再度クリックする
       click_on "タグ"
-      expect(page).to have_css("[data-testid='description-toggle']")
+      expect(page).to have_css("[data-testid='description-toggle']", visible: :all)
       expect(page).to have_text("ゲーム")
     end
   end
