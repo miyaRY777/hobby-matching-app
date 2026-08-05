@@ -13,7 +13,9 @@ export default class extends Controller {
     const content = button.closest("[data-testid='tag-card']")
                           ?.querySelector("[data-description-content]")
     if (!content) return
-    content.classList.toggle("hidden")
+
+    const isHidden = content.classList.toggle("hidden")
+    button.textContent = isHidden ? "説明を開く" : "説明を閉じる"
   }
 
   onDescriptionInput(event) {
@@ -80,16 +82,16 @@ export default class extends Controller {
                     data-action="click->tag-description#onToggle"
                     data-testid="description-toggle"
                     class="shrink-0 border-none cursor-pointer"
-                    style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1.2;padding:0.35rem 0.7rem;border-radius:9999px;background:rgba(59,130,246,0.14);color:#bfdbfe;border:1px solid rgba(96,165,250,0.22);font-size:0.75rem;font-weight:600;">説明を追加</button>
+                    style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1.2;padding:0.35rem 0.7rem;border-radius:9999px;background:rgba(59,130,246,0.14);color:#bfdbfe;border:1px solid rgba(96,165,250,0.22);font-size:0.75rem;font-weight:600;">説明を閉じる</button>
           </div>
         </div>
-        <div data-description-content class="hidden border-t border-slate-700/60 px-4 pb-4 pt-4">
+        <div data-description-content class="border-t border-slate-700/60 px-4 pb-4 pt-4">
           <textarea data-testid="description-input"
                     data-name="${this.#escapeHtml(chip.name)}"
                     data-action="input->tag-description#onDescriptionInput"
                     placeholder="例：マイクラ歴3年で、建築メインで遊んでいます！"
                     maxlength="200"
-                    rows="3"
+                    rows="4"
                     class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm leading-7 text-white outline-none resize-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">${this.#escapeHtml(chip.description || "")}</textarea>
           <div data-testid="description-counter"
                class="mt-2 text-right text-xs font-medium tracking-wide text-slate-500">${(chip.description || "").length} / 200字</div>
