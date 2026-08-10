@@ -10,7 +10,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
   end
 
   describe "説明文入力欄の表示" do
-    before { click_on "タグ" }
+    before { click_on "趣味" }
 
     it "タグ追加後に説明カードが表示される" do
       fill_in "tag-input", with: "ゲーム"
@@ -33,7 +33,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       hobby = create(:hobby, name: "ゲーム")
       create(:profile_hobby, profile: current_profile, hobby:, description: "毎日遊びます")
       visit edit_my_profile_path
-      click_on "タグ"
+      click_on "趣味"
 
       expect(find("[data-testid='description-input']").value).to eq("毎日遊びます")
       expect(page).to have_button("説明を閉じる")
@@ -65,7 +65,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
   end
 
   describe "説明文の保存" do
-    before { click_on "タグ" }
+    before { click_on "趣味" }
 
     it "説明文を入力して保存すると反映される" do
       # タグ追加 → 説明入力 → 保存
@@ -97,7 +97,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
   end
 
   describe "Turbo再表示後の復元" do
-    before { click_on "タグ" }
+    before { click_on "趣味" }
 
     it "バリデーションエラー後もカードと説明文が復元される" do
       # 入力内容がエラー後もそのまま残る
@@ -123,9 +123,9 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     end
 
     it "bioを入力して保存できる" do
-      # ひとことタブでbio入力 → タグタブでタグ追加 → 保存
+      # ひとことタブでbio入力 → 趣味タブでタグ追加 → 保存
       fill_in "profile[bio]", with: "テスト自己紹介です"
-      click_on "タグ"
+      click_on "趣味"
       fill_in "tag-input", with: "ゲーム"
       find("[data-testid='skip-parent-tag']").click
       click_button "更新する"

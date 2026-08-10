@@ -29,16 +29,16 @@ RSpec.describe "プロフィール編集タブ", type: :system, js: true do
     end
   end
 
-  describe "タグタブ" do
-    it "タグタブを2回クリックしてもタグパネルが消えない" do
-      # タグタブ（2番目のタブ）をクリックしてアクティブにする
+  describe "趣味タブ" do
+    it "趣味タブを2回クリックしてもタグパネルが消えない" do
+      # 趣味タブ（2番目のタブ）をクリックしてアクティブにする
       tag_tab = all("[data-tabs-target='tab']")[1]
       tag_tab.click
 
       # タグ入力欄が表示されることを確認
       expect(page).to have_css("[data-testid='tag-input']", visible: true)
 
-      # もう一度タグタブをクリック
+      # もう一度趣味タブをクリック
       tag_tab.click
 
       # タグ入力欄が消えない
