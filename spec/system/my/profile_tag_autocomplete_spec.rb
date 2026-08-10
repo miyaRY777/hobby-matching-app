@@ -5,10 +5,10 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
   let!(:current_profile) { create(:profile, user: current_user) }
 
   before do
-    # タグ操作はタグタブで行う
+    # タグ操作は趣味タブで行う
     login_as(current_user, scope: :user)
     visit edit_my_profile_path
-    click_on "タグ"
+    click_on "趣味"
   end
 
   describe "タグの追加" do
@@ -106,8 +106,8 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
       page.execute_script("document.querySelector('[data-tag-autocomplete-target=\"hiddenField\"]').value = #{over_limit.to_json}")
       click_button "更新する"
 
-      # バリデーションエラー後はタブがリセットされるため、タグタブを再度クリックする
-      click_on "タグ"
+      # バリデーションエラー後はタブがリセットされるため、趣味タブを再度クリックする
+      click_on "趣味"
       expect(page).to have_css("[data-testid='description-toggle']", visible: :all)
       expect(page).to have_css(
         "[data-testid='tag-card']",

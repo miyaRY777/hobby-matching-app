@@ -8,7 +8,7 @@ RSpec.describe "タグ作成時の親タグ選択", type: :system, js: true do
   before do
     login_as(current_user, scope: :user)
     visit edit_my_profile_path
-    click_on "タグ"
+    click_on "趣味"
   end
 
   describe "新規タグの親タグ選択" do
