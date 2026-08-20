@@ -31,7 +31,9 @@ digraph execute {
     "GREEN: 最小実装" [shape=box];
     "テスト成功を確認" [shape=box];
     "REFACTOR" [shape=box];
+    "難所?\n(認可/Policy/N+1/DB\n複雑ロジック)" [shape=diamond];
     "サブエージェントレビュー\n(rails-reviewer\nperformance-checker)" [shape=box];
+    "RuboCop + 自己レビュー" [shape=box];
     "指摘あり?" [shape=diamond];
     "指摘対応" [shape=box];
     "コミット" [shape=box];
@@ -55,8 +57,11 @@ digraph execute {
     "/debug で調査" -> "3回失敗?";
     "3回失敗?" -> "GREEN: 最小実装" [label="いいえ"];
     "3回失敗?" -> "エスカレーション" [label="はい"];
-    "REFACTOR" -> "サブエージェントレビュー\n(rails-reviewer\nperformance-checker)";
+    "REFACTOR" -> "難所?\n(認可/Policy/N+1/DB\n複雑ロジック)";
+    "難所?\n(認可/Policy/N+1/DB\n複雑ロジック)" -> "サブエージェントレビュー\n(rails-reviewer\nperformance-checker)" [label="はい"];
+    "難所?\n(認可/Policy/N+1/DB\n複雑ロジック)" -> "RuboCop + 自己レビュー" [label="いいえ"];
     "サブエージェントレビュー\n(rails-reviewer\nperformance-checker)" -> "指摘あり?";
+    "RuboCop + 自己レビュー" -> "指摘あり?";
     "指摘あり?" -> "指摘対応" [label="はい"];
     "指摘対応" -> "コミット";
     "指摘あり?" -> "コミット" [label="いいえ"];
@@ -75,7 +80,8 @@ digraph execute {
 | 「テストは後でまとめて書く」 | RED → GREEN → REFACTOR。順番を守る |
 | 「小さい修正だからテスト不要」 | TDD省略条件（CLAUDE.md）を確認。迷ったらTDD |
 | 「リファクタリングは後でまとめて」 | 各サイクルでREFACTOR。溜めない |
-| 「サブエージェントのレビューは省略」 | REFACTOR時に必ず実行する |
+| 「難所なのにレビューを省略」 | 認可・Policy・N+1・DB・複雑ロジックは reviewer を回す |
+| 「単純作業でも2本フル並列で回す」 | 単純作業は RuboCop + 自己レビューで可。コスパを優先 |
 | 「とりあえず動くものを作ってから」 | 「とりあえず」はTDD違反の始まり |
 
 ## サブエージェント駆動開発（SDD）
@@ -119,7 +125,10 @@ Phase 2 で合意した計画に従い、以下のサイクルを繰り返す：
 
 ### 3. REFACTOR
 - コードの改善点があればリファクタリングする
-- サブエージェント（rails-reviewer / performance-checker）を並列実行する
+- **サブエージェントは変更の性質で使い分ける（毎サイクル2本固定にしない）：**
+  - 認可・Policy・N+1・DB・複雑ロジックなど**難所** → reviewer を実行（ロジック変更→rails-reviewer / クエリ変更→performance-checker / 両方→2本並列）
+  - 単純な CRUD / 1ファイル修正 / 文言・UI → RuboCop + 軽い自己レビューで可（サブエージェント省略可）
+  - まとめレビューは Task 完了後 / PR 前（`/check`）に1回で足りる。重複させない
 - 指摘があれば対応し、ユーザーに報告する
 - テストが引き続き通ることを確認する
 - 改善内容を報告する
@@ -129,7 +138,12 @@ Phase 2 で合意した計画に従い、以下のサイクルを繰り返す：
 - **1〜2回目:** `/debug` で根本原因を調査し、1つずつ修正
 - **3回目:** **停止。** `/debug` のエスカレーションフォーマットで報告し、AskUserQuestionで相談
 
-### 5. 次のサイクルへ
+### 5. コミット
+- **REFACTOR まで終えてから**コミットする（RED/GREEN の途中では刻まない）
+- 粒度は「サイクル数」でなく「責務」。1サイクル=1責務なら1コミット、そうでなければファイル指定で分割
+- 詳細は `/commit` スキルの「TDDサイクルとの関係（粒度）」に従う
+
+### 6. 次のサイクルへ
 - 計画の次のステップへ進む
 - 方針が分岐した場合はAskUserQuestionで確認する
 

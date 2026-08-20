@@ -21,8 +21,17 @@
 変更ファイル一覧・テスト一覧・RED/GREEN/REFACTORの分解・Service分離の要否。「この計画で進めてよいか？」を確認。
 
 ## Phase 3：実行
-RED → GREEN → REFACTOR 厳守。REFACTOR時にサブエージェント（rails-reviewer / performance-checker）を実行し、指摘があれば対応する。方針分岐時は停止して確認。各ステップで報告。
+RED → GREEN → REFACTOR 厳守。方針分岐時は停止して確認。各ステップで報告。
 テスト失敗やバグ発生時は `/debug` で体系的に根本原因を特定してから修正する。
+
+### サブエージェント運用（コスト配分）
+REFACTOR時のサブエージェント（rails-reviewer / performance-checker）は**変更の性質で使い分ける**。毎サイクル2本固定にしない。
+| タイミング | 運用 | 理由 |
+|---|---|---|
+| 認可・Policy・N+1・DB・複雑ロジックなど難所 | REFACTORで reviewer を実行（ロジック変更→rails-reviewer / クエリ変更→performance-checker / 両方→2本） | バグコストが高い |
+| 単純な CRUD / 1ファイル修正 / 文言・UI | 親エージェントが RuboCop + 軽い自己レビュー（サブエージェント省略可） | オーバーヘッドが大きい |
+| Task 完了後 / PR 前 | `/check` 時に1回まとめて review | 重複レビューを避ける |
+| 独立 Task が複数 | SDD（Task ごとに実装サブエージェント） | コンテキスト汚染を防ぐ（Task 数分コスト増は許容） |
 
 ---
 
