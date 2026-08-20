@@ -11,17 +11,15 @@ module ApplicationHelper
     "#{base} #{padding} border border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
   end
 
+  # 責務: 見られる部屋なら room_path。410 の share_path には誘導しない。
   def recent_room_nav_path(user)
-    token = cookies[:recent_room_token]
-    return share_path(token) if token.present?
+    return nil unless user
 
-    profile = user&.profile
-    return nil unless profile
-
-    room = profile.last_joined_room_with_share_link
+    room = recent_room_from_token || user.profile&.last_joined_room_with_share_link
     return nil unless room
+    return nil unless RoomPolicy.new(room, user: user).show?
 
-    room.shareable? ? share_path(room.share_link.token) : mypage_rooms_path
+    room_path(room)
   end
 
   def avatar_image_tag(user, size: :medium)
@@ -38,5 +36,14 @@ module ApplicationHelper
         data: { testid: "avatar" }
       )
     end
+  end
+
+  private
+
+  def recent_room_from_token
+    token = cookies[:recent_room_token]
+    return if token.blank?
+
+    ShareLink.eager_load(:room).find_by(token:)&.room
   end
 end

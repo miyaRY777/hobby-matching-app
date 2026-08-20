@@ -36,79 +36,90 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   describe "#recent_room_nav_path" do
-    context "Cookieにトークンがセットされている場合" do
-      it "Cookieのトークンでshare_pathを返す" do
-        allow(helper).to receive(:cookies).and_return({ recent_room_token: "tok456" }.with_indifferent_access)
+    # 責務: 見られる部屋なら room_path。410 の share_path には誘導しない。
 
-        expect(helper.recent_room_nav_path(nil)).to eq(share_path("tok456"))
+    context "Cookieにトークンがある場合" do
+      let(:current_user) { create(:user) }
+      let(:owner_profile) { create(:profile) }
+      let(:room) { create(:room, issuer_profile: owner_profile, locked: false) }
+
+      before do
+        create(:share_link, room:, token: "tok456", expires_at: 1.day.ago)
+        allow(helper).to receive(:cookies).and_return({ recent_room_token: "tok456" }.with_indifferent_access)
+      end
+
+      it "期限切れでも公開なら room_path を返す" do
+        expect(helper.recent_room_nav_path(current_user)).to eq(room_path(room))
+      end
+
+      it "非公開の未参加なら nil を返す" do
+        room.update!(locked: true)
+        create(:profile, user: current_user)
+
+        expect(helper.recent_room_nav_path(current_user)).to be_nil
+      end
+
+      it "非公開でもメンバーなら room_path を返す" do
+        room.update!(locked: true)
+        current_profile = create(:profile, user: current_user)
+        create(:room_membership, room:, profile: current_profile)
+
+        expect(helper.recent_room_nav_path(current_user)).to eq(room_path(room))
       end
     end
 
-    # 未ログインの場合のテスト
     context "未ログインの場合" do
       it "nilを返す" do
-        # アクション＋アサーション：nilユーザーを渡すとnilを返すこと
         expect(helper.recent_room_nav_path(nil)).to be_nil
       end
     end
 
-    # プロフィールなしの場合のテスト
     context "ログイン済みでプロフィールがない場合" do
       let(:current_user) { create(:user) }
 
-      it "nilを返す" do
-        # アクション＋アサーション：プロフィールなしユーザーを渡すとnilを返すこと
+      it "Cookieがなければ nil を返す" do
         expect(helper.recent_room_nav_path(current_user)).to be_nil
       end
     end
 
-    # 参加部屋なしの場合のテスト
     context "ログイン済み・プロフィールあり・参加部屋なしの場合" do
       let(:current_user) { create(:user) }
 
       before do
-        # セットアップ：プロフィールあり・部屋への参加なし
         create(:profile, user: current_user)
       end
 
       it "nilを返す" do
-        # アクション＋アサーション：参加部屋がないのでnilを返すこと
         expect(helper.recent_room_nav_path(current_user)).to be_nil
       end
     end
 
-    # share_linkありの場合のテスト
     context "参加部屋あり・share_linkがある場合" do
       let(:current_user) { create(:user) }
       let(:current_profile) { create(:profile, user: current_user) }
       let(:recent_room) { create(:room, label: "直近テスト部屋") }
 
       before do
-        # セットアップ：部屋・membership・share_linkを用意
         create(:room_membership, profile: current_profile, room: recent_room)
         create(:share_link, room: recent_room, expires_at: nil, token: "tok123")
       end
 
-      it "share_pathを返す" do
-        # アクション＋アサーション：share_pathを返すこと
-        expect(helper.recent_room_nav_path(current_user)).to eq(share_path("tok123"))
+      it "room_path を返す" do
+        expect(helper.recent_room_nav_path(current_user)).to eq(room_path(recent_room))
       end
     end
 
-    # share_linkがnilの場合のテスト（edge case）
     context "参加部屋あり・share_linkがnilの場合" do
       let(:current_user) { create(:user) }
       let(:current_profile) { create(:profile, user: current_user) }
       let(:room_without_link) { create(:room, label: "share_linkなし部屋") }
 
       before do
-        # セットアップ：share_linkを持たない部屋に参加
         create(:room_membership, profile: current_profile, room: room_without_link)
       end
 
-      it "mypage_rooms_pathを返す" do
-        # アクション＋アサーション：フォールバックパスを返すこと
-        expect(helper.recent_room_nav_path(current_user)).to eq(mypage_rooms_path)
+      it "room_path を返す" do
+        expect(helper.recent_room_nav_path(current_user)).to eq(room_path(room_without_link))
       end
     end
   end
