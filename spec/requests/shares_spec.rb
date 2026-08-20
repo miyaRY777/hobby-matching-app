@@ -25,7 +25,7 @@ RSpec.describe "Shares", type: :request do
     end
 
     context "ロック中の部屋に既存メンバーがアクセスした場合" do
-      it "通常通りページが表示される" do
+      it "部屋ページへリダイレクトする" do
         # ロック中の部屋にメンバーを準備
         room_owner = create(:user)
         room_owner_profile = create(:profile, user: room_owner)
@@ -38,15 +38,16 @@ RSpec.describe "Shares", type: :request do
         create(:room_membership, room: locked_room, profile: member_profile)
         sign_in member_user
 
-        # ページが表示されること
+        # アクション: 有効な入場券で開く
         get share_path(share_link.token)
 
-        expect(response).to have_http_status(:ok)
+        # アサーション: 地図は出さず、部屋へ案内する
+        expect(response).to redirect_to(room_path(locked_room))
       end
     end
 
     context "ロック中の部屋にオーナーがアクセスした場合" do
-      it "通常通りページが表示される" do
+      it "部屋ページへリダイレクトする" do
         # ロック中の部屋を作成したオーナーでアクセス
         room_owner = create(:user)
         room_owner_profile = create(:profile, user: room_owner)
@@ -55,10 +56,11 @@ RSpec.describe "Shares", type: :request do
         create(:room_membership, room: locked_room, profile: room_owner_profile)
         sign_in room_owner
 
-        # ページが表示されること
+        # アクション: 有効な入場券で開く
         get share_path(share_link.token)
 
-        expect(response).to have_http_status(:ok)
+        # アサーション: 地図は出さず、部屋へ案内する
+        expect(response).to redirect_to(room_path(locked_room))
       end
     end
 
@@ -83,7 +85,7 @@ RSpec.describe "Shares", type: :request do
     end
 
     context "ロックされていない部屋に未参加ユーザーがアクセスした場合" do
-      it "RoomMembership が作成される" do
+      it "部屋ページへリダイレクトし、RoomMembership は増えない" do
         # 公開中の部屋と共有リンクを準備
         room_owner = create(:user)
         room_owner_profile = create(:profile, user: room_owner)
@@ -95,12 +97,13 @@ RSpec.describe "Shares", type: :request do
         create(:profile, user: guest_user)
         sign_in guest_user
 
-        # RoomMembership が1件増えること
+        # アクション: 有効な入場券で開く
         expect {
           get share_path(share_link.token)
-        }.to change(RoomMembership, :count).by(1)
+        }.not_to change(RoomMembership, :count)
 
-        expect(response).to have_http_status(:ok)
+        # アサーション: 参加せず、部屋へ案内する
+        expect(response).to redirect_to(room_path(unlocked_room))
       end
 
       it "recent_room_token Cookieにトークンがセットされる" do

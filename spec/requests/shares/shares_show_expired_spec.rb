@@ -19,7 +19,7 @@ RSpec.describe "shares#show", type: :request do
       expect(response).to have_http_status(:gone)
     end
 
-    it "既存メンバーは正常に部屋ページを表示できる" do
+    it "既存メンバーは部屋ページへ案内される" do
       issuer = create(:profile)
       room = create(:room, issuer_profile: issuer)
       share_link = create(:share_link, room: room, expires_at: 1.minute.ago)
@@ -30,12 +30,14 @@ RSpec.describe "shares#show", type: :request do
 
       sign_in viewer
 
+      # アクション: 期限切れの入場券で開く
       get share_path(share_link.token)
 
-      expect(response).to have_http_status(:ok)
+      # アサーション: 中の人は券が切れても部屋へ案内される
+      expect(response).to redirect_to(room_path(room))
     end
 
-    it "プロフィール未登録ユーザーはプロフィール作成ページへリダイレクトされる" do
+    it "プロフィール未登録の未参加は 410 Gone を返す" do
       issuer = create(:profile)
       room = create(:room, issuer_profile: issuer)
       share_link = create(:share_link, room: room, expires_at: 1.minute.ago)
@@ -47,9 +49,8 @@ RSpec.describe "shares#show", type: :request do
 
       get share_path(share_link.token)
 
-      # プロフィール未作成ガードが期限切れチェックより先に動作するため、
-      # 410 Gone ではなくプロフィール作成ページへのリダイレクトになる
-      expect(response).to redirect_to(new_my_profile_path)
+      # アサーション: プロフィールの有無より先に、期限切れの券として 410
+      expect(response).to have_http_status(:gone)
     end
   end
 end
