@@ -21,12 +21,20 @@ RSpec.describe "Rooms::ParentTagMembers#index", type: :request do
   context "ログイン済み" do
     before { sign_in viewer_user }
 
-    it "部屋外ユーザーには403を返す" do
-      outside_room = create(:room, room_type: :chat)
+    it "公開部屋の未参加は 200 を返す" do
+      public_room = create(:room, room_type: :chat, locked: false)
 
-      get room_parent_tag_members_path(room_id: outside_room.id, parent_tag_id: parent_tag.id)
+      get room_parent_tag_members_path(room_id: public_room.id, parent_tag_id: parent_tag.id)
 
-      expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "非公開部屋の未参加は 404 を返す" do
+      private_room = create(:room, room_type: :chat, locked: true)
+
+      get room_parent_tag_members_path(room_id: private_room.id, parent_tag_id: parent_tag.id)
+
+      expect(response).to have_http_status(:not_found)
     end
 
     it "部屋カテゴリーと異なる親タグには404を返す" do

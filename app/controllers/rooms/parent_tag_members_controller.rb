@@ -1,8 +1,10 @@
 module Rooms
+  # 責務: 部屋ページの親タグメンバー一覧。見る権利は RoomPolicy#show?。
   class ParentTagMembersController < ApplicationController
+    include AuthorizesRoomShow
     before_action :authenticate_user!
     before_action :set_room
-    before_action :authorize_member!
+    before_action :authorize_room!
     before_action :set_parent_tag
 
     def index
@@ -19,13 +21,6 @@ module Rooms
 
     def set_room
       @room = Room.find(params[:room_id])
-    end
-
-    def authorize_member!
-      return if current_user.profile &&
-                RoomMembership.exists?(room: @room, profile: current_user.profile)
-
-      head :forbidden
     end
 
     def set_parent_tag
