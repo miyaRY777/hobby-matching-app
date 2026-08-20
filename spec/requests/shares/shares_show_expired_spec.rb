@@ -30,10 +30,10 @@ RSpec.describe "shares#show", type: :request do
 
       sign_in viewer
 
-      # アクション: 期限切れの入場券で開く
+      # アクション: 期限切れの招待リンクで開く
       get share_path(share_link.token)
 
-      # アサーション: 中の人は券が切れても部屋へ案内される
+      # アサーション: 中の人は招待リンクが期限切れでも部屋へ案内される
       expect(response).to redirect_to(room_path(room))
     end
 
@@ -49,7 +49,7 @@ RSpec.describe "shares#show", type: :request do
 
       get share_path(share_link.token)
 
-      # アサーション: プロフィールの有無より先に、期限切れの券として 410
+      # アサーション: プロフィールの有無より先に、期限切れの招待リンクとして 410
       expect(response).to have_http_status(:gone)
     end
   end

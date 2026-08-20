@@ -1,5 +1,5 @@
 module Rooms
-  # 責務: 部屋ページの親タグメンバー一覧。見る権利は RoomPolicy#show?。
+  # 責務: 部屋ページの親タグメンバー一覧。閲覧可否は RoomPolicy#show?。
   class ParentTagMembersController < ApplicationController
     include AuthorizesRoomShow
     before_action :authenticate_user!

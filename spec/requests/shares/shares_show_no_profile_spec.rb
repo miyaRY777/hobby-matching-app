@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "shares#show", type: :request do
   it "プロフィールがなくても部屋ページへ案内される" do
-    # セットアップ: 有効な入場券と、プロフィールなしの訪問者
+    # セットアップ: 有効な招待リンクと、プロフィールなしの訪問者
     issuer = create(:profile)
     room = create(:room, issuer_profile: issuer)
     share_link = create(:share_link, room: room, expires_at: 1.hour.from_now)
@@ -10,7 +10,7 @@ RSpec.describe "shares#show", type: :request do
     viewer = create(:user)
     sign_in viewer
 
-    # アクション: 入場券の URL を開く
+    # アクション: 招待リンクの URL を開く
     expect {
       get share_path(share_link.token)
     }.not_to change(RoomMembership, :count)

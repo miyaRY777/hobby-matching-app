@@ -1,4 +1,4 @@
-# 責務: 部屋の見る権利。失敗は 404。410 は SharesController。
+# 責務: 部屋の閲覧可否（RoomPolicy#show?）。失敗は 404。410 は SharesController。
 module AuthorizesRoomShow
   extend ActiveSupport::Concern
 
