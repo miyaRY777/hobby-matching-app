@@ -8,7 +8,7 @@ class Mypage::RoomMembershipsController < ApplicationController
 
     @room = Room.unlocked.find(params[:room_id])
     RoomMembership.create!(room: @room, profile: profile)
-    redirect_to room_redirect_path(@room), notice: "部屋に参加しました"
+    redirect_to room_path(@room), notice: "部屋に参加しました"
   rescue ActiveRecord::RecordNotFound
     redirect_to rooms_path, alert: "部屋が見つかりません"
   rescue ActiveRecord::RecordInvalid
@@ -41,11 +41,5 @@ class Mypage::RoomMembershipsController < ApplicationController
     @membership = current_user.profile.room_memberships.includes(room: :issuer_profile).find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to mypage_rooms_path, alert: "参加している部屋が見つかりません"
-  end
-
-  def room_redirect_path(room)
-    return share_path(room.share_link.token) if room.shareable?
-
-    mypage_rooms_path
   end
 end

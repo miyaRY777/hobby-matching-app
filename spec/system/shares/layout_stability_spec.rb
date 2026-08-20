@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "共有画面の横位置", type: :system, js: true do
+RSpec.describe "部屋ページの横位置", type: :system, js: true do
   let(:viewer_user) { create(:user, nickname: "閲覧者") }
   let(:viewer_profile) { create(:profile, user: viewer_user) }
   let(:short_user) { create(:user, nickname: "短文ユーザー") }
@@ -10,7 +10,6 @@ RSpec.describe "共有画面の横位置", type: :system, js: true do
   let(:tag_user) { create(:user, nickname: "タグ切替ユーザー") }
   let(:tag_profile) { create(:profile, user: tag_user, bio: "タグ切り替え確認用") }
   let(:room) { create(:room, issuer_profile: viewer_profile, room_type: :chat) }
-  let(:share_link) { create(:share_link, room:, expires_at: 1.hour.from_now) }
   let(:parent_tag) { create(:parent_tag, room_type: :chat) }
   let(:short_hobby) { create(:hobby, name: "短文タグ") }
   let(:long_hobby) { create(:hobby, name: "長文タグ") }
@@ -33,10 +32,10 @@ RSpec.describe "共有画面の横位置", type: :system, js: true do
     end
 
     login_as(viewer_user, scope: :user)
-    visit share_path(share_link.token)
+    visit room_path(room)
   end
 
-  it "ユーザーを切り替えても共有画面の横幅と左位置が変わらない" do
+  it "ユーザーを切り替えても部屋ページの横幅と左位置が変わらない" do
     select_member("短文ユーザー")
     before_switch = share_container_rect
 
@@ -47,7 +46,7 @@ RSpec.describe "共有画面の横位置", type: :system, js: true do
     expect(after_switch["left"]).to be_within(1).of(before_switch["left"])
   end
 
-  it "タグを切り替えても共有画面の横幅と左位置が変わらない" do
+  it "タグを切り替えても部屋ページの横幅と左位置が変わらない" do
     select_member("タグ切替ユーザー")
 
     within("turbo-frame#member_detail") do
