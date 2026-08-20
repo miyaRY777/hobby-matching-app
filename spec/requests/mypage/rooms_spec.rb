@@ -54,6 +54,32 @@ RSpec.describe "Mypage::Rooms", type: :request do
         expect(response.body).to include("非公開")
       end
 
+      it "公開中の部屋に「非公開にする」がある" do
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        create(:room, issuer_profile: current_profile, locked: false)
+        sign_in current_user
+
+        get mypage_rooms_path
+
+        expect(response.body).to include("非公開にする")
+        expect(response.body).to include("この部屋を非公開にしますか？")
+        expect(response.body).not_to include("ロックする")
+      end
+
+      it "非公開の部屋に「公開する」がある" do
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        create(:room, issuer_profile: current_profile, locked: true)
+        sign_in current_user
+
+        get mypage_rooms_path
+
+        expect(response.body).to include("公開する")
+        expect(response.body).to include("この部屋を公開しますか？")
+        expect(response.body).not_to include("ロックを解除")
+      end
+
       it "他人の部屋は表示されない" do
         user = create(:user)
         create(:profile, user: user)
@@ -334,6 +360,17 @@ RSpec.describe "Mypage::Rooms", type: :request do
         expect(own_room.reload.locked).to be true
       end
 
+      it "フラッシュは「非公開にしました」である" do
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile, locked: false)
+        sign_in current_user
+
+        patch lock_mypage_room_path(own_room)
+
+        expect(flash[:notice]).to eq("非公開にしました")
+      end
+
       it "turbo_stream で応答する" do
         # ログインユーザーと部屋を準備
         current_user = create(:user)
@@ -382,6 +419,17 @@ RSpec.describe "Mypage::Rooms", type: :request do
 
         # locked が false になっていること
         expect(own_room.reload.locked).to be false
+      end
+
+      it "フラッシュは「公開しました」である" do
+        current_user = create(:user)
+        current_profile = create(:profile, user: current_user)
+        own_room = create(:room, issuer_profile: current_profile, locked: true)
+        sign_in current_user
+
+        patch unlock_mypage_room_path(own_room)
+
+        expect(flash[:notice]).to eq("公開しました")
       end
 
       it "他人の部屋はロック解除できない" do

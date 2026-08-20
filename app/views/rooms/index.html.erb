@@ -5,7 +5,7 @@
   <div style="display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
     <div>
       <h1 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin: 0 0 0.5rem 0;">公開部屋一覧</h1>
-      <p style="font-size: 0.9375rem; color: #9ca3af; margin: 0;">公開中の部屋を一覧で確認して、そのまま参加できます。</p>
+      <p style="font-size: 0.9375rem; color: #9ca3af; margin: 0;">公開中の部屋を一覧で確認して、覗けます。</p>
     </div>
 
     <%= link_to "部屋管理へ", mypage_rooms_path, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.625rem 1rem; border-radius: 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
@@ -34,7 +34,7 @@
             </tr>
           <% else %>
             <% @rooms.each do |room| %>
-              <%= render "room", room:, joined_room_ids: @joined_room_ids, issued_room_ids: @issued_room_ids %>
+              <%= render "room", room:, joined_room_ids: @joined_room_ids, issued_room_ids: @issued_room_ids, viewer_profile: @viewer_profile %>
             <% end %>
           <% end %>
         </tbody>

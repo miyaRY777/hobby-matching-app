@@ -1,18 +1,12 @@
 class ShareLinkPolicy < ApplicationPolicy
-  # user   = current_user（action_policy が自動注入）
-  # record = share_link
+  # 責務: 入場券（ShareLink）の案内可否。部屋の見る権利は RoomPolicy。
+  # 期限切れの未参加はその URL では通せない。参加判定は持たない。
 
-  # 期限切れでも既存メンバーなら閲覧継続可
   def show?
     return true if member? || owner?
     return false if record.expired?
 
     !record.room.locked?
-  end
-
-  # ロック中は既存メンバー or オーナーのみ参加可
-  def join?
-    !record.room.locked? || member? || owner?
   end
 
   private
@@ -29,6 +23,8 @@ class ShareLinkPolicy < ApplicationPolicy
   end
 
   def viewer_profile
-    user.profile
+    return @viewer_profile if instance_variable_defined?(:@viewer_profile)
+
+    @viewer_profile = user.profile
   end
 end

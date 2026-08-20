@@ -18,15 +18,34 @@ RSpec.describe "Rooms::Members#show", type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
 
-    it "ログイン済みでも部屋のメンバーでなければ403を返す" do
-      # 部屋に参加していない別ユーザー
+    it "公開部屋の未参加は 200 を返す" do
       other_user = create(:user)
       create(:profile, user: other_user)
       sign_in other_user
 
       get room_member_path(room_id: room.id, id: room_owner_profile.id)
 
-      expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "プロフィール未作成でも公開部屋は 200 を返す" do
+      other_user = create(:user)
+      sign_in other_user
+
+      get room_member_path(room_id: room.id, id: room_owner_profile.id)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "非公開部屋の未参加は 404 を返す" do
+      room.update!(locked: true)
+      other_user = create(:user)
+      create(:profile, user: other_user)
+      sign_in other_user
+
+      get room_member_path(room_id: room.id, id: room_owner_profile.id)
+
+      expect(response).to have_http_status(:not_found)
     end
 
     it "部屋のメンバーであれば200を返す" do

@@ -1,38 +1,23 @@
 class SharesController < ApplicationController
+  # 責務: 入場券の判定と部屋への案内。地図は RoomsController。
   before_action :authenticate_user!
-  before_action :require_profile!
   rescue_from ActionPolicy::Unauthorized, with: :handle_unauthorized
 
+  # 責務: 券が通れば部屋へ案内する。参加レコードは作らない。
   def show
-    @share_link     = ShareLink.includes(:room).find_by!(token: params[:token])
-    @room           = @share_link.room
-    @viewer_profile = current_user.profile
-
+    @share_link = ShareLink.includes(:room).find_by!(token: params[:token])
     authorize! @share_link, to: :show?
     cookies[:recent_room_token] = { value: params[:token], expires: 1.year.from_now }
 
-    RoomMembership.find_or_create_by!(room: @room, profile: @viewer_profile) if @viewer_profile
-    @memberships = memberships_for_display
-    @jsmind_data = JsmindDataBuilder.new(@room, @memberships).build
+    redirect_to room_path(@share_link.room)
   end
 
   private
 
-  def memberships_for_display
-    @room.room_memberships
-         .includes(profile: [ :user, { profile_hobbies: { hobby: :hobby_parent_tags } } ])
-         .order(created_at: :asc)
-  end
-
+  # 責務: 期限切れは 410。それ以外の拒否は 404。
   def handle_unauthorized
     return head :gone if @share_link&.expired?
 
     head :not_found
-  end
-
-  def require_profile!
-    return if current_user.profile
-
-    redirect_to new_my_profile_path, alert: "部屋に入るにはプロフィールを作成してください"
   end
 end

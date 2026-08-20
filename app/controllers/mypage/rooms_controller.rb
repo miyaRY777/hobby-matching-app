@@ -59,11 +59,11 @@ class Mypage::RoomsController < ApplicationController
   end
 
   def lock
-    update_lock(true, "部屋をロックしました")
+    update_lock(true, "非公開にしました")
   end
 
   def unlock
-    update_lock(false, "部屋のロックを解除しました")
+    update_lock(false, "公開しました")
   end
 
   def regenerate_share_link

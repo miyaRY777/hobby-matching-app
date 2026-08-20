@@ -25,7 +25,7 @@
           <%= room_type_badge(@room.room_type)[:label] %>
         </span>
         <% if @room.locked? %>
-          <span class="inline-flex items-center rounded-full bg-rose-500/95 px-4 py-1.5 font-semibold text-white shadow-sm">ロック中</span>
+          <span class="inline-flex items-center rounded-full bg-rose-500/95 px-4 py-1.5 font-semibold text-white shadow-sm">非公開</span>
         <% else %>
           <span class="inline-flex items-center rounded-full bg-emerald-500/95 px-4 py-1.5 font-semibold text-white shadow-sm">公開中</span>
         <% end %>
@@ -33,11 +33,24 @@
       </div>
       <div class="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-slate-900/38 px-5 py-4 text-sm leading-7 text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         <% if @room.locked? %>
-          この部屋は現在ロック中です。新しいメンバーは参加できません。
+          この部屋は非公開です。新しいメンバーは参加できません。
         <% else %>
           この部屋は公開中です。気になるメンバーを選んでください。
         <% end %>
       </div>
+      <% if !@room.locked? && !@joined %>
+        <% join_button_class = "inline-flex items-center rounded-xl border border-indigo-300/60 bg-[linear-gradient(135deg,rgba(59,130,246,0.95),rgba(79,70,229,0.95))] px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)]" %>
+        <div class="mt-4">
+          <% if @viewer_profile %>
+            <%= form_with url: mypage_room_memberships_path, method: :post do |f| %>
+              <%= f.hidden_field :room_id, value: @room.id %>
+              <%= f.submit "参加する", class: join_button_class %>
+            <% end %>
+          <% else %>
+            <%= link_to "参加する", new_my_profile_path, class: join_button_class %>
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
     <div class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,3fr)_minmax(380px,2fr)] md:items-start">

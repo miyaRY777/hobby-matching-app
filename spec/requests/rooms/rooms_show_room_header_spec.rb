@@ -1,17 +1,16 @@
 require "rails_helper"
 
-RSpec.describe "shares#show", type: :request do
+RSpec.describe "Rooms#show header", type: :request do
   let(:issuer_user) { create(:user) }
   let(:issuer_profile) { create(:profile, user: issuer_user) }
 
   context "studyタイプ・公開中の部屋" do
     let(:room) { create(:room, issuer_profile: issuer_profile, room_type: :study, locked: false) }
-    let(:share_link) { create(:share_link, room: room, expires_at: 1.hour.from_now) }
 
     before do
       create(:room_membership, room: room, profile: issuer_profile)
       sign_in issuer_user
-      get share_path(share_link.token)
+      get room_path(room)
     end
 
     it "room_typeが日本語で表示される" do
@@ -35,21 +34,21 @@ RSpec.describe "shares#show", type: :request do
     end
   end
 
-  context "ロック中の部屋" do
+  context "非公開の部屋" do
     let(:room) { create(:room, issuer_profile: issuer_profile, locked: true) }
-    let(:share_link) { create(:share_link, room: room, expires_at: 1.hour.from_now) }
 
     before do
       sign_in issuer_user
-      get share_path(share_link.token)
+      get room_path(room)
     end
 
-    it "ロック中バッジが表示される" do
-      expect(response.body).to include("ロック中")
+    it "非公開バッジが表示される" do
+      expect(response.body).to include("非公開")
+      expect(response.body).not_to include("ロック中")
     end
 
-    it "ロック中の状態案内が表示される" do
-      expect(response.body).to include("この部屋は現在ロック中です")
+    it "非公開の状態案内が表示される" do
+      expect(response.body).to include("この部屋は非公開です。新しいメンバーは参加できません。")
     end
   end
 end

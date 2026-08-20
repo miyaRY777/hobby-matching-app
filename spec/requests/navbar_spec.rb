@@ -17,9 +17,10 @@ RSpec.describe "Navbar", type: :request do
         # アクション
         get profiles_path
 
-        # アサーション：「部屋に戻る」ボタンとshare_pathリンクがナビに含まれること
+        # アサーション：「部屋に戻る」は部屋ページへ行く
         expect(response.body).to include("部屋に戻る")
-        expect(response.body).to include(share_path("nav_tok"))
+        expect(response.body).to include(room_path(recent_room))
+        expect(response.body).not_to include(share_path("nav_tok"))
       end
     end
 

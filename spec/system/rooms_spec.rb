@@ -8,7 +8,6 @@ RSpec.describe "公開部屋一覧", type: :system, js: true do
   let!(:joined_room) { create(:room, issuer_profile: owner_profile, label: "参加済みの部屋", locked: false) }
   let!(:unjoined_room) { create(:room, issuer_profile: owner_profile, label: "未参加の部屋", locked: false) }
   let!(:locked_room) { create(:room, issuer_profile: owner_profile, label: "非公開の部屋", locked: true) }
-  let!(:unjoined_room_share_link) { create(:share_link, room: unjoined_room, token: "system-room-token", expires_at: 1.year.from_now) }
 
   before do
     create(:room_membership, room: issued_room, profile: current_profile)
@@ -47,57 +46,50 @@ RSpec.describe "公開部屋一覧", type: :system, js: true do
     end
   end
 
-  it "未参加部屋に参加するボタンが表示される" do
-    # アクション: 公開部屋一覧ページを開く
+  it "未参加部屋に覗いてみると参加するが並ぶ" do
     visit rooms_path
 
-    # アサーション: 未参加の部屋に参加するボタンが表示される
     within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
+      expect(page).to have_link("覗いてみる", href: room_path(unjoined_room))
       expect(page).to have_button("参加する")
     end
   end
 
-  it "モーダルの参加するボタンを押すと共有ページへ遷移する" do
+  it "覗いてみるを押すと部屋ページへ行き、参加しない" do
+    visit rooms_path
+
+    within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
+      click_link "覗いてみる"
+    end
+
+    expect(page).to have_current_path(room_path(unjoined_room), ignore_query: true)
+    expect(RoomMembership.exists?(room: unjoined_room, profile: current_profile)).to be false
+  end
+
+  it "参加するを押すと参加して部屋ページへ行く" do
     visit rooms_path
 
     within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
       click_button "参加する"
     end
 
-    within("[data-testid='room-modal-#{unjoined_room.id}']") do
-      click_button "参加する"
-    end
-
-    expect(page).to have_current_path(share_path(unjoined_room_share_link.token), ignore_query: true)
+    expect(page).to have_current_path(room_path(unjoined_room), ignore_query: true)
     expect(RoomMembership.exists?(room: unjoined_room, profile: current_profile)).to be true
   end
 
-  it "参加するボタンをクリックするとモーダルが開く" do
+  it "参加済み部屋に見るリンクが表示される" do
     visit rooms_path
 
-    within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
-      click_button "参加する"
+    within find("[id='#{ActionView::RecordIdentifier.dom_id(joined_room)}']") do
+      expect(page).to have_link("見る", href: room_path(joined_room))
     end
-
-    expect(page).to have_css("[data-testid='room-modal-#{unjoined_room.id}']", visible: true)
-    modal_display = page.evaluate_script(<<~JS)
-      window.getComputedStyle(document.querySelector("[data-testid='room-modal-#{unjoined_room.id}']")).display
-    JS
-    expect(modal_display).to eq("flex")
-    expect(page).to have_text("未参加の部屋")
   end
 
-  it "モーダルの一覧に戻るボタンを押すとモーダルが閉じる" do
+  it "作成した部屋に見るリンクが表示される" do
     visit rooms_path
 
-    within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
-      click_button "参加する"
+    within find("[id='#{ActionView::RecordIdentifier.dom_id(issued_room)}']") do
+      expect(page).to have_link("見る", href: room_path(issued_room))
     end
-
-    within("[data-testid='room-modal-#{unjoined_room.id}']") do
-      click_button "一覧に戻る"
-    end
-
-    expect(page).to have_css("[data-testid='room-modal-#{unjoined_room.id}']", visible: false)
   end
 end

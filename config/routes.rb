@@ -20,7 +20,7 @@ Rails.application.routes.draw do
 
   # 他人用（複数）
   resources :profiles, only: %i[index show]
-  resources :rooms, only: %i[index]
+  resources :rooms, only: %i[index show]
 
   resources :hobbies, only: [] do
     collection do

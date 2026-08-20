@@ -24,7 +24,7 @@
     </span>
   </td>
 
-  <%# ロック状態 %>
+  <%# 公開状態 %>
   <td style="padding: 0.875rem 1rem; white-space: nowrap;">
     <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: <%= lock_badge[:color] %>; border: 1px solid <%= lock_badge[:border] %>; color: <%= lock_badge[:text] %>;">
       <%= lock_badge[:label] %>
@@ -100,14 +100,14 @@
           <% end %>
 
           <% if room.locked? %>
-            <%= link_to "解除する",
+            <%= link_to "公開する",
                         unlock_mypage_room_path(room),
-                        data: { turbo_method: :patch, turbo_confirm: "この部屋のロックを解除しますか？" },
+                        data: { turbo_method: :patch, turbo_confirm: "この部屋を公開しますか？" },
                         style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #86efac; text-decoration: none; font-size: 0.875rem;" %>
           <% else %>
-            <%= link_to "ロックする",
+            <%= link_to "非公開にする",
                         lock_mypage_room_path(room),
-                        data: { turbo_method: :patch, turbo_confirm: "この部屋をロックしますか？" },
+                        data: { turbo_method: :patch, turbo_confirm: "この部屋を非公開にしますか？" },
                         style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #fca5a5; text-decoration: none; font-size: 0.875rem;" %>
           <% end %>
 
