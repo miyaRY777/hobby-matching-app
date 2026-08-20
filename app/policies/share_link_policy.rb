@@ -1,5 +1,5 @@
 class ShareLinkPolicy < ApplicationPolicy
-  # 責務: 入場券（ShareLink）の案内可否。部屋の見る権利は RoomPolicy。
+  # 責務: 招待リンク（ShareLink）の案内可否。部屋の閲覧可否は RoomPolicy。
   # 期限切れの未参加はその URL では通せない。参加判定は持たない。
 
   def show?

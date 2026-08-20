@@ -23,7 +23,7 @@
 ## 2. 目的
 
 1. 「見る」と「入る」を分ける。公開部屋は参加せずに地図まで覗ける
-2. 招待リンクは入場券、公開/非公開は部屋の扉、と責務を分ける
+2. 招待リンクの案内可否と、部屋の公開設定（`rooms.locked`）と責務を分ける
 3. 画面の言葉を公開 / 非公開に揃え、コードを説明できる状態にする
 
 ## 3. スコープ
@@ -35,7 +35,7 @@
 - 期限切れリンクの 410（その URL では覗きも参加も不可）
 - 非公開の未参加は 404
 - 公開部屋一覧からの覗きと、部屋ページからの明示的な参加
-- ナビ「部屋に戻る」を扉（部屋の見る権利）基準にする
+- ナビ「部屋に戻る」を部屋の閲覧可否（`RoomPolicy#show?`）基準にする
 - 文言の公開 / 非公開化
 - `join?` の削除
 
@@ -51,7 +51,7 @@
 
 ## 4. 方針
 
-| 方式 | コスト | 券と扉の分離 | 現状との相性 |
+| 方式 | コスト | 招待リンクと公開設定の分離 | 現状との相性 |
 |---|---|---|---|
 | A. 地図を招待 URL に残し、一覧からも token を開く | 低 | 弱い | ◎ |
 | **B. 地図を部屋ページに置く** | 中 | 強い | ○ |
@@ -59,9 +59,9 @@
 
 **採用:** 案B。
 
-**設計意図:** 見る権利は部屋、券の寿命は招待リンク。期限切れ URL は 410 のまま、公開なら一覧から覗ける。自動参加は見るとは入るを同じ操作にしているので外す。
+**設計意図:** 部屋の閲覧可否は `RoomPolicy`、招待リンクの有効期限は `ShareLinkPolicy`。期限切れ URL は 410 のまま、公開なら一覧から覗ける。自動参加は見るとは入るを同じ操作にしているので外す。
 
-権限の主体は部屋。Cookie の token は「最後に見た部屋を思い出す鍵」に過ぎない。ナビに出すかは部屋の見る権利で決める。
+権限の主体は部屋。Cookie の token は「最後に見た部屋を思い出す鍵」に過ぎない。ナビに出すかは `RoomPolicy#show?` で決める。
 
 ## 5. 受入条件
 
@@ -83,7 +83,7 @@
 
 ## 6. 結論
 
-地図の本体は部屋ページ。招待リンクは入場券の案内だけ。公開は未参加でも見られる。非公開は未参加に存在を認めない。期限切れ券の URL では何もできない。ナビは扉基準で部屋に戻す。参加は自分を地図に載せる明示操作。
+地図の本体は部屋ページ。招待リンクは案内だけ。公開は未参加でも見られる。非公開は未参加に存在を認めない。期限切れの招待リンク URL では何もできない。ナビは部屋の閲覧可否基準で部屋に戻す。参加は自分を地図に載せる明示操作。
 
 残リスク: 公開部屋の ID は推測できる。410 / 404 は本文なしのまま。限定公開はこの設計ではできない。
 
@@ -93,24 +93,26 @@
 
 | 言葉 | 実体 |
 |---|---|
-| 見る（覗く） | 部屋の見る権利があれば地図を出す。参加レコードは作らない |
+| 見る（覗く） | `RoomPolicy#show?` が true なら地図を出す。参加レコードは作らない |
 | 参加する | 公開部屋への membership 作成。プロフィール必須 |
-| 入場券 | `ShareLink`。期限切れの未参加がその URL を開くと 410 |
-| 扉 | `rooms.locked`（false=公開 / true=非公開）。非公開の未参加は 404 |
-| 部屋に戻る | token から部屋を思い出し、見る権利があれば部屋ページ。無ければナビに出さない |
+| 招待リンク | `ShareLink`。期限切れの未参加がその URL を開くと 410 |
+| 公開設定 | `rooms.locked`（false=公開 / true=非公開）。非公開の未参加は 404 |
+| 部屋に戻る | token から部屋を思い出し、`RoomPolicy#show?` が true なら部屋ページ。無ければナビに出さない |
 
 画面は「非公開」、コードは `locked` のまま。同じフラグの二つの呼び方であり、カラム名は変えない。
+
+**用語整理（2026-08-21）:** 開発者向けの比喩「見る権利」「入場券」「扉」はやめ、上記の Policy 名・画面用語に揃えた。
 
 ## 8. データ
 
 変更: **なし。**
 
-既存の `rooms.locked` を扉、`share_links.token` / `expires_at` を入場券として使う。
+既存の `rooms.locked` を公開設定、`share_links.token` / `expires_at` を招待リンクとして使う。
 
 | カラム | 制約 | 理由 |
 |---|---|---|
-| `share_links.token` | unique | 券の一意性 |
-| `share_links.room_id` | unique | 1部屋1券 |
+| `share_links.token` | unique | 招待リンク token の一意性 |
+| `share_links.room_id` | unique | 1部屋1招待リンク |
 | `room_memberships(room_id, profile_id)` | unique | 二重参加防止 |
 
 ```mermaid
@@ -135,7 +137,7 @@ erDiagram
     bigint id PK
   }
 
-  rooms ||--o| share_links : "入場券"
+  rooms ||--o| share_links : "招待リンク"
   rooms ||--o{ room_memberships : "参加者"
   profiles ||--o{ room_memberships : "参加"
   profiles ||--o{ rooms : "作成"
@@ -155,12 +157,12 @@ erDiagram
 | 既存メンバー / 作成者 | 200 |
 | 存在しない token / room_id | 404 |
 
-部屋の見る権利:
+部屋の閲覧可否（`RoomPolicy#show?`）:
 
 - 公開 → ログイン済みなら可
 - 非公開 → メンバーまたは作成者だけ
 
-入場券の判定順:
+招待リンクの判定順（`ShareLinkPolicy#show?`）:
 
 1. メンバーまたは作成者 → 通す（期限切れ・非公開でも部屋へ案内する）
 2. 期限切れ → 410
@@ -182,7 +184,7 @@ sequenceDiagram
     S-->>U: 410
   else 非公開かつ未参加
     S-->>U: 404
-  else 券として通る
+  else 案内可能
     S->>R: redirect GET /rooms/:id
   end
 
@@ -204,7 +206,7 @@ sequenceDiagram
   end
 ```
 
-**設計意図:** 期限は券、公開/非公開は部屋。混ぜない。非公開の中の人を通すため、見せるときは公開部屋スコープで find しない。
+**設計意図:** 有効期限は招待リンク、公開/非公開は部屋。混ぜない。非公開の中の人を通すため、見せるときは公開部屋スコープで find しない。
 
 ## 10. 入口
 
@@ -219,7 +221,7 @@ get "/share/:token", to: "shares#show", as: :share
 
 既存の `GET /rooms/:room_id/members/:id` とは衝突しない。
 
-**設計意図:** 見る URL は部屋 ID。token は券の URL のまま。
+**設計意図:** 見る URL は部屋 ID。token は招待リンク URL のまま。
 
 ## 11. 画面と文言
 
@@ -248,18 +250,18 @@ get "/share/:token", to: "shares#show", as: :share
 
 Devise のアカウントロック文言は対象外。テスト例の名前に「ロック」が残っても、画面に出なければよい。
 
-**設計意図:** 参加判断は地図を見てから行う。画面の言葉は扉に揃える。
+**設計意図:** 参加判断は地図を見てから行う。画面の言葉は公開 / 非公開に揃える。
 
 ## 12. 構成
 
 | 役割 | 担当 |
 |---|---|
 | 見る | `RoomsController#show` + `RoomPolicy#show?` |
-| 券の判定と案内 | `SharesController#show` + `ShareLinkPolicy#show?` |
+| 招待リンクの案内 | `SharesController#show` + `ShareLinkPolicy#show?` |
 | 参加 | 既存の memberships#create（公開部屋のみ） |
-| メンバー詳細 / 親タグ | 既存コントローラ。認可を部屋の見る権利に合わせ、失敗は 404 |
+| メンバー詳細 / 親タグ | 既存コントローラ。認可を `RoomPolicy#show?` に合わせ、失敗は 404 |
 | 地図データ | 既存 `JsmindDataBuilder` |
-| 部屋に戻る | `recent_room_nav_path`。見る権利があれば `room_path`。410 へは誘導しない |
+| 部屋に戻る | `recent_room_nav_path`。`RoomPolicy#show?` が true なら `room_path`。410 へは誘導しない |
 
 廃止（消す）:
 
@@ -268,7 +270,7 @@ Devise のアカウントロック文言は対象外。テスト例の名前に�
 - 一覧の参加モーダル
 - 共有ページの `require_profile!`（覗きを止めていたため）
 
-**設計意図:** 見るは部屋、券は案内、参加は別操作。使わない参加 Policy を残すと、後から読み違える。
+**設計意図:** 見るは部屋、招待リンクは案内、参加は別操作。使わない参加 Policy を残すと、後から読み違える。
 
 ## 13. 性能と一貫性
 
@@ -292,10 +294,10 @@ Devise のアカウントロック文言は対象外。テスト例の名前に�
 | 6 | `app/views/rooms/show.html.erb` | 共有ページから移動 |
 | 7 | `app/views/shares/show.html.erb` | 削除 |
 | 8 | `app/views/rooms/_room.html.erb` | 覗く / 見る。モーダル削除 |
-| 9 | `app/controllers/rooms/members_controller.rb` | 部屋の見る権利。失敗は 404 |
+| 9 | `app/controllers/rooms/members_controller.rb` | `RoomPolicy#show?`。失敗は 404 |
 | 10 | `app/controllers/rooms/parent_tag_members_controller.rb` | 同上 |
 | 11 | `app/controllers/mypage/room_memberships_controller.rb` | 参加後 `room_path` |
-| 12 | `app/helpers/application_helper.rb` | 見る権利があれば `room_path` |
+| 12 | `app/helpers/application_helper.rb` | `RoomPolicy#show?` が true なら `room_path` |
 | 13 | `app/views/mypage/rooms/_room.html.erb` | 非公開にする / 公開する |
 | 14 | `app/controllers/mypage/rooms_controller.rb` | フラッシュ |
 
@@ -310,7 +312,7 @@ Devise のアカウントロック文言は対象外。テスト例の名前に�
 | 17 | `spec/requests/rooms_spec.rb` | `#show` の覗き・404・参加しない |
 | 18 | `spec/requests/shares_spec.rb` | リダイレクト / 410 / 404。自動参加しない |
 | 19 | `spec/requests/shares/shares_show_join_spec.rb` | 参加しないことへ更新 |
-| 20 | `spec/requests/shares/shares_show_expired_spec.rb` | 410。プロフィールなしでも券判定する |
+| 20 | `spec/requests/shares/shares_show_expired_spec.rb` | 410。プロフィールなしでも招待リンク判定する |
 | 21 | `spec/requests/shares/shares_show_no_profile_spec.rb` | プロフィールなしでも案内される |
 | 22 | `spec/requests/shares/shares_show_jsmind_spec.rb` | 部屋ページへ移す |
 | 23 | `spec/requests/shares/shares_show_room_header_spec.rb` | 部屋ページへ移す |

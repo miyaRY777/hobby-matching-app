@@ -1,6 +1,6 @@
 require "rails_helper"
 
-# 部屋の「見る権利」を検証する。
+# 部屋の閲覧可否（RoomPolicy#show?）を検証する。
 # 招待リンクの期限は ShareLinkPolicy の責務なので、ここでは見ない。
 RSpec.describe RoomPolicy do
   # 部屋の作成者
@@ -46,7 +46,7 @@ RSpec.describe RoomPolicy do
       end
 
       it "作成者は true を返す" do
-        # membership の有無に関わらず、作成者は扉を開けられる
+        # membership の有無に関わらず、作成者は非公開部屋も閲覧できる
         expect(policy(room, room_owner_user).show?).to be true
       end
     end

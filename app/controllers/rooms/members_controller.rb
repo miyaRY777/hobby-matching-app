@@ -1,5 +1,5 @@
 module Rooms
-  # 責務: 部屋ページのメンバー詳細。見る権利は RoomPolicy#show?。
+  # 責務: 部屋ページのメンバー詳細。閲覧可否は RoomPolicy#show?。
   class MembersController < ApplicationController
     include AuthorizesRoomShow
     before_action :authenticate_user!

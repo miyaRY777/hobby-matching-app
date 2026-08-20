@@ -38,7 +38,7 @@ RSpec.describe "Shares", type: :request do
         create(:room_membership, room: locked_room, profile: member_profile)
         sign_in member_user
 
-        # アクション: 有効な入場券で開く
+        # アクション: 有効な招待リンクで開く
         get share_path(share_link.token)
 
         # アサーション: 地図は出さず、部屋へ案内する
@@ -56,7 +56,7 @@ RSpec.describe "Shares", type: :request do
         create(:room_membership, room: locked_room, profile: room_owner_profile)
         sign_in room_owner
 
-        # アクション: 有効な入場券で開く
+        # アクション: 有効な招待リンクで開く
         get share_path(share_link.token)
 
         # アサーション: 地図は出さず、部屋へ案内する
@@ -97,7 +97,7 @@ RSpec.describe "Shares", type: :request do
         create(:profile, user: guest_user)
         sign_in guest_user
 
-        # アクション: 有効な入場券で開く
+        # アクション: 有効な招待リンクで開く
         expect {
           get share_path(share_link.token)
         }.not_to change(RoomMembership, :count)

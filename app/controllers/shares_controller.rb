@@ -1,9 +1,9 @@
 class SharesController < ApplicationController
-  # 責務: 入場券の判定と部屋への案内。地図は RoomsController。
+  # 責務: 招待リンクの案内可否と部屋へのリダイレクト。地図は RoomsController。
   before_action :authenticate_user!
   rescue_from ActionPolicy::Unauthorized, with: :handle_unauthorized
 
-  # 責務: 券が通れば部屋へ案内する。参加レコードは作らない。
+  # 責務: 案内可能なら部屋へリダイレクトする。参加レコードは作らない。
   def show
     @share_link = ShareLink.includes(:room).find_by!(token: params[:token])
     authorize! @share_link, to: :show?
