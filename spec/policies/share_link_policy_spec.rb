@@ -57,34 +57,7 @@ RSpec.describe ShareLinkPolicy do
     end
   end
 
-  describe "#join?" do
-    context "アンロック中の部屋の場合" do
-      before { room.update!(locked: false) }
-
-      it "非メンバーでも true を返す" do
-        # 未参加でもアンロック中なら参加可
-        expect(policy(active_link, viewer_user).join?).to be true
-      end
-    end
-
-    context "ロック中の部屋の場合" do
-      before { room.update!(locked: true) }
-
-      it "非メンバー・非オーナーは false を返す" do
-        # 未参加かつオーナーでない → 参加拒否
-        expect(policy(active_link, viewer_user).join?).to be false
-      end
-
-      it "既存メンバーは true を返す" do
-        # すでに参加済みならロック中でも通過
-        create(:room_membership, room: room, profile: viewer_profile)
-        expect(policy(active_link, viewer_user).join?).to be true
-      end
-
-      it "オーナーは true を返す" do
-        # 部屋の作成者はロック中でも通過
-        expect(policy(active_link, room_owner_user).join?).to be true
-      end
-    end
+  it "参加判定用の join? は持たない" do
+    expect(described_class.instance_methods(false)).not_to include(:join?)
   end
 end
