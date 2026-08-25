@@ -27,7 +27,7 @@
 
     <% if user_signed_in? && current_user.own?(profile) %>
       <%= link_to "編集する",
-                  edit_my_profile_path,
+                  edit_mypage_profile_path,
                   data: { turbo_frame: "_top" },
                   style: "color: #60a5fa; text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
     <% end %>

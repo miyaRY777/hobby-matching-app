@@ -6,7 +6,7 @@ RSpec.describe "趣味タグ ヘルプ導線", type: :system, js: true do
 
   before do
     login_as(current_user, scope: :user)
-    visit edit_my_profile_path
+    visit edit_mypage_profile_path
     click_on "趣味"
   end
 

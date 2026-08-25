@@ -6,7 +6,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
 
   before do
     login_as(current_user, scope: :user)
-    visit edit_my_profile_path
+    visit edit_mypage_profile_path
   end
 
   describe "説明文入力欄の表示" do
@@ -32,7 +32,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     it "既存タグも説明文入力欄が開いた状態で復元される" do
       hobby = create(:hobby, name: "ゲーム")
       create(:profile_hobby, profile: current_profile, hobby:, description: "毎日遊びます")
-      visit edit_my_profile_path
+      visit edit_mypage_profile_path
       click_on "趣味"
 
       expect(find("[data-testid='description-input']").value).to eq("毎日遊びます")
@@ -148,7 +148,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     it "初期表示で既存bioの文字数が表示される" do
       # 既存bioがある場合は初期カウントが反映される
       current_profile.update!(bio: "既存テキスト")
-      visit edit_my_profile_path
+      visit edit_mypage_profile_path
 
       expect(page).to have_css("[data-testid='bio-counter']", text: "6 / 500字")
     end

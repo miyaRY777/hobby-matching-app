@@ -35,7 +35,7 @@ RSpec.describe "Mypage::Dashboards", type: :request do
 
         get mypage_root_path
 
-        expect(response.body).to include(edit_my_profile_path)
+        expect(response.body).to include(edit_mypage_profile_path)
       end
 
       it "プロフィール未作成ならプロフィール作成リンクが表示される" do
@@ -47,7 +47,7 @@ RSpec.describe "Mypage::Dashboards", type: :request do
         menu_links = dashboard_menu_links(response.body)
 
         expect(menu_links.map(&:text).map(&:strip)).to include("プロフィールを作成する")
-        expect(response.body).to include(new_my_profile_path)
+        expect(response.body).to include(new_mypage_profile_path)
         expect(response.body).not_to include("趣味プロフィール編集")
       end
 

@@ -10,7 +10,7 @@
     <div class="mb-6 p-4 rounded-lg bg-yellow-100 text-yellow-800 flex justify-between items-center">
       <span>プロフィール未登録です</span>
       <%= link_to "プロフィール作成",
-                  new_my_profile_path,
+                  new_mypage_profile_path,
                   class: "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm" %>
     </div>
   <% end %>
@@ -47,7 +47,7 @@
               <%= f.submit "参加する", class: join_button_class %>
             <% end %>
           <% else %>
-            <%= link_to "参加する", new_my_profile_path, class: join_button_class %>
+            <%= link_to "参加する", new_mypage_profile_path, class: join_button_class %>
           <% end %>
         </div>
       <% end %>

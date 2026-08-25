@@ -16,7 +16,7 @@
     <%# ヘルプモーダル（初期状態は hidden） %>
     <%= render "shared/help_modal",
           title: "プロフィール編集のヘルプ",
-          content_partial: "my/profiles/help_content_edit" %>
+          content_partial: "mypage/profiles/help_content_edit" %>
 
     <p class="mb-8 text-center text-gray-400">
       <span class="font-semibold text-white">
@@ -41,7 +41,7 @@
         プロフィールを削除すると、登録した自己紹介や趣味タグは元に戻せません。
       </p>
       <%= button_to "プロフィールを削除する",
-        my_profile_path,
+        mypage_profile_path,
         method: :delete,
         data: { turbo_confirm: "本当に削除しますか？" },
         class: "w-full rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300 cursor-pointer transition hover:bg-red-500/20 hover:text-red-100" %>

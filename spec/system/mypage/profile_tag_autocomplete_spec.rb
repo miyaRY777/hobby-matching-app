@@ -7,7 +7,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
   before do
     # タグ操作は趣味タブで行う
     login_as(current_user, scope: :user)
-    visit edit_my_profile_path
+    visit edit_mypage_profile_path
     click_on "趣味"
   end
 

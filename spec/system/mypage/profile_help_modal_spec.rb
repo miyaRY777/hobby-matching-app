@@ -8,7 +8,7 @@ RSpec.describe "プロフィールヘルプモーダル", type: :system, js: tru
     before do
       # ログインしてプロフィール作成画面へ
       login_as(current_user, scope: :user)
-      visit new_my_profile_path
+      visit new_mypage_profile_path
     end
 
     it "？ボタンが表示されている" do
@@ -56,7 +56,7 @@ RSpec.describe "プロフィールヘルプモーダル", type: :system, js: tru
     before do
       # ログインしてプロフィール編集画面へ
       login_as(current_user, scope: :user)
-      visit edit_my_profile_path
+      visit edit_mypage_profile_path
     end
 
     it "？ボタンが表示されている" do
