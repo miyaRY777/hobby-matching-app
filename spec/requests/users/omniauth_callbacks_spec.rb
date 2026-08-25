@@ -27,7 +27,7 @@ RSpec.describe "Users::OmniauthCallbacks", type: :request do
         get "/users/auth/google_oauth2/callback"
 
         # 新規OAuthユーザーはプロフィール未作成のため、プロフィール作成ページへリダイレクト
-        expect(response).to redirect_to(new_my_profile_path)
+        expect(response).to redirect_to(new_mypage_profile_path)
         expect(controller.current_user).to be_present
       end
 
@@ -108,7 +108,7 @@ RSpec.describe "Users::OmniauthCallbacks", type: :request do
         get "/users/auth/discord/callback"
 
         # 新規OAuthユーザーはプロフィール未作成のため、プロフィール作成ページへリダイレクト
-        expect(response).to redirect_to(new_my_profile_path)
+        expect(response).to redirect_to(new_mypage_profile_path)
         expect(controller.current_user).to be_present
       end
 

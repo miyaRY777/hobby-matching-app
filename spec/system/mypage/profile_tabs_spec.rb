@@ -8,7 +8,7 @@ RSpec.describe "プロフィール編集タブ", type: :system, js: true do
   before do
     # ログインしてプロフィール編集画面へ
     login_as(current_user, scope: :user)
-    visit edit_my_profile_path
+    visit edit_mypage_profile_path
   end
 
   describe "自己紹介タブ" do

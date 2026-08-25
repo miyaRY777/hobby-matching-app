@@ -26,7 +26,7 @@ RSpec.describe "ログイン画面", type: :system do
       click_button "ログイン"
 
       # プロフィール作成画面へ遷移することを確認
-      expect(page).to have_current_path(new_my_profile_path)
+      expect(page).to have_current_path(new_mypage_profile_path)
     end
   end
 

@@ -9,21 +9,21 @@ RSpec.describe "ApplicationController", type: :request do
         user: { email: user.email, password: user.password }
       }
 
-      expect(response).to redirect_to(new_my_profile_path)
+      expect(response).to redirect_to(new_mypage_profile_path)
     end
 
     it "プロフィール作成済みなら保存済みの遷移先を優先する" do
       user = create(:user)
       create(:profile, user:)
 
-      get edit_my_profile_path
+      get edit_mypage_profile_path
       expect(response).to redirect_to(new_user_session_path)
 
       post user_session_path, params: {
         user: { email: user.email, password: user.password }
       }
 
-      expect(response).to redirect_to(edit_my_profile_path)
+      expect(response).to redirect_to(edit_mypage_profile_path)
     end
   end
 
@@ -56,7 +56,7 @@ RSpec.describe "ApplicationController", type: :request do
       profile.update_column(:bio, "")
       sign_in user
 
-      get edit_my_profile_path
+      get edit_mypage_profile_path
 
       expect(response.body).not_to include("プロフィールの自己紹介またはタグが未入力です。編集ページから補完してください。")
     end

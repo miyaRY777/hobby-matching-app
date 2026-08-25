@@ -43,13 +43,10 @@ Rails.application.routes.draw do
       to: "rooms/parent_tag_members#index",
       as: :room_parent_tag_members
 
-  namespace :my do
-    # 自分用（単数）
-    resource :profile, only: %i[new create edit update destroy]
-  end
-
   namespace :mypage do
     root to: "dashboards#show"
+    # 自分用（単数）
+    resource :profile, only: %i[new create edit update destroy]
     resource :dashboard, only: [ :update ]
     resources :rooms, only: %i[index create edit update destroy] do
       member do
@@ -59,6 +56,14 @@ Rails.application.routes.draw do
       end
     end
     resources :room_memberships, only: [ :create, :destroy ]
+  end
+
+  # 後方互換: 旧 /my/profile/* （次リリース以降に削除予定）
+  namespace :my do
+    resource :profile, only: %i[create update destroy],
+             controller: "/mypage/profiles"
+    get "profile/new", to: redirect("/mypage/profile/new")
+    get "profile/edit", to: redirect("/mypage/profile/edit")
   end
 
   devise_scope :user do

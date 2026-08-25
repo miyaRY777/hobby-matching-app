@@ -1,4 +1,4 @@
-class My::ProfilesController < ApplicationController
+class Mypage::ProfilesController < ApplicationController
   before_action :authenticate_user!
   before_action :redirect_if_profile_exists, only: %i[new create]
   before_action :set_profile, only: %i[edit update destroy]
@@ -61,7 +61,7 @@ class My::ProfilesController < ApplicationController
 
   def set_profile
     @profile = current_user.profile
-    redirect_to new_my_profile_path, alert: "プロフィールを作成してください" unless @profile
+    redirect_to new_mypage_profile_path, alert: "プロフィールを作成してください" unless @profile
   end
 
   def serialize_profile_hobby(profile_hobby)
