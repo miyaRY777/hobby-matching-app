@@ -7,24 +7,24 @@ RSpec.describe Profile, type: :model do
     expect(described_class.reflect_on_association(:issued_rooms).macro).to eq(:has_many)
   end
 
-  describe "hobbies_text バリデーション（JSON形式）" do
+  describe "hobbies_json バリデーション（JSON形式）" do
     let(:profile) { build(:profile) }
 
     it "10個以下のタグは有効" do
-      profile.hobbies_text = (1..10).map { |i| { name: "タグ#{i}", description: "" } }.to_json
+      profile.hobbies_json = (1..10).map { |i| { name: "タグ#{i}", description: "" } }.to_json
       expect(profile).to be_valid
     end
 
     it "11個以上のタグは無効" do
-      profile.hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
+      profile.hobbies_json = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to be_present
+      expect(profile.errors[:hobbies_json]).to be_present
     end
 
-    it "新規作成時に hobbies_textが未設定の場合は無効" do
-      profile.hobbies_text = nil
+    it "新規作成時に hobbies_jsonが未設定の場合は無効" do
+      profile.hobbies_json = nil
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
+      expect(profile.errors[:hobbies_json]).to include("を1つ以上追加してください")
     end
   end
 
@@ -37,29 +37,29 @@ RSpec.describe Profile, type: :model do
     end
   end
 
-  describe "hobbies_text の必須バリデーション" do
-    it "新規作成時に hobbies_text が空だと無効" do
+  describe "hobbies_json の必須バリデーション" do
+    it "新規作成時に hobbies_json が空だと無効" do
       profile = build(:profile)
-      profile.hobbies_text = ""
+      profile.hobbies_json = ""
 
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
+      expect(profile.errors[:hobbies_json]).to include("を1つ以上追加してください")
     end
 
-    it "新規作成時に hobbies_text が空配列だと無効" do
+    it "新規作成時に hobbies_json が空配列だと無効" do
       profile = build(:profile)
-      profile.hobbies_text = [].to_json
+      profile.hobbies_json = [].to_json
 
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
+      expect(profile.errors[:hobbies_json]).to include("を1つ以上追加してください")
     end
 
-    it "更新時に hobbies_text が空配列だと無効" do
+    it "更新時に hobbies_json が空配列だと無効" do
       profile = create(:profile)
-      profile.hobbies_text = [].to_json
+      profile.hobbies_json = [].to_json
 
       expect(profile).not_to be_valid
-      expect(profile.errors[:hobbies_text]).to include("を1つ以上追加してください")
+      expect(profile.errors[:hobbies_json]).to include("を1つ以上追加してください")
     end
   end
 

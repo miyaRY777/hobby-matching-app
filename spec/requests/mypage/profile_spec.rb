@@ -21,7 +21,7 @@ RSpec.describe "Mypage::Profile", type: :request do
       let!(:profile) { create(:profile, user:) }
       let(:programming) { create(:parent_tag, name: "プログラミング", slug: "programming", room_type: :study) }
 
-      it "hobbies_text に parent_tag_name と room_type が含まれる" do
+      it "hobbies_json に parent_tag_name と room_type が含まれる" do
         rails_hobby = create(:hobby, name: "Rails")
         create(:hobby_parent_tag, hobby: rails_hobby, parent_tag: programming)
         create(:profile_hobby, profile:, hobby: rails_hobby)
@@ -39,41 +39,41 @@ RSpec.describe "Mypage::Profile", type: :request do
     let(:fps) { create(:parent_tag, name: "FPS", slug: "fps", room_type: :game) }
 
     it "11個のタグで更新するとバリデーションエラーになる" do
-      hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
+      hobbies_json = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
 
-      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_json: } }
 
       expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "10個以下のタグで更新すると成功する" do
-      hobbies_text = (1..10).map { |i| { name: "タグ#{i}", description: "" } }.to_json
+      hobbies_json = (1..10).map { |i| { name: "タグ#{i}", description: "" } }.to_json
 
-      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_json: } }
 
       expect(response).to have_http_status(:found)
     end
 
     it "bio が未入力だと更新できない" do
-      hobbies_text = [ { name: "ゲーム", description: "" } ].to_json
+      hobbies_json = [ { name: "ゲーム", description: "" } ].to_json
 
-      patch mypage_profile_path, params: { profile: { bio: "", hobbies_text: } }
+      patch mypage_profile_path, params: { profile: { bio: "", hobbies_json: } }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("自己紹介を入力してください")
     end
 
     it "タグが0個だと更新できない" do
-      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: [].to_json } }
+      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_json: [].to_json } }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("趣味タグを1つ以上追加してください")
     end
 
     it "parent_tag_id 付きで新規タグを保存すると HobbyParentTag が作成される" do
-      hobbies_text = [ { name: "brandnewtag", description: "", parent_tag_id: fps.id } ].to_json
+      hobbies_json = [ { name: "brandnewtag", description: "", parent_tag_id: fps.id } ].to_json
 
-      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+      patch mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_json: } }
 
       hobby = Hobby.find_by(normalized_name: "brandnewtag")
       expect(hobby.hobby_parent_tags.find_by(room_type: :game)&.parent_tag).to eq(fps)
@@ -82,33 +82,33 @@ RSpec.describe "Mypage::Profile", type: :request do
 
   describe "POST /mypage/profile" do
     it "作成成功後にマイページへリダイレクトする" do
-      hobbies_text = [ { name: "ゲーム", description: "" } ].to_json
+      hobbies_json = [ { name: "ゲーム", description: "" } ].to_json
 
-      post mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: } }
+      post mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_json: } }
 
       expect(response).to redirect_to(mypage_root_path)
     end
 
     it "11個のタグで作成するとバリデーションエラーになりタグデータが保持される" do
-      hobbies_text = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
+      hobbies_json = (1..11).map { |i| { name: "タグ#{i}", description: "" } }.to_json
 
-      post mypage_profile_path, params: { profile: { hobbies_text: } }
+      post mypage_profile_path, params: { profile: { hobbies_json: } }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("タグ1")
     end
 
     it "bio が未入力だと作成できない" do
-      hobbies_text = [ { name: "ゲーム", description: "" } ].to_json
+      hobbies_json = [ { name: "ゲーム", description: "" } ].to_json
 
-      post mypage_profile_path, params: { profile: { bio: "", hobbies_text: } }
+      post mypage_profile_path, params: { profile: { bio: "", hobbies_json: } }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("自己紹介を入力してください")
     end
 
     it "タグが0個だと作成できない" do
-      post mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_text: [].to_json } }
+      post mypage_profile_path, params: { profile: { bio: "自己紹介", hobbies_json: [].to_json } }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("趣味タグを1つ以上追加してください")
@@ -144,9 +144,9 @@ RSpec.describe "Mypage::Profile", type: :request do
     end
 
     it "POST /my/profile は引き続きプロフィールを作成できる" do
-      hobbies_text = [ { name: "ゲーム", description: "" } ].to_json
+      hobbies_json = [ { name: "ゲーム", description: "" } ].to_json
 
-      post "/my/profile", params: { profile: { bio: "自己紹介", hobbies_text: } }
+      post "/my/profile", params: { profile: { bio: "自己紹介", hobbies_json: } }
 
       expect(response).to redirect_to(mypage_root_path)
       expect(user.reload.profile).to be_present
@@ -154,9 +154,9 @@ RSpec.describe "Mypage::Profile", type: :request do
 
     it "PATCH /my/profile は引き続きプロフィールを更新できる" do
       profile = create(:profile, user:)
-      hobbies_text = [ { name: "更新タグ", description: "" } ].to_json
+      hobbies_json = [ { name: "更新タグ", description: "" } ].to_json
 
-      patch "/my/profile", params: { profile: { bio: "更新後", hobbies_text: } }
+      patch "/my/profile", params: { profile: { bio: "更新後", hobbies_json: } }
 
       expect(response).to redirect_to(profile_path(profile))
       expect(profile.reload.bio).to eq("更新後")

@@ -10,10 +10,10 @@ RSpec.describe "Profile hobbies", type: :request do
 
   describe "更新：PATCH /profile (mypage_profile_path)" do
     it "タグ入力を受け取り、hobbies を全置換して表示に反映される" do
-      hobbies_text = [ { name: "rails", description: "" }, { name: "ruby", description: "" } ].to_json
+      hobbies_json = [ { name: "rails", description: "" }, { name: "ruby", description: "" } ].to_json
 
       patch mypage_profile_path, params: {
-        profile: { hobbies_text: }
+        profile: { hobbies_json: }
       }
 
       expect(response).to redirect_to(profile_path(profile))
@@ -27,7 +27,7 @@ RSpec.describe "Profile hobbies", type: :request do
       eleven_tags = (1..11).map { |i| { name: "tag#{i}", description: "" } }.to_json
 
       patch mypage_profile_path, params: {
-        profile: { hobbies_text: eleven_tags }
+        profile: { hobbies_json: eleven_tags }
       }
 
       expect(response).to have_http_status(:unprocessable_content)
