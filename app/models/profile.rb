@@ -10,12 +10,13 @@ class Profile < ApplicationRecord
   has_many :joined_rooms, through: :room_memberships, source: :room
   has_many :issued_rooms, class_name: "Room", foreign_key: :issuer_profile_id, inverse_of: :issuer_profile, dependent: :destroy
 
-  attr_accessor :hobbies_text
+  # タグ入力フォームから送られる趣味JSON。DBカラムではない
+  attr_accessor :hobbies_json
 
   MAX_HOBBIES = 10
 
-  validate :hobbies_text_not_empty
-  validate :hobbies_json_count_within_limit, if: -> { hobbies_text.present? }
+  validate :hobbies_json_not_empty
+  validate :hobbies_json_count_within_limit, if: -> { hobbies_json.present? }
 
   def update_hobbies_from_json(json_str)
     tag_data = JSON.parse(json_str).map(&:symbolize_keys)
@@ -45,33 +46,35 @@ class Profile < ApplicationRecord
 
   private
 
-  def hobbies_text_not_empty
+  # 新規作成時は必須。更新時は hobbies_json が送られたときだけ検証する（bio のみ更新を許可するため）
+  def hobbies_json_not_empty
     if new_record?
-      validate_hobbies_text_presence(hobbies_text)
+      validate_hobbies_json_presence(hobbies_json)
       return
     end
 
-    validate_hobbies_text_presence(hobbies_text) if hobbies_text.present?
+    validate_hobbies_json_presence(hobbies_json) if hobbies_json.present?
   end
 
-  def validate_hobbies_text_presence(raw_value)
+  def validate_hobbies_json_presence(raw_value)
     if raw_value.blank?
-      errors.add(:hobbies_text, "を1つ以上追加してください")
+      errors.add(:hobbies_json, "を1つ以上追加してください")
       return
     end
 
     tags = JSON.parse(raw_value)
-    errors.add(:hobbies_text, "を1つ以上追加してください") if tags.empty?
+    errors.add(:hobbies_json, "を1つ以上追加してください") if tags.empty?
   rescue JSON::ParserError
-    errors.add(:hobbies_text, "を1つ以上追加してください")
+    errors.add(:hobbies_json, "を1つ以上追加してください")
   end
 
   def hobbies_json_count_within_limit
-    tags = JSON.parse(hobbies_text)
+    tags = JSON.parse(hobbies_json)
     return if tags.size <= MAX_HOBBIES
 
-    errors.add(:hobbies_text, "は#{MAX_HOBBIES}個以下にしてください")
+    errors.add(:hobbies_json, "は#{MAX_HOBBIES}個以下にしてください")
   rescue JSON::ParserError
+    # 不正JSONのエラーは hobbies_json_not_empty 側で扱う
     nil
   end
 end
