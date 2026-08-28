@@ -9,12 +9,10 @@ RSpec.describe "趣味(タグ)登録の一連の流れ", type: :system, js: true
     visit edit_mypage_profile_path
     click_on "趣味"
 
-    fill_in "tag-input", with: "Ruby Rails"
-    find("[data-testid='skip-parent-tag']").click
+    add_new_hobby_tag("Ruby Rails")
     expect(page).to have_text("Ruby Rails")
 
-    fill_in "tag-input", with: "Ruby"
-    find("[data-testid='skip-parent-tag']").click
+    add_new_hobby_tag("Ruby")
     expect(page).to have_text("Ruby")
 
     click_button "更新する"
