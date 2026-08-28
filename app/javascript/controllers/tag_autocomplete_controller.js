@@ -1,11 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-const ROOM_TYPE_LABELS = {
-  chat: "雑談系",
-  study: "学習系",
-  game: "ゲーム系"
-}
-
 export default class extends Controller {
   static targets = ["input", "hiddenField", "chipList", "dropdown", "count"]
   static values = {
@@ -15,18 +9,20 @@ export default class extends Controller {
   }
 
   #debounceTimer = null
-  // chips: [{ name, normalized_name, description, parent_tag_id, parent_tag_name }]
+  // chips: [{ name, normalized_name, description, parent_tag_id, parent_tag_name, is_new }]
   #chips = []
   #activeIndex = -1
-  #pendingNewTag = null
 
+  // --- 初期化 ---
   connect() {
     const existing = this.hiddenFieldTarget.value
     if (existing) {
       try {
         const parsed = JSON.parse(existing)
         parsed.forEach(tag => {
-          this.#addChip(tag.name, tag.description || "", null, tag.parent_tag_name || null)
+          const parentTagId = tag.parent_tag_id ?? null
+          const parentTagName = tag.parent_tag_name || this.#parentTagNameById(parentTagId)
+          this.#addChip(tag.name, tag.description || "", parentTagId, parentTagName, tag.is_new === true)
         })
       } catch {
         // JSON でない場合は無視
@@ -34,6 +30,7 @@ export default class extends Controller {
     }
   }
 
+  // --- 入力・キーボード ---
   onInput() {
     clearTimeout(this.#debounceTimer)
     const q = this.inputTarget.value.trim()
@@ -42,7 +39,6 @@ export default class extends Controller {
       return
     }
 
-    this.#triggerNewTagFlow(q)
     this.#debounceTimer = setTimeout(() => this.#fetchSuggestions(q), 300)
   }
 
@@ -67,41 +63,37 @@ export default class extends Controller {
         this.#selectExistingTag(item.dataset.name, item.dataset.parentTagName || null)
       } else {
         const q = this.inputTarget.value.trim()
-        if (q) this.#triggerNewTagFlow(q)
+        if (q) this.#confirmNewName(q)
       }
     } else if (event.key === "Escape") {
       this.#closeDropdown()
     }
   }
 
+  // --- 候補の確定（クリック / Enter の入口 → 実処理） ---
   selectSuggestion(event) {
     const { name, parentTagName } = event.currentTarget.dataset
     this.#selectExistingTag(name, parentTagName || null)
   }
 
-  confirmNewTag() {
-    if (!this.#pendingNewTag) return
+  confirmNewTagRow() {
+    const query = this.inputTarget.value.trim()
+    if (query) this.#confirmNewName(query)
+  }
 
-    const select = this.dropdownTarget.querySelector("[data-testid='new-tag-parent-select']")
-    const selectedOption = select?.options[select.selectedIndex]
-    const parentTagId = selectedOption?.value ? parseInt(selectedOption.value, 10) : null
-    const parentTagName = selectedOption?.value ? selectedOption.text : null
-
-    this.#addChip(this.#pendingNewTag, "", parentTagId, parentTagName)
+  #selectExistingTag(name, parentTagName) {
+    this.#addChip(name, "", null, parentTagName || null)
     this.inputTarget.value = ""
-    this.#pendingNewTag = null
     this.#closeDropdown()
   }
 
-  skipParentTag() {
-    if (!this.#pendingNewTag) return
-
-    this.#addChip(this.#pendingNewTag, "", null, null)
+  #confirmNewName(query) {
+    this.#addChip(query, "", null, null, true)
     this.inputTarget.value = ""
-    this.#pendingNewTag = null
     this.#closeDropdown()
   }
 
+  // --- チップの削除 ---
   removeChip(event) {
     const name = event.currentTarget.dataset.name
     this.#removeChipByName(name)
@@ -122,6 +114,7 @@ export default class extends Controller {
     }
   }
 
+  // --- チップの更新（説明・カテゴリ） ---
   updateDescription(event) {
     const { name, description } = event.detail
     const chip = this.#chips.find(currentChip => currentChip.name === name)
@@ -132,20 +125,19 @@ export default class extends Controller {
     }
   }
 
-  #selectExistingTag(name, parentTagName) {
-    this.#addChip(name, "", null, parentTagName || null)
-    this.inputTarget.value = ""
-    this.#closeDropdown()
+  updateCategory(event) {
+    const { name, parentTagId, parentTagName } = event.detail
+    const chip = this.#chips.find(currentChip => currentChip.name === name)
+    if (!chip?.is_new) return
+
+    chip.parent_tag_id = parentTagId
+    chip.parent_tag_name = parentTagName
+    this.#syncHiddenField()
+    this.#dispatchChipsChanged()
   }
 
-  #triggerNewTagFlow(query) {
-    if (this.#chips.find(chip => chip.normalized_name === this.#normalizeName(query))) return
-
-    this.#pendingNewTag = query
-    this.#renderNewTagUI(query)
-  }
-
-  #addChip(name, description = "", parentTagId = null, parentTagName = null) {
+  // --- チップの追加・描画・同期 ---
+  #addChip(name, description = "", parentTagId = null, parentTagName = null, isNew = false) {
     const displayName = name.trim()
     const normalizedName = this.#normalizeName(displayName)
 
@@ -158,7 +150,8 @@ export default class extends Controller {
       normalized_name: normalizedName,
       description,
       parent_tag_id: parentTagId,
-      parent_tag_name: parentTagName
+      parent_tag_name: parentTagName,
+      is_new: Boolean(isNew)
     })
     this.#renderChips()
     this.#syncHiddenField()
@@ -181,17 +174,22 @@ export default class extends Controller {
 
   #syncHiddenField() {
     this.hiddenFieldTarget.value = JSON.stringify(
-      this.#chips.map(({ name, description, parent_tag_id }) => ({ name, description, parent_tag_id }))
+      this.#chips.map(({ name, description, parent_tag_id, is_new }) => {
+        const payload = { name, description, parent_tag_id }
+        if (is_new) payload.is_new = true
+        return payload
+      })
     )
   }
 
   #dispatchChipsChanged() {
     this.element.dispatchEvent(new CustomEvent("chips-changed", {
       bubbles: true,
-      detail: { chips: [...this.#chips] }
+      detail: { chips: [...this.#chips], parentTags: this.parentTagsValue }
     }))
   }
 
+  // --- ドロップダウン UI ---
   async #fetchSuggestions(query) {
     if (this.#chips.find(chip => chip.normalized_name === this.#normalizeName(query))) {
       this.#closeDropdown()
@@ -209,7 +207,7 @@ export default class extends Controller {
       if (hobbies.length > 0) {
         this.#renderDropdown(hobbies)
       } else {
-        this.#triggerNewTagFlow(query)
+        this.#renderNewTagAddRow(query)
       }
     } catch {
       this.#closeDropdown()
@@ -232,42 +230,12 @@ export default class extends Controller {
     this.dropdownTarget.classList.remove("hidden")
   }
 
-  #renderNewTagUI(query) {
-    const options = Object.entries(this.parentTagsValue).flatMap(([roomType, tags]) => {
-      const tagList = Array.isArray(tags) ? tags : []
-      if (tagList.length === 0) return []
-
-      return [
-        `<optgroup label="${ROOM_TYPE_LABELS[roomType] || roomType}">`,
-        ...tagList.map(parentTag => `<option value="${parentTag.id}">${this.#escapeHtml(parentTag.name)}</option>`),
-        "</optgroup>"
-      ]
-    }).join("")
-
+  #renderNewTagAddRow(query) {
     this.dropdownTarget.innerHTML = `
-      <li data-testid="new-tag-section" class="new-tag-section">
-        <div style="margin-bottom:0.75rem;">「${this.#escapeHtml(query)}」を新しいタグとして追加する</div>
-        <div style="margin-top:0.5rem;margin-bottom:0.25rem;font-size:0.8rem;font-weight:600;color:#e2e8f0;">親タグ</div>
-        <select data-testid="new-tag-parent-select"
-                id="new-tag-parent-select"
-                class="new-tag-select">
-          ${options}
-        </select>
-        <div style="margin-top:0.35rem;margin-bottom:0.5rem;color:#9ca3af;font-size:0.8rem;">近い分類を選ぶと、あとで見つけやすくなります</div>
-        <div style="margin-top:0.25rem;margin-bottom:0.5rem;color:#f87171;font-size:0.75rem;">※ プロフィールを更新すると、親タグはご自身では変更できなくなります。変更が必要な場合は管理者にお問い合わせください。</div>
-        <div style="display:flex;gap:0.5rem;">
-          <button type="button"
-                  class="new-tag-confirm-btn"
-                  data-action="click->tag-autocomplete#confirmNewTag">
-            追加する
-          </button>
-          <button type="button"
-                  class="new-tag-skip-btn"
-                  data-testid="skip-parent-tag"
-                  data-action="click->tag-autocomplete#skipParentTag">
-            わからない
-          </button>
-        </div>
+      <li data-testid="new-tag-add-row"
+          class="autocomplete-item"
+          data-action="click->tag-autocomplete#confirmNewTagRow">
+        「${this.#escapeHtml(query)}」を新しいタグとして追加
       </li>
     `
     this.dropdownTarget.classList.remove("hidden")
@@ -277,13 +245,24 @@ export default class extends Controller {
     this.dropdownTarget.innerHTML = ""
     this.dropdownTarget.classList.add("hidden")
     this.#activeIndex = -1
-    this.#pendingNewTag = null
   }
 
   #updateActiveItem(items) {
     items.forEach((item, index) => {
       item.style.background = index === this.#activeIndex ? "rgba(96,165,250,0.15)" : "transparent"
     })
+  }
+
+  // --- ユーティリティ ---
+  #parentTagNameById(parentTagId) {
+    if (!parentTagId) return null
+    const groups = Object.values(this.parentTagsValue)
+    for (const tags of groups) {
+      const list = Array.isArray(tags) ? tags : []
+      const match = list.find(tag => tag.id === parentTagId)
+      if (match) return match.name
+    }
+    return null
   }
 
   #escapeHtml(value) {

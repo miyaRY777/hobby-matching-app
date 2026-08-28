@@ -12,17 +12,33 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
   end
 
   describe "タグの追加" do
-    it "新規タグを追加セクションから説明カードとして追加できる" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+    it "候補がないタグは追加行クリックで即カードになる" do
+      add_new_hobby_tag("ゲーム")
 
-      expect(page).to have_text("ゲーム")
-      expect(page).to have_css("[data-testid='description-toggle']", count: 1)
+      expect(page).to have_css("[data-testid='tag-child-chip']", text: "ゲーム")
+      expect(page).to have_css("[data-testid='tag-category-trigger']", text: "カテゴリー")
+      expect(page).to have_no_button("わからない")
+      expect(page).to have_no_button("追加する")
+      expect(page).to have_no_css("[data-testid='new-tag-parent-select']")
+    end
+
+    it "候補を選んでいない状態で Enter すると即カードになる" do
+      fill_in "tag-input", with: "ボードゲーム"
+      find("[data-testid='tag-input']").send_keys(:enter)
+
+      expect(page).to have_css("[data-testid='tag-child-chip']", text: "ボードゲーム")
+      expect(find("[data-testid='tag-input']").value).to eq("")
+    end
+
+    it "2文字以上入力しただけではカードが増えない" do
+      fill_in "tag-input", with: "ゲーム"
+
+      expect(page).to have_css("[data-testid='new-tag-add-row']")
+      expect(page).to have_no_css("[data-testid='tag-card']")
     end
 
     it "同一タグは重複追加できない" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
 
       fill_in "tag-input", with: "ゲーム"
       expect(page).to have_text("ゲーム")
@@ -30,16 +46,14 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
     end
 
     it "入力した表示名の大文字小文字を保ったままカードに追加できる" do
-      fill_in "tag-input", with: "Ruby Rails"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("Ruby Rails")
 
       expect(page).to have_css("[data-testid='tag-child-chip']", text: "Ruby Rails")
     end
 
     it "10個追加するとinputが無効化される" do
       10.times do |i|
-        fill_in "tag-input", with: "タグ#{i}"
-        find("[data-testid='skip-parent-tag']").click
+        add_new_hobby_tag("タグ#{i}")
       end
 
       expect(page).to have_css("[data-testid='description-toggle']", count: 10)
@@ -50,8 +64,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
   describe "タグの削除" do
     it "カードの×ボタンでタグを削除できる" do
       # タグを追加してから削除する
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       expect(page).to have_text("ゲーム")
 
       find("button[aria-label='ゲームを削除']", visible: :all).click
@@ -86,8 +99,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
 
   describe "フォーム送信" do
     it "カードのタグが保存される" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(current_profile))
@@ -98,8 +110,7 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
 
   describe "Turbo再表示時のカード復元" do
     it "バリデーションエラー後もカードが復元される" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
 
       # hidden fieldを11個分のタグ（上限超過）に書き換えてバリデーションエラーを発生させる
       over_limit = ([ { name: "ゲーム", description: "" } ] + (1..10).map { |i| { name: "tag#{i}", description: "" } }).to_json
@@ -123,15 +134,13 @@ RSpec.describe "タグ入力チップUI", type: :system, js: true do
     end
 
     it "タグ追加時にカウンターが更新される" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
 
       expect(page).to have_css("[data-testid='tag-count']", text: "1 / 10件")
     end
 
     it "タグ削除時にカウンターが更新される" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       find("button[aria-label='ゲームを削除']", visible: :all).click
 
       expect(page).to have_css("[data-testid='tag-count']", text: "0 / 10件")

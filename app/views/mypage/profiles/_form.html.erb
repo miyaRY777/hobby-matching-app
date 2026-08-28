@@ -2,6 +2,7 @@
               url: mypage_profile_path,
               class: "space-y-8" do |f| %>
 
+  <%# --- エラー表示 --- %>
   <% if profile.errors.any? %>
     <div class="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
       <ul class="list-none p-0 m-0">
@@ -16,6 +17,7 @@
 
   <div data-controller="tabs" data-tabs-toggleable-value="false" class="space-y-6">
 
+    <%# --- タブ切替 --- %>
     <div class="inline-flex rounded-2xl border border-slate-700/60 bg-slate-900/70 p-1">
       <button type="button"
               data-tabs-target="tab"
@@ -27,6 +29,7 @@
               class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">趣味</button>
     </div>
 
+    <%# --- 自己紹介 --- %>
     <div data-tabs-target="panel"
          class="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6">
       <div data-controller="char-counter" data-char-counter-max-value="500">
@@ -49,14 +52,16 @@
       </div>
     </div>
 
+    <%# --- 趣味タグ --- %>
     <div data-tabs-target="panel"
          class="relative hidden rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6"
          data-controller="tag-description tag-autocomplete"
          data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
          data-tag-autocomplete-max-value="10"
          data-tag-autocomplete-parent-tags-value="<%= @parent_tags_json %>"
-         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription tag-remove-request->tag-autocomplete#removeTag">
+         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription tag-remove-request->tag-autocomplete#removeTag tag-category-update->tag-autocomplete#updateCategory">
 
+      <%# --- 見出し・ヘルプ --- %>
       <div data-controller="toggle">
         <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
@@ -94,7 +99,7 @@
         </div>
       </div>
 
-      <%# カラムではない。JS がタグ配列の JSON を入れる。失敗再表示は @hobbies_json を戻す %>
+      <%# --- 送信データ（カラムではない。JS がタグ配列の JSON を入れる。失敗再表示は @hobbies_json を戻す） --- %>
       <input type="hidden"
              name="profile[hobbies_json]"
              value="<%= @hobbies_json %>"
@@ -104,6 +109,7 @@
            aria-hidden="true"
            data-tag-autocomplete-target="chipList"></div>
 
+      <%# --- 入力・候補 --- %>
       <div class="relative">
         <input type="text"
                id="tag-input"
@@ -119,11 +125,13 @@
             style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
       </div>
 
+      <%# --- タグカード --- %>
       <div class="mt-5" data-tag-description-target="container"></div>
     </div>
 
   </div>
 
+  <%# --- 送信 --- %>
   <div class="grid gap-3 border-t border-slate-700/50 pt-6 md:grid-cols-2">
     <% if local_assigns[:return_path] %>
       <%= link_to "一覧へ戻る", return_path,

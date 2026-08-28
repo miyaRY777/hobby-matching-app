@@ -89,6 +89,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods # ブロック内の最下段に追記
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Warden::Test::Helpers, type: :system
+  config.include TagInputHelpers, type: :system
   config.after(type: :system) { Warden.test_reset! }
   config.before(:suite) { TestDatabaseCleanup.clean_test_database! }
   config.append_after(:each, type: :system, js: true) { TestDatabaseCleanup.clean_test_database! }

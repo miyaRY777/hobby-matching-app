@@ -13,17 +13,15 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     before { click_on "趣味" }
 
     it "タグ追加後に説明カードが表示される" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
 
       expect(page).to have_css("[data-testid='description-toggle']")
-      expect(page).to have_css("[data-testid='tag-parent-label']", text: "未分類")
+      expect(page).to have_css("[data-testid='tag-category-trigger']", text: "カテゴリー")
       expect(page).to have_css("[data-testid='tag-child-chip']", text: "ゲーム")
     end
 
     it "新規タグ追加直後から説明文入力欄が表示される" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
 
       expect(page).to have_css("[data-testid='description-input']")
       expect(page).to have_button("説明を閉じる")
@@ -40,8 +38,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
     end
 
     it "ボタンで説明文入力欄と文言を交互に切り替える" do
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
 
       click_button "説明を閉じる"
       expect(page).not_to have_css("[data-testid='description-input']")
@@ -54,8 +51,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
 
     it "カードを削除すると説明編集ボタンも消える" do
       # タグ削除と同時に説明編集ボタンも消える
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       expect(page).to have_css("[data-testid='description-toggle']")
 
       find("button[aria-label='ゲームを削除']", visible: :all).click
@@ -69,8 +65,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
 
     it "説明文を入力して保存すると反映される" do
       # タグ追加 → 説明入力 → 保存
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       find("[data-testid='description-input']").fill_in with: "毎日やってます"
       click_button "更新する"
 
@@ -83,8 +78,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
 
     it "説明文なしでも保存できる" do
       # ✏️を開かずに保存しても空文字で保存される
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(current_profile))
@@ -101,8 +95,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
 
     it "バリデーションエラー後もカードと説明文が復元される" do
       # 入力内容がエラー後もそのまま残る
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       find("[data-testid='description-input']").fill_in with: "毎日やってます"
 
       expect(page).to have_text("ゲーム")
@@ -126,8 +119,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       # ひとことタブでbio入力 → 趣味タブでタグ追加 → 保存
       fill_in "profile[bio]", with: "テスト自己紹介です"
       click_on "趣味"
-      fill_in "tag-input", with: "ゲーム"
-      find("[data-testid='skip-parent-tag']").click
+      add_new_hobby_tag("ゲーム")
       click_button "更新する"
 
       expect(page).to have_current_path(profile_path(current_profile))
