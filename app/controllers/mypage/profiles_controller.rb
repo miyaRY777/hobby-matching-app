@@ -1,8 +1,8 @@
 class Mypage::ProfilesController < ApplicationController
-  # 責務: 自分のプロフィール CRUD。趣味はタグ入力の JSON（hobbies_json）経由。公開閲覧は ProfilesController。
   before_action :authenticate_user!
   before_action :redirect_if_profile_exists, only: %i[new create]
   before_action :set_profile, only: %i[edit update destroy]
+  # render :new/:edit は before_action を再実行しないので、失敗時再描画用に create/update でも読む
   before_action :set_parent_tags, only: %i[new create edit update]
 
   def new
@@ -10,24 +10,22 @@ class Mypage::ProfilesController < ApplicationController
   end
 
   def create
-    # hobbies_json は attr_accessor（DBカラムではない）なので mass assignment から外して別途セットする
     @profile = current_user.build_profile(profile_params.except(:hobbies_json))
     @profile.hobbies_json = profile_params[:hobbies_json]
 
-    # プロフィール保存と趣味の紐付けを同一トランザクションにする
     ApplicationRecord.transaction do
       @profile.save!
       @profile.update_hobbies_from_json(@profile.hobbies_json)
     end
     redirect_to mypage_root_path, notice: "プロフィールを作成しました"
   rescue ActiveRecord::RecordInvalid
+    # render は new を再実行しない。戻さないとタグ入力が消える
     @hobbies_json = @profile.hobbies_json
     flash.now[:alert] = "プロフィールを作成できませんでした"
     render :new, status: :unprocessable_entity
   end
 
   def edit
-    # タグ入力の初期値用。N+1 を防ぐ includes を維持する
     @hobbies_json = @profile.profile_hobbies
                            .includes(hobby: { hobby_parent_tags: :parent_tag })
                            .map { |profile_hobby| serialize_profile_hobby(profile_hobby) }
@@ -35,12 +33,11 @@ class Mypage::ProfilesController < ApplicationController
   end
 
   def update
-    # 先にセットしてバリデーション（更新時は hobbies_json があるときだけ趣味を検証する）
     @profile.hobbies_json = profile_params[:hobbies_json]
 
     ApplicationRecord.transaction do
       @profile.update!(profile_params.except(:hobbies_json))
-      # 空のときは bio のみ更新を許可し、既存趣味は触らない
+      # 空なら bio のみ更新。既存趣味は触らない
       @profile.update_hobbies_from_json(@profile.hobbies_json) if @profile.hobbies_json.present?
     end
     redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
@@ -57,6 +54,7 @@ class Mypage::ProfilesController < ApplicationController
 
   private
 
+  # カラムではない。build/update! に渡すと UnknownAttributeError になる
   def profile_params
     params.require(:profile).permit(:bio, :hobbies_json)
   end
@@ -76,7 +74,7 @@ class Mypage::ProfilesController < ApplicationController
   end
 
   def set_parent_tags
-    # 未分類は選択させない。room_type ごとにタグ入力の親タグ候補を渡す
+    # 未分類は管理用途。ユーザーの select 候補から外す
     @parent_tags_json = ParentTag.where.not(slug: "uncategorized")
                                  .order(:room_type, :position)
                                  .group_by(&:room_type)

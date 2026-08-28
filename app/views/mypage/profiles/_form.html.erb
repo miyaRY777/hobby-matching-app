@@ -2,7 +2,6 @@
               url: mypage_profile_path,
               class: "space-y-8" do |f| %>
 
-  <%# エラー表示 %>
   <% if profile.errors.any? %>
     <div class="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
       <ul class="list-none p-0 m-0">
@@ -15,10 +14,8 @@
     </div>
   <% end %>
 
-  <%# タブ切り替え %>
   <div data-controller="tabs" data-tabs-toggleable-value="false" class="space-y-6">
 
-    <%# タブボタン %>
     <div class="inline-flex rounded-2xl border border-slate-700/60 bg-slate-900/70 p-1">
       <button type="button"
               data-tabs-target="tab"
@@ -30,7 +27,6 @@
               class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors">趣味</button>
     </div>
 
-    <%# 自己紹介パネル %>
     <div data-tabs-target="panel"
          class="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6">
       <div data-controller="char-counter" data-char-counter-max-value="500">
@@ -53,7 +49,6 @@
       </div>
     </div>
 
-    <%# タグパネル %>
     <div data-tabs-target="panel"
          class="relative hidden rounded-2xl border border-slate-700/50 bg-slate-950/40 p-5 md:p-6"
          data-controller="tag-description tag-autocomplete"
@@ -99,18 +94,16 @@
         </div>
       </div>
 
-      <%# hidden field: サーバーに送信される値 %>
+      <%# カラムではない。JS がタグ配列の JSON を入れる。失敗再表示は @hobbies_json を戻す %>
       <input type="hidden"
              name="profile[hobbies_json]"
              value="<%= @hobbies_json %>"
              data-tag-autocomplete-target="hiddenField">
 
-      <%# 表示上はカードを唯一の表現にし、hidden field と件数だけ tag-autocomplete が管理する %>
       <div class="hidden"
            aria-hidden="true"
            data-tag-autocomplete-target="chipList"></div>
 
-      <%# テキスト入力 + ドロップダウンを relative でラップしてドロップダウンの幅を入力欄に合わせる %>
       <div class="relative">
         <input type="text"
                id="tag-input"
@@ -121,19 +114,16 @@
                data-action="input->tag-autocomplete#onInput keydown->tag-autocomplete#onKeydown"
                class="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none box-border transition placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20">
 
-        <%# オートコンプリート候補ドロップダウン %>
         <ul data-tag-autocomplete-target="dropdown"
             class="hidden absolute z-10 mt-1 w-full rounded-lg max-h-60 overflow-auto"
             style="background: #1e293b; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);"></ul>
       </div>
 
-      <%# 説明文入力エリア（tag-descriptionコントローラが管理）%>
       <div class="mt-5" data-tag-description-target="container"></div>
     </div>
 
   </div>
 
-  <%# ボタンエリア %>
   <div class="grid gap-3 border-t border-slate-700/50 pt-6 md:grid-cols-2">
     <% if local_assigns[:return_path] %>
       <%= link_to "一覧へ戻る", return_path,

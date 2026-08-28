@@ -16,7 +16,7 @@ class ProfileHobbiesUpdater
     ApplicationRecord.transaction do
       target_names = normalized.map { |t| t[:name] }
 
-      # 不要なprofile_hobbiesを削除
+      # フォームから外した趣味の紐付けを削除する
       profile.profile_hobbies
              .joins(:hobby)
              .where.not(hobbies: { normalized_name: target_names })
@@ -25,7 +25,7 @@ class ProfileHobbiesUpdater
       # N+1対策: 既存Hobbyをバッチロード
       existing_hobbies = Hobby.where(normalized_name: target_names).index_by(&:normalized_name)
 
-      # 移行前データで normalized_name が nil の既存 hobby も再利用する
+      # normalized_name 追加前の行。無視すると find_or_create_by! が name uniqueness で落ちる
       missing_names = target_names - existing_hobbies.keys
       legacy_hobbies = Hobby.where(normalized_name: nil, name: missing_names).to_a
 
@@ -55,6 +55,7 @@ class ProfileHobbiesUpdater
     end
   end
 
+  # 未分類の既存 Hobby は admin 専用。ユーザー提案は今作った Hobby にだけ付ける
   def self.classify_if_newly_created(hobby, parent_tag)
     return unless hobby.previously_new_record?
     return if parent_tag.nil?

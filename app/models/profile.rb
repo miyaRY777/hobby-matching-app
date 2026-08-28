@@ -10,7 +10,7 @@ class Profile < ApplicationRecord
   has_many :joined_rooms, through: :room_memberships, source: :room
   has_many :issued_rooms, class_name: "Room", foreign_key: :issuer_profile_id, inverse_of: :issuer_profile, dependent: :destroy
 
-  # タグ入力フォームから送られる趣味JSON。DBカラムではない
+  # カラムではない。実体は hobbies / profile_hobbies に書く
   attr_accessor :hobbies_json
 
   MAX_HOBBIES = 10
@@ -22,7 +22,8 @@ class Profile < ApplicationRecord
     tag_data = JSON.parse(json_str).map(&:symbolize_keys)
     ProfileHobbiesUpdater.call(self, tag_data)
   rescue JSON::ParserError
-    # パース失敗時は何もしない
+    # hobbies_json_not_empty で弾く。ここは到達しない想定の防御
+    nil
   end
 
   def joined_room_ids
@@ -46,7 +47,7 @@ class Profile < ApplicationRecord
 
   private
 
-  # 新規作成時は必須。更新時は hobbies_json が送られたときだけ検証する（bio のみ更新を許可するため）
+  # 新規は必須。更新は hobbies_json があるときだけ（bio のみ更新を許可する）
   def hobbies_json_not_empty
     if new_record?
       validate_hobbies_json_presence(hobbies_json)
@@ -74,7 +75,7 @@ class Profile < ApplicationRecord
 
     errors.add(:hobbies_json, "は#{MAX_HOBBIES}個以下にしてください")
   rescue JSON::ParserError
-    # 不正JSONのエラーは hobbies_json_not_empty 側で扱う
+    # メッセージは hobbies_json_not_empty 側に任せる（二重に出さない）
     nil
   end
 end
