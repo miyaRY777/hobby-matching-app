@@ -9,7 +9,7 @@ export default class extends Controller {
   }
 
   #debounceTimer = null
-  // chips: [{ name, normalized_name, description, parent_tag_id, parent_tag_name }]
+  // chips: [{ name, normalized_name, description, parent_tag_id, parent_tag_name, is_new }]
   #chips = []
   #activeIndex = -1
 
@@ -19,7 +19,9 @@ export default class extends Controller {
       try {
         const parsed = JSON.parse(existing)
         parsed.forEach(tag => {
-          this.#addChip(tag.name, tag.description || "", null, tag.parent_tag_name || null)
+          const parentTagId = tag.parent_tag_id ?? null
+          const parentTagName = tag.parent_tag_name || this.#parentTagNameById(parentTagId)
+          this.#addChip(tag.name, tag.description || "", parentTagId, parentTagName, tag.is_new === true)
         })
       } catch {
         // JSON でない場合は無視
@@ -106,6 +108,17 @@ export default class extends Controller {
     }
   }
 
+  updateCategory(event) {
+    const { name, parentTagId, parentTagName } = event.detail
+    const chip = this.#chips.find(currentChip => currentChip.name === name)
+    if (!chip?.is_new) return
+
+    chip.parent_tag_id = parentTagId
+    chip.parent_tag_name = parentTagName
+    this.#syncHiddenField()
+    this.#dispatchChipsChanged()
+  }
+
   #selectExistingTag(name, parentTagName) {
     this.#addChip(name, "", null, parentTagName || null)
     this.inputTarget.value = ""
@@ -113,12 +126,12 @@ export default class extends Controller {
   }
 
   #confirmNewName(query) {
-    this.#addChip(query)
+    this.#addChip(query, "", null, null, true)
     this.inputTarget.value = ""
     this.#closeDropdown()
   }
 
-  #addChip(name, description = "", parentTagId = null, parentTagName = null) {
+  #addChip(name, description = "", parentTagId = null, parentTagName = null, isNew = false) {
     const displayName = name.trim()
     const normalizedName = this.#normalizeName(displayName)
 
@@ -131,7 +144,8 @@ export default class extends Controller {
       normalized_name: normalizedName,
       description,
       parent_tag_id: parentTagId,
-      parent_tag_name: parentTagName
+      parent_tag_name: parentTagName,
+      is_new: Boolean(isNew)
     })
     this.#renderChips()
     this.#syncHiddenField()
@@ -154,15 +168,30 @@ export default class extends Controller {
 
   #syncHiddenField() {
     this.hiddenFieldTarget.value = JSON.stringify(
-      this.#chips.map(({ name, description, parent_tag_id }) => ({ name, description, parent_tag_id }))
+      this.#chips.map(({ name, description, parent_tag_id, is_new }) => {
+        const payload = { name, description, parent_tag_id }
+        if (is_new) payload.is_new = true
+        return payload
+      })
     )
   }
 
   #dispatchChipsChanged() {
     this.element.dispatchEvent(new CustomEvent("chips-changed", {
       bubbles: true,
-      detail: { chips: [...this.#chips] }
+      detail: { chips: [...this.#chips], parentTags: this.parentTagsValue }
     }))
+  }
+
+  #parentTagNameById(parentTagId) {
+    if (!parentTagId) return null
+    const groups = Object.values(this.parentTagsValue)
+    for (const tags of groups) {
+      const list = Array.isArray(tags) ? tags : []
+      const match = list.find(tag => tag.id === parentTagId)
+      if (match) return match.name
+    }
+    return null
   }
 
   async #fetchSuggestions(query) {

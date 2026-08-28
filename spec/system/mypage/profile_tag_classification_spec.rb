@@ -24,7 +24,7 @@ RSpec.describe "タグ作成時の親タグ選択", type: :system, js: true do
     it "追加行をクリックすると未分類のカードがすぐ出る" do
       add_new_hobby_tag("新作ゲームタグ")
 
-      expect(page).to have_css("[data-testid='tag-parent-label']", text: "未分類")
+      expect(page).to have_css("[data-testid='tag-category-trigger']", text: "カテゴリー")
       expect(page).to have_css("[data-testid='tag-child-chip']", text: "新作ゲームタグ")
     end
 
@@ -35,6 +35,65 @@ RSpec.describe "タグ作成時の親タグ選択", type: :system, js: true do
       expect(page).to have_current_path(profile_path(current_profile))
       hobby = Hobby.find_by(normalized_name: "未分類タグ")
       expect(hobby.hobby_parent_tags).to be_empty
+    end
+  end
+
+  describe "新規カードのカテゴリー" do
+    it "新規カードにカテゴリー開閉が出て、説明文がパネル内にある" do
+      add_new_hobby_tag("新作ゲームタグ")
+      find("[data-testid='tag-category-trigger']").click
+
+      expect(page).to have_css("[data-testid='tag-category-panel']")
+      expect(page).to have_text("近いカテゴリーを選ぶと、マインドマップ上で同じ趣味の人とまとまって表示されやすくなります。")
+      expect(page).to have_text("迷ったら、選ばなくても大丈夫です。")
+      expect(page).to have_text("ゲーム系")
+      expect(page).to have_css("[data-testid='tag-category-option']", text: "FPS")
+      expect(page).to have_no_text("管理者にお問い合わせ")
+      expect(page).to have_no_button("わからない")
+    end
+
+    it "説明を開閉するとカテゴリーパネルが閉じる" do
+      add_new_hobby_tag("新作ゲームタグ")
+      find("[data-testid='tag-category-trigger']").click
+      expect(page).to have_css("[data-testid='tag-category-panel']")
+
+      click_button "説明を閉じる"
+
+      expect(page).to have_no_css("[data-testid='tag-category-panel']")
+    end
+
+    it "カードの外をクリックするとカテゴリーパネルが閉じる" do
+      add_new_hobby_tag("新作ゲームタグ")
+      find("[data-testid='tag-category-trigger']").click
+      expect(page).to have_css("[data-testid='tag-category-panel']")
+
+      find("[data-testid='tag-count']").click
+
+      expect(page).to have_no_css("[data-testid='tag-category-panel']")
+    end
+
+    it "カテゴリーを選んで保存すると HobbyParentTag が付く" do
+      add_new_hobby_tag("新規タグ123")
+      find("[data-testid='tag-category-trigger']").click
+      find("[data-testid='tag-category-option']", text: "FPS").click
+      click_button "更新する"
+
+      expect(page).to have_current_path(profile_path(current_profile))
+      hobby = Hobby.find_by(normalized_name: "新規タグ123")
+      expect(hobby.hobby_parent_tags.find_by(room_type: :game)&.parent_tag).to eq(fps)
+    end
+
+    it "バリデーション失敗後も新規カードのカテゴリー選択が残る" do
+      click_on "自己紹介"
+      fill_in "自己紹介（500字以内）", with: "あ" * 501
+      click_on "趣味"
+      add_new_hobby_tag("再表示タグ")
+      find("[data-testid='tag-category-trigger']").click
+      find("[data-testid='tag-category-option']", text: "FPS").click
+      click_button "更新する"
+
+      click_on "趣味"
+      expect(page).to have_css("[data-testid='tag-category-trigger']", text: "FPS")
     end
   end
 
@@ -56,6 +115,14 @@ RSpec.describe "タグ作成時の親タグ選択", type: :system, js: true do
 
       expect(page).to have_css("[data-testid='tag-parent-label']", text: "プログラミング")
       expect(page).to have_css("[data-testid='tag-child-chip']", text: "Rails")
+    end
+
+    it "既存タグのカードにカテゴリー開閉は出ない" do
+      fill_in "tag-input", with: "Rai"
+      find("[data-testid='autocomplete-item']", text: "Rails").click
+
+      expect(page).to have_css("[data-testid='tag-parent-label']", text: "プログラミング")
+      expect(page).to have_no_css("[data-testid='tag-category-trigger']")
     end
   end
 end

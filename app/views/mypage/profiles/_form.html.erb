@@ -55,7 +55,7 @@
          data-tag-autocomplete-url-value="<%= autocomplete_hobbies_path %>"
          data-tag-autocomplete-max-value="10"
          data-tag-autocomplete-parent-tags-value="<%= @parent_tags_json %>"
-         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription tag-remove-request->tag-autocomplete#removeTag">
+         data-action="chips-changed->tag-description#onChipsChanged tag-description-update->tag-autocomplete#updateDescription tag-remove-request->tag-autocomplete#removeTag tag-category-update->tag-autocomplete#updateCategory">
 
       <div data-controller="toggle">
         <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">

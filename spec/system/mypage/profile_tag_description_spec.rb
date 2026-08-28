@@ -16,7 +16,7 @@ RSpec.describe "タグ説明文入力UI", type: :system, js: true do
       add_new_hobby_tag("ゲーム")
 
       expect(page).to have_css("[data-testid='description-toggle']")
-      expect(page).to have_css("[data-testid='tag-parent-label']", text: "未分類")
+      expect(page).to have_css("[data-testid='tag-category-trigger']", text: "カテゴリー")
       expect(page).to have_css("[data-testid='tag-child-chip']", text: "ゲーム")
     end
 

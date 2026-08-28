@@ -1,14 +1,41 @@
 import { Controller } from "@hotwired/stimulus"
 
+const ROOM_TYPE_LABELS = {
+  chat: "雑談系",
+  study: "学習系",
+  game: "ゲーム系"
+}
+
 export default class extends Controller {
   static targets = ["container"]
 
+  #parentTags = {}
+  #onDocumentClick = null
+
+  connect() {
+    this.#onDocumentClick = (event) => {
+      if (event.target.closest("[data-testid='tag-category-trigger']")) return
+      if (event.target.closest("[data-testid='tag-category-panel']")) return
+      this.#closeAllCategoryPanels()
+    }
+    document.addEventListener("click", this.#onDocumentClick)
+  }
+
+  disconnect() {
+    if (this.#onDocumentClick) {
+      document.removeEventListener("click", this.#onDocumentClick)
+    }
+  }
+
   onChipsChanged(event) {
-    const { chips } = event.detail
+    const { chips, parentTags } = event.detail
+    if (parentTags) this.#parentTags = parentTags
     this.#renderDescriptionInputs(chips)
   }
 
   onToggle(event) {
+    this.#closeAllCategoryPanels()
+
     const button = event.currentTarget
     const content = button.closest("[data-testid='tag-card']")
                           ?.querySelector("[data-description-content]")
@@ -16,6 +43,27 @@ export default class extends Controller {
 
     const isHidden = content.classList.toggle("hidden")
     button.textContent = isHidden ? "説明を開く" : "説明を閉じる"
+  }
+
+  onCategoryToggle(event) {
+    event.stopPropagation()
+    const card = event.currentTarget.closest("[data-testid='tag-card']")
+    const panel = card?.querySelector("[data-testid='tag-category-panel']")
+    const wasHidden = panel?.classList.contains("hidden")
+    this.#closeAllCategoryPanels()
+    if (wasHidden) panel?.classList.remove("hidden")
+  }
+
+  onCategorySelect(event) {
+    const button = event.currentTarget
+    const name = button.dataset.name
+    const parentTagId = parseInt(button.dataset.parentTagId, 10)
+    const parentTagName = button.dataset.parentTagName
+
+    this.element.dispatchEvent(new CustomEvent("tag-category-update", {
+      bubbles: true,
+      detail: { name, parentTagId, parentTagName }
+    }))
   }
 
   onDescriptionInput(event) {
@@ -63,9 +111,11 @@ export default class extends Controller {
                 <img src="/icon.png?v=2" alt="" class="h-5 w-5 rounded-md object-cover">
               </span>
               <div style="display:flex;align-items:center;gap:0.35rem;min-width:0;flex:1;flex-wrap:wrap;">
-                <span data-testid="tag-parent-label"
+                ${chip.is_new
+                  ? this.#categoryTriggerHtml(chip)
+                  : `<span data-testid="tag-parent-label"
                       class="inline-flex items-center rounded-full px-2.5 text-[11px] font-semibold"
-                      style="${this.#parentLabelStyle(chip.parent_tag_name)}">${this.#escapeHtml(chip.parent_tag_name || "未分類")}</span>
+                      style="${this.#parentLabelStyle(chip.parent_tag_name)}">${this.#escapeHtml(chip.parent_tag_name || "未分類")}</span>`}
                 <span data-testid="tag-child-chip"
                       class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                       style="background:rgba(59,130,246,0.14);color:#bfdbfe;border:1px solid rgba(96,165,250,0.24);">${this.#escapeHtml(chip.name)}</span>
@@ -100,6 +150,12 @@ export default class extends Controller {
     `).join("")
   }
 
+  #closeAllCategoryPanels() {
+    this.element.querySelectorAll("[data-testid='tag-category-panel']").forEach(panel => {
+      panel.classList.add("hidden")
+    })
+  }
+
   #escapeHtml(str) {
     return str
       .replace(/&/g, "&amp;")
@@ -115,5 +171,60 @@ export default class extends Controller {
     }
 
     return "background:rgba(71,85,105,0.22);color:#cbd5e1;border:1px solid rgba(148,163,184,0.28);padding-top:0.18rem;padding-bottom:0.18rem;"
+  }
+
+  #categoryTriggerHtml(chip) {
+    const label = chip.parent_tag_name || "カテゴリー"
+    return `
+    <div style="position:relative;">
+      <button type="button"
+              data-testid="tag-category-trigger"
+              data-action="click->tag-description#onCategoryToggle"
+              class="inline-flex items-center rounded-full px-2.5 text-[11px] font-semibold"
+              style="${this.#parentLabelStyle(chip.parent_tag_name)}">
+        ${this.#escapeHtml(label)}
+      </button>
+      ${this.#categoryPanelHtml(chip)}
+    </div>
+    `
+  }
+
+  #categoryPanelHtml(chip) {
+    const groups = Object.entries(this.#parentTags).flatMap(([roomType, tags]) => {
+      const tagList = Array.isArray(tags) ? tags : []
+      if (tagList.length === 0) return []
+
+      const options = tagList.map(parentTag => {
+        const selected = Number(parentTag.id) === Number(chip.parent_tag_id)
+        return `
+      <button type="button"
+              data-testid="tag-category-option"
+              data-name="${this.#escapeHtml(chip.name)}"
+              data-parent-tag-id="${parentTag.id}"
+              data-parent-tag-name="${this.#escapeHtml(parentTag.name)}"
+              data-action="click->tag-description#onCategorySelect"
+              class="tag-category-option">
+        <span class="tag-category-check">${selected ? "✓" : ""}</span>
+        ${this.#escapeHtml(parentTag.name)}
+      </button>
+    `
+      }).join("")
+
+      return [
+        `<div class="tag-category-group-label">${ROOM_TYPE_LABELS[roomType] || roomType}</div>`,
+        options
+      ]
+    }).join("")
+
+    return `
+    <div data-testid="tag-category-panel" class="tag-category-panel hidden">
+      <div class="tag-category-help">
+        <p class="tag-category-help-primary">近いカテゴリーを選ぶと、マインドマップ上で同じ趣味の人とまとまって表示されやすくなります。</p>
+        <p class="tag-category-help-secondary">迷ったら、選ばなくても大丈夫です。</p>
+      </div>
+      ${groups}
+      <div class="tag-category-more" aria-hidden="true">▾</div>
+    </div>
+    `
   }
 }

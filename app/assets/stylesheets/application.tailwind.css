@@ -64,6 +64,108 @@
     border-radius: 9999px;
   }
 
+  .tag-category-panel {
+    position: absolute;
+    z-index: 20;
+    left: 0;
+    margin-top: 0.35rem;
+    width: 22rem;
+    max-height: min(24rem, 58vh);
+    overflow-y: auto;
+    padding: 0.55rem 0 0;
+    border-radius: 0.875rem;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    scrollbar-color: rgba(71, 85, 105, 0.14) transparent;
+    scrollbar-width: thin;
+  }
+
+  .tag-category-panel:hover {
+    scrollbar-color: rgba(100, 116, 139, 0.55) transparent;
+  }
+
+  .tag-category-panel::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .tag-category-panel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .tag-category-panel::-webkit-scrollbar-thumb {
+    background-color: rgba(71, 85, 105, 0.14);
+    border-radius: 9999px;
+  }
+
+  .tag-category-panel:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.55);
+  }
+
+  .tag-category-help {
+    padding: 0 0.875rem 0.45rem;
+    font-size: 0.7rem;
+    line-height: 1.5;
+  }
+
+  .tag-category-help-primary {
+    margin: 0 0 0.25rem;
+    color: #cbd5e1;
+  }
+
+  .tag-category-help-secondary {
+    margin: 0 0 0.35rem;
+    color: #94a3b8;
+  }
+
+  .tag-category-group-label {
+    padding: 0.45rem 0.875rem 0.15rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .tag-category-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.38rem 0.875rem 0.38rem 0.7rem;
+    border: none;
+    background: transparent;
+    color: #f8fafc;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .tag-category-option:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .tag-category-check {
+    display: inline-flex;
+    width: 1.15rem;
+    flex-shrink: 0;
+    justify-content: center;
+    color: #f8fafc;
+    font-size: 0.72rem;
+  }
+
+  .tag-category-more {
+    position: sticky;
+    bottom: 0;
+    padding: 0.2rem 0 0.35rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    background: linear-gradient(transparent, rgba(15, 23, 42, 0.88) 40%);
+    pointer-events: none;
+  }
+
   .new-tag-section {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
