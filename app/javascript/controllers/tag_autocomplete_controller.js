@@ -13,6 +13,7 @@ export default class extends Controller {
   #chips = []
   #activeIndex = -1
 
+  // --- 初期化 ---
   connect() {
     const existing = this.hiddenFieldTarget.value
     if (existing) {
@@ -29,6 +30,7 @@ export default class extends Controller {
     }
   }
 
+  // --- 入力・キーボード ---
   onInput() {
     clearTimeout(this.#debounceTimer)
     const q = this.inputTarget.value.trim()
@@ -68,6 +70,7 @@ export default class extends Controller {
     }
   }
 
+  // --- 候補の確定（クリック / Enter の入口 → 実処理） ---
   selectSuggestion(event) {
     const { name, parentTagName } = event.currentTarget.dataset
     this.#selectExistingTag(name, parentTagName || null)
@@ -78,6 +81,19 @@ export default class extends Controller {
     if (query) this.#confirmNewName(query)
   }
 
+  #selectExistingTag(name, parentTagName) {
+    this.#addChip(name, "", null, parentTagName || null)
+    this.inputTarget.value = ""
+    this.#closeDropdown()
+  }
+
+  #confirmNewName(query) {
+    this.#addChip(query, "", null, null, true)
+    this.inputTarget.value = ""
+    this.#closeDropdown()
+  }
+
+  // --- チップの削除 ---
   removeChip(event) {
     const name = event.currentTarget.dataset.name
     this.#removeChipByName(name)
@@ -98,6 +114,7 @@ export default class extends Controller {
     }
   }
 
+  // --- チップの更新（説明・カテゴリ） ---
   updateDescription(event) {
     const { name, description } = event.detail
     const chip = this.#chips.find(currentChip => currentChip.name === name)
@@ -119,18 +136,7 @@ export default class extends Controller {
     this.#dispatchChipsChanged()
   }
 
-  #selectExistingTag(name, parentTagName) {
-    this.#addChip(name, "", null, parentTagName || null)
-    this.inputTarget.value = ""
-    this.#closeDropdown()
-  }
-
-  #confirmNewName(query) {
-    this.#addChip(query, "", null, null, true)
-    this.inputTarget.value = ""
-    this.#closeDropdown()
-  }
-
+  // --- チップの追加・描画・同期 ---
   #addChip(name, description = "", parentTagId = null, parentTagName = null, isNew = false) {
     const displayName = name.trim()
     const normalizedName = this.#normalizeName(displayName)
@@ -183,17 +189,7 @@ export default class extends Controller {
     }))
   }
 
-  #parentTagNameById(parentTagId) {
-    if (!parentTagId) return null
-    const groups = Object.values(this.parentTagsValue)
-    for (const tags of groups) {
-      const list = Array.isArray(tags) ? tags : []
-      const match = list.find(tag => tag.id === parentTagId)
-      if (match) return match.name
-    }
-    return null
-  }
-
+  // --- ドロップダウン UI ---
   async #fetchSuggestions(query) {
     if (this.#chips.find(chip => chip.normalized_name === this.#normalizeName(query))) {
       this.#closeDropdown()
@@ -255,6 +251,18 @@ export default class extends Controller {
     items.forEach((item, index) => {
       item.style.background = index === this.#activeIndex ? "rgba(96,165,250,0.15)" : "transparent"
     })
+  }
+
+  // --- ユーティリティ ---
+  #parentTagNameById(parentTagId) {
+    if (!parentTagId) return null
+    const groups = Object.values(this.parentTagsValue)
+    for (const tags of groups) {
+      const list = Array.isArray(tags) ? tags : []
+      const match = list.find(tag => tag.id === parentTagId)
+      if (match) return match.name
+    }
+    return null
   }
 
   #escapeHtml(value) {

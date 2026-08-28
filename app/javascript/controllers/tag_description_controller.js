@@ -12,6 +12,7 @@ export default class extends Controller {
   #parentTags = {}
   #onDocumentClick = null
 
+  // --- 初期化 ---
   connect() {
     this.#onDocumentClick = (event) => {
       if (event.target.closest("[data-testid='tag-category-trigger']")) return
@@ -27,12 +28,14 @@ export default class extends Controller {
     }
   }
 
+  // --- チップ変更の受け取り ---
   onChipsChanged(event) {
     const { chips, parentTags } = event.detail
     if (parentTags) this.#parentTags = parentTags
     this.#renderDescriptionInputs(chips)
   }
 
+  // --- カード操作（説明・削除） ---
   onToggle(event) {
     this.#closeAllCategoryPanels()
 
@@ -45,33 +48,11 @@ export default class extends Controller {
     button.textContent = isHidden ? "説明を開く" : "説明を閉じる"
   }
 
-  onCategoryToggle(event) {
-    event.stopPropagation()
-    const card = event.currentTarget.closest("[data-testid='tag-card']")
-    const panel = card?.querySelector("[data-testid='tag-category-panel']")
-    const wasHidden = panel?.classList.contains("hidden")
-    this.#closeAllCategoryPanels()
-    if (wasHidden) panel?.classList.remove("hidden")
-  }
-
-  onCategorySelect(event) {
-    const button = event.currentTarget
-    const name = button.dataset.name
-    const parentTagId = parseInt(button.dataset.parentTagId, 10)
-    const parentTagName = button.dataset.parentTagName
-
-    this.element.dispatchEvent(new CustomEvent("tag-category-update", {
-      bubbles: true,
-      detail: { name, parentTagId, parentTagName }
-    }))
-  }
-
   onDescriptionInput(event) {
     const textarea = event.currentTarget
     const name = textarea.dataset.name
     const description = textarea.value
 
-    // カウンター更新
     const counter = textarea.closest("[data-description-content]")
                             ?.querySelector("[data-testid='description-counter']")
     if (counter) {
@@ -93,8 +74,35 @@ export default class extends Controller {
     }))
   }
 
-  // private
+  // --- カテゴリ選択 ---
+  onCategoryToggle(event) {
+    event.stopPropagation()
+    const card = event.currentTarget.closest("[data-testid='tag-card']")
+    const panel = card?.querySelector("[data-testid='tag-category-panel']")
+    const wasHidden = panel?.classList.contains("hidden")
+    this.#closeAllCategoryPanels()
+    if (wasHidden) panel?.classList.remove("hidden")
+  }
 
+  onCategorySelect(event) {
+    const button = event.currentTarget
+    const name = button.dataset.name
+    const parentTagId = parseInt(button.dataset.parentTagId, 10)
+    const parentTagName = button.dataset.parentTagName
+
+    this.element.dispatchEvent(new CustomEvent("tag-category-update", {
+      bubbles: true,
+      detail: { name, parentTagId, parentTagName }
+    }))
+  }
+
+  #closeAllCategoryPanels() {
+    this.element.querySelectorAll("[data-testid='tag-category-panel']").forEach(panel => {
+      panel.classList.add("hidden")
+    })
+  }
+
+  // --- カードの描画 ---
   #renderDescriptionInputs(chips) {
     if (!this.hasContainerTarget) return
     if (!chips || chips.length === 0) {
@@ -150,29 +158,6 @@ export default class extends Controller {
     `).join("")
   }
 
-  #closeAllCategoryPanels() {
-    this.element.querySelectorAll("[data-testid='tag-category-panel']").forEach(panel => {
-      panel.classList.add("hidden")
-    })
-  }
-
-  #escapeHtml(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;")
-  }
-
-  #parentLabelStyle(parentTagName) {
-    if (parentTagName) {
-      return "background:linear-gradient(135deg, rgba(244,63,94,0.24), rgba(236,72,153,0.18));color:#fecdd3;border:1px solid rgba(251,113,133,0.38);padding-top:0.18rem;padding-bottom:0.18rem;"
-    }
-
-    return "background:rgba(71,85,105,0.22);color:#cbd5e1;border:1px solid rgba(148,163,184,0.28);padding-top:0.18rem;padding-bottom:0.18rem;"
-  }
-
   #categoryTriggerHtml(chip) {
     const label = chip.parent_tag_name || "カテゴリー"
     return `
@@ -226,5 +211,23 @@ export default class extends Controller {
       <div class="tag-category-more" aria-hidden="true">▾</div>
     </div>
     `
+  }
+
+  #parentLabelStyle(parentTagName) {
+    if (parentTagName) {
+      return "background:linear-gradient(135deg, rgba(244,63,94,0.24), rgba(236,72,153,0.18));color:#fecdd3;border:1px solid rgba(251,113,133,0.38);padding-top:0.18rem;padding-bottom:0.18rem;"
+    }
+
+    return "background:rgba(71,85,105,0.22);color:#cbd5e1;border:1px solid rgba(148,163,184,0.28);padding-top:0.18rem;padding-bottom:0.18rem;"
+  }
+
+  // --- ユーティリティ ---
+  #escapeHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;")
   }
 }
