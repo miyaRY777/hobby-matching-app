@@ -31,7 +31,7 @@
     </span>
   </td>
 
-  <%# リンク状態 + Copyボタン %>
+  <%# リンク状態：バッジのみ %>
   <td style="padding: 0.875rem 1rem; white-space: nowrap;">
     <% if link.present? %>
       <% if link.expired? %>
@@ -39,15 +39,30 @@
           期限切れ
         </span>
       <% else %>
-        <div style="display: flex; align-items: center; gap: 0.5rem;" data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
-          <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac;">
-            有効
-          </span>
+        <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac;">
+          有効
+        </span>
+      <% end %>
+    <% else %>
+      <span style="color: #6b7280;">―</span>
+    <% end %>
+  </td>
+
+  <%# リンク操作：有効→コピー / 期限切れ→再発行 %>
+  <td style="padding: 0.875rem 1rem; white-space: nowrap;">
+    <% if link.present? %>
+      <% if link.expired? %>
+        <%= link_to "再発行",
+                    regenerate_share_link_mypage_room_path(room),
+                    data: { turbo_method: :patch, turbo_confirm: "招待リンクを再発行しますか？古いURLは無効になります。" },
+                    style: room_management_button_style(:regenerate) %>
+      <% else %>
+        <div data-controller="clipboard" data-clipboard-text-value="<%= share_url(link.token) %>">
           <button type="button"
                   data-clipboard-target="button"
                   data-action="click->clipboard#copy"
-                  style="display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #60a5fa; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 0.375rem; cursor: pointer;">
-            Copy
+                  style="<%= room_management_button_style(:copy) %>">
+            コピー
           </button>
         </div>
       <% end %>
@@ -63,25 +78,25 @@
 
   <%# 操作 %>
   <td style="padding: 0.875rem 1rem; white-space: nowrap;">
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; width: 100%;">
       <% if link.present? %>
-        <%= link_to "部屋を見る",
+        <%= link_to "入室",
                     share_path(link.token),
                     target: "_blank",
-                    style: "display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: 1px solid rgba(167,139,250,0.4); color: #c4b5fd; font-size: 0.875rem; text-decoration: none;" %>
+                    style: room_management_button_style(:enter, issued: true) %>
       <% end %>
 
       <%= link_to "編集",
                   edit_mypage_room_path(room),
                   data: { turbo_frame: "_top" },
-                  style: "display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; border-radius: 0.375rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; text-decoration: none; font-size: 0.8125rem;" %>
+                  style: room_management_button_style(:edit) %>
 
-      <%# ドロップダウンメニュー %>
-      <div data-controller="dropdown" style="position: relative;">
+      <%# ドロップダウンメニュー（右端） %>
+      <div data-controller="dropdown" style="position: relative; margin-left: auto;">
         <button
           type="button"
           data-action="click->dropdown#toggle"
-          style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.375rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(55, 65, 81, 0.5); color: #d1d5db; cursor: pointer;"
+          style="<%= room_table_menu_button_style %>"
           aria-label="その他の操作"
         >
           &#8942;
@@ -92,13 +107,6 @@
           class="hidden"
           style="position: absolute; top: calc(100% + 0.25rem); right: 0; z-index: 10; min-width: 10rem; padding: 0.5rem; border-radius: 0.75rem; background: #111827; border: 1px solid rgba(55, 65, 81, 0.6); box-shadow: 0 10px 24px rgba(0,0,0,0.35);"
         >
-          <% if link.present? %>
-            <%= link_to "再発行",
-                        regenerate_share_link_mypage_room_path(room),
-                        data: { turbo_method: :patch, turbo_confirm: "招待リンクを再発行しますか？古いURLは無効になります。" },
-                        style: "display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #fbbf24; text-decoration: none; font-size: 0.875rem;" %>
-          <% end %>
-
           <% if room.locked? %>
             <%= link_to "公開する",
                         unlock_mypage_room_path(room),

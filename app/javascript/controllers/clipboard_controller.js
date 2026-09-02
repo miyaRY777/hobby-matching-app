@@ -8,7 +8,7 @@ export default class extends Controller {
     navigator.clipboard.writeText(this.textValue).then(() => {
       const button = this.buttonTarget
       const originalText = button.textContent
-      button.textContent = "Copied!"
+      button.textContent = "コピーしました！"
       setTimeout(() => {
         button.textContent = originalText
       }, 1500)
