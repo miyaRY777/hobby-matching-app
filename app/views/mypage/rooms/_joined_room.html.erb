@@ -28,7 +28,10 @@
   <%# 公開状態（参加者は表示なし） %>
   <td style="padding: 0.875rem 1rem; color: #6b7280;">―</td>
 
-  <%# リンク（参加者は表示なし） %>
+  <%# リンク状態（参加者は表示なし） %>
+  <td style="padding: 0.875rem 1rem; color: #6b7280;">―</td>
+
+  <%# リンク操作（参加者は表示なし） %>
   <td style="padding: 0.875rem 1rem; color: #6b7280;">―</td>
 
   <%# 参加人数 %>
@@ -40,17 +43,18 @@
   <td style="padding: 0.875rem 1rem; white-space: nowrap;">
     <div style="display: flex; align-items: center; gap: 0.5rem;">
       <% if link.present? %>
-        <%= link_to "部屋を見る",
+        <%= link_to "入室",
                     share_path(link.token),
                     target: "_blank",
-                    style: "display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: 1px solid rgba(167,139,250,0.4); color: #c4b5fd; font-size: 0.875rem; text-decoration: none;" %>
+                    style: room_management_button_style(:enter, issued: false) %>
       <% end %>
 
       <%= button_to "退出",
                     mypage_room_membership_path(membership),
                     method: :delete,
                     data: { turbo_confirm: "本当に退出しますか？" },
-                    style: "padding: 0.375rem 0.75rem; border-radius: 0.375rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; font-size: 0.8125rem; cursor: pointer;" %>
+                    form: { style: "margin: 0;" },
+                    style: room_management_button_style(:leave) %>
     </div>
   </td>
 </tr>

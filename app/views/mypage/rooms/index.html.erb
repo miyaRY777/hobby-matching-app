@@ -1,13 +1,10 @@
-<% content_for :no_center, true %>
-<% content_for :fixed_main, true %>
-
-<div style="max-width: 72rem; margin: 0 auto; padding: 1.5rem 1.5rem; flex: 1; min-height: 0; display: flex; flex-direction: column;">
+<div class="w-full max-w-7xl mx-auto flex flex-col gap-6 flex-1">
 
   <%# 作成ボタン＋モーダル（部屋一覧見出しと横並び） %>
-  <div data-controller="modal" data-action="turbo:submit-end->modal#closeOnSuccess" style="margin-bottom: 1rem;">
+  <div data-controller="modal" data-action="turbo:submit-end->modal#closeOnSuccess">
     <%# 見出し行：部屋一覧 + 新規作成ボタン %>
     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem;">
-      <h2 style="font-size: 1.875rem; font-weight: 700; color: #ffffff; margin: 0;">部屋一覧</h2>
+      <h2 style="font-size: 1.5rem; font-weight: 600; color: #ffffff; margin: 0;">部屋一覧</h2>
       <button
         type="button"
         data-action="click->modal#open"
@@ -95,8 +92,8 @@
   </div><%# /data-controller="modal" %>
 
   <%# 部屋一覧テーブル %>
-  <section style="flex: 1; min-height: 0; display: flex; flex-direction: column; margin-bottom: 3rem;">
-    <div style="flex: 1; min-height: 0; overflow: auto; border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+  <section style="display: flex; flex-direction: column; gap: 1rem;">
+    <div style="overflow-x: auto; border-radius: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(55, 65, 81, 0.4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
 
       <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
         <thead>
@@ -105,7 +102,8 @@
             <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">タイプ</th>
             <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">状態</th>
             <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">公開設定</th>
-            <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">リンク</th>
+            <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">リンク状態</th>
+            <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">リンク操作</th>
             <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">人数</th>
             <th style="padding: 0.75rem 1rem; text-align: left; color: #9ca3af; font-weight: 500; white-space: nowrap;">操作</th>
           </tr>
@@ -113,7 +111,7 @@
         <tbody id="rooms_tbody">
           <% if @combined.empty? %>
             <tr>
-              <td colspan="7" style="padding: 2rem 1rem; color: #6b7280; text-align: center;">
+              <td colspan="8" style="padding: 2rem 1rem; color: #6b7280; text-align: center;">
                 まだ部屋がありません。上のフォームから部屋を作成してみましょう。
               </td>
             </tr>

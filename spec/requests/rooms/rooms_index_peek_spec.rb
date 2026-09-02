@@ -1,8 +1,8 @@
 require "rails_helper"
 
-# 責務: 一覧の「覗いてみる / 見る」と、未参加の直接参加。
+# 責務: 一覧の「見学 / 入室」と、未参加の直接参加。
 # 参加モーダルは出さない。
-RSpec.describe "GET /rooms 覗いてみる/見る", type: :request do
+RSpec.describe "GET /rooms 見学/入室", type: :request do
   let(:current_user) { create(:user) }
   let(:current_profile) { create(:profile, user: current_user) }
   let(:owner_profile) { create(:profile) }
@@ -17,11 +17,11 @@ RSpec.describe "GET /rooms 覗いてみる/見る", type: :request do
     get rooms_path
   end
 
-  it "未参加には「覗いてみる」があり、部屋ページへリンクする" do
+  it "未参加には「見学」があり、部屋ページへリンクする" do
     row = Nokogiri::HTML(response.body).at_css("#room_#{unjoined_room.id}")
     peek = row.at_css("a[href='#{room_path(unjoined_room)}']")
 
-    expect(peek.text).to include("覗いてみる")
+    expect(peek.text).to include("見学")
   end
 
   it "未参加の「参加する」は参加リクエストを送る" do
@@ -33,10 +33,10 @@ RSpec.describe "GET /rooms 覗いてみる/見る", type: :request do
     expect(form.at_css("[type=submit]")[:value]).to eq("参加する")
   end
 
-  it "参加済みには「見る」があり、部屋ページへリンクする" do
+  it "参加済みには「入室」があり、部屋ページへリンクする" do
     row = Nokogiri::HTML(response.body).at_css("#room_#{joined_room.id}")
 
-    expect(row.text).to include("見る")
+    expect(row.text).to include("入室")
     expect(row.at_css("a")[:href]).to eq(room_path(joined_room))
   end
 
@@ -46,10 +46,10 @@ RSpec.describe "GET /rooms 覗いてみる/見る", type: :request do
     expect(row.text).not_to include("参加する")
   end
 
-  it "作成した部屋には「見る」があり、部屋ページへリンクする" do
+  it "作成した部屋には「入室」があり、部屋ページへリンクする" do
     row = Nokogiri::HTML(response.body).at_css("#room_#{issued_room.id}")
 
-    expect(row.text).to include("見る")
+    expect(row.text).to include("入室")
     expect(row.at_css("a")[:href]).to eq(room_path(issued_room))
   end
 

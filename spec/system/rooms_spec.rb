@@ -46,20 +46,20 @@ RSpec.describe "公開部屋一覧", type: :system, js: true do
     end
   end
 
-  it "未参加部屋に覗いてみると参加するが並ぶ" do
+  it "未参加部屋に見学と参加するが並ぶ" do
     visit rooms_path
 
     within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
-      expect(page).to have_link("覗いてみる", href: room_path(unjoined_room))
+      expect(page).to have_link("見学", href: room_path(unjoined_room))
       expect(page).to have_button("参加する")
     end
   end
 
-  it "覗いてみるを押すと部屋ページへ行き、参加しない" do
+  it "見学を押すと部屋ページへ行き、参加しない" do
     visit rooms_path
 
     within find("[id='#{ActionView::RecordIdentifier.dom_id(unjoined_room)}']") do
-      click_link "覗いてみる"
+      click_link "見学"
     end
 
     expect(page).to have_current_path(room_path(unjoined_room), ignore_query: true)
@@ -77,19 +77,19 @@ RSpec.describe "公開部屋一覧", type: :system, js: true do
     expect(RoomMembership.exists?(room: unjoined_room, profile: current_profile)).to be true
   end
 
-  it "参加済み部屋に見るリンクが表示される" do
+  it "参加済み部屋に入室リンクが表示される" do
     visit rooms_path
 
     within find("[id='#{ActionView::RecordIdentifier.dom_id(joined_room)}']") do
-      expect(page).to have_link("見る", href: room_path(joined_room))
+      expect(page).to have_link("入室", href: room_path(joined_room))
     end
   end
 
-  it "作成した部屋に見るリンクが表示される" do
+  it "作成した部屋に入室リンクが表示される" do
     visit rooms_path
 
     within find("[id='#{ActionView::RecordIdentifier.dom_id(issued_room)}']") do
-      expect(page).to have_link("見る", href: room_path(issued_room))
+      expect(page).to have_link("入室", href: room_path(issued_room))
     end
   end
 end
