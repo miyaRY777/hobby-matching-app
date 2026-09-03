@@ -5,36 +5,25 @@ class Mypage::RoomsController < ApplicationController
   def index
     @new_room = Room.new
     profile = current_user.profile
-    unless profile
-      @combined = Kaminari.paginate_array([]).page(params[:page]).per(10)
-      return
-    end
-
-    load_room_lists(profile)
+    @combined = profile ? MypageRoomsQuery.call(profile: profile, page: params[:page])
+                        : Kaminari.paginate_array([]).page(params[:page]).per(MypageRoomsQuery::PER)
   end
 
   def create
     issuer_profile = current_user.profile
     return redirect_to mypage_root_path unless issuer_profile
-
-    @new_room = Room.new(room_create_params.merge(issuer_profile: issuer_profile))
-    unless @new_room.valid?
-      load_room_lists(issuer_profile)
+    result = RoomCreator.call(
+      issuer_profile: issuer_profile,
+      room_params: room_create_params,
+      expires_in: params[:expires_in]
+    )
+    unless result[:success]
+      @new_room = result[:room]
+      @combined = MypageRoomsQuery.call(profile: issuer_profile, page: params[:page])
       flash.now[:alert] = "部屋を作成できませんでした"
       return render :index, status: :unprocessable_entity
     end
-
-    # "none" や未指定は nil に正規化し、保存と計算を同一の変数から行う
-    raw = params[:expires_in]
-    expires_in_value = ShareLink::EXPIRES_IN_MAP.key?(raw) ? raw : nil
-    expires_at = ShareLink::EXPIRES_IN_MAP[expires_in_value]&.from_now
-
-    Room.transaction do
-      @room = Room.create!(room_create_params.merge(issuer_profile: issuer_profile))
-      RoomMembership.create!(room: @room, profile: issuer_profile)
-      ShareLink.create!(room: @room, expires_at: expires_at, expires_in: expires_in_value)
-    end
-
+    @room = result[:room]
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to mypage_rooms_path }
@@ -110,25 +99,5 @@ class Mypage::RoomsController < ApplicationController
       format.turbo_stream { flash.now[:notice] = message }
       format.html { redirect_to mypage_rooms_path, notice: message }
     end
-  end
-
-  def load_room_lists(profile)
-    issued = profile.issued_rooms
-                    .includes(:share_link, :room_memberships)
-                    .order(created_at: :desc)
-                    .to_a
-
-    joined = profile.room_memberships
-                    .joins(:room)
-                    .where.not(rooms: { issuer_profile_id: profile.id })
-                    .includes(room: [ { issuer_profile: :user }, :room_memberships, :share_link ])
-                    .order("rooms.created_at DESC")
-                    .to_a
-
-    combined = (issued + joined).sort_by { |item|
-      item.is_a?(Room) ? item.created_at : item.room.created_at
-    }.reverse
-
-    @combined = Kaminari.paginate_array(combined).page(params[:page]).per(10)
   end
 end
