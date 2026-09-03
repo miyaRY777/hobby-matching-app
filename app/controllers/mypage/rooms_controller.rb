@@ -1,55 +1,48 @@
+# 責務: マイページの部屋一覧・作成・オーナー操作（編集・公開設定・招待リンク・削除）。
 class Mypage::RoomsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_room, only: %i[edit update destroy lock unlock regenerate_share_link]
 
+  # --- 一覧・作成 ---
+
   def index
     @new_room = Room.new
     profile = current_user.profile
-    unless profile
-      @combined = Kaminari.paginate_array([]).page(params[:page]).per(10)
-      return
-    end
-
-    load_room_lists(profile)
+    @combined = profile ? MypageRoomsQuery.call(profile: profile, page: params[:page])
+                        : Kaminari.paginate_array([]).page(params[:page]).per(MypageRoomsQuery::PER)
   end
 
   def create
     issuer_profile = current_user.profile
     return redirect_to mypage_root_path unless issuer_profile
 
-    @new_room = Room.new(room_create_params.merge(issuer_profile: issuer_profile))
-    unless @new_room.valid?
-      load_room_lists(issuer_profile)
+    result = RoomCreator.call(
+      issuer_profile: issuer_profile,
+      room_params: room_create_params,
+      expires_in: params[:expires_in]
+    )
+    unless result[:success]
+      @new_room = result[:room]
+      @combined = MypageRoomsQuery.call(profile: issuer_profile, page: params[:page])
       flash.now[:alert] = "部屋を作成できませんでした"
       return render :index, status: :unprocessable_entity
     end
 
-    # "none" や未指定は nil に正規化し、保存と計算を同一の変数から行う
-    raw = params[:expires_in]
-    expires_in_value = ShareLink::EXPIRES_IN_MAP.key?(raw) ? raw : nil
-    expires_at = ShareLink::EXPIRES_IN_MAP[expires_in_value]&.from_now
-
-    Room.transaction do
-      @room = Room.create!(room_create_params.merge(issuer_profile: issuer_profile))
-      RoomMembership.create!(room: @room, profile: issuer_profile)
-      ShareLink.create!(room: @room, expires_at: expires_at, expires_in: expires_in_value)
-    end
-
+    @room = result[:room]
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to mypage_rooms_path }
     end
   end
 
+  # --- 編集・更新 ---
+
   def edit
   end
 
   def update
     if @room.update(room_params)
-      respond_to do |format|
-        format.turbo_stream { flash.now[:notice] = "部屋名を更新しました" }
-        format.html { redirect_to mypage_rooms_path, notice: "部屋名を更新しました" }
-      end
+      respond_with_flash(notice: "部屋名を更新しました")
     else
       respond_to do |format|
         format.turbo_stream { render :edit, status: :unprocessable_entity }
@@ -57,6 +50,8 @@ class Mypage::RoomsController < ApplicationController
       end
     end
   end
+
+  # --- 公開設定 ---
 
   def lock
     update_lock(true, "非公開にしました")
@@ -66,33 +61,34 @@ class Mypage::RoomsController < ApplicationController
     update_lock(false, "公開しました")
   end
 
+  # --- 招待リンク ---
+
   def regenerate_share_link
-    @room = current_user.profile.issued_rooms
-                        .includes(:share_link, :room_memberships)
-                        .find(params[:id])
     @share_link = @room.share_link
     raise ActiveRecord::RecordNotFound, "ShareLink not found for room #{@room.id}" unless @share_link
 
     @share_link.regenerate!
-    respond_to do |format|
-      format.turbo_stream { flash.now[:notice] = "招待リンクを再発行しました" }
-      format.html { redirect_to mypage_rooms_path, notice: "招待リンクを再発行しました" }
-    end
+    respond_with_flash(notice: "招待リンクを再発行しました")
   end
+
+  # --- 削除 ---
 
   def destroy
     @room.destroy!
-    respond_to do |format|
-      format.turbo_stream { flash.now[:notice] = "部屋を削除しました" }
-      format.html { redirect_to mypage_rooms_path, notice: "部屋を削除しました" }
-    end
+    respond_with_flash(notice: "部屋を削除しました")
   end
 
   private
 
+  # --- セットアップ ---
+
   def set_room
-    @room = current_user.profile.issued_rooms.find(params[:id])
+    @room = current_user.profile.issued_rooms
+                        .includes(:share_link, :room_memberships)
+                        .find(params[:id])
   end
+
+  # --- strong parameters ---
 
   # create 専用（locked を含む）
   def room_create_params
@@ -104,31 +100,17 @@ class Mypage::RoomsController < ApplicationController
     params.require(:room).permit(:label, :room_type)
   end
 
+  # --- レスポンス ---
+
   def update_lock(state, message)
     @room.update!(locked: state)
-    respond_to do |format|
-      format.turbo_stream { flash.now[:notice] = message }
-      format.html { redirect_to mypage_rooms_path, notice: message }
-    end
+    respond_with_flash(notice: message)
   end
 
-  def load_room_lists(profile)
-    issued = profile.issued_rooms
-                    .includes(:share_link, :room_memberships)
-                    .order(created_at: :desc)
-                    .to_a
-
-    joined = profile.room_memberships
-                    .joins(:room)
-                    .where.not(rooms: { issuer_profile_id: profile.id })
-                    .includes(room: [ { issuer_profile: :user }, :room_memberships, :share_link ])
-                    .order("rooms.created_at DESC")
-                    .to_a
-
-    combined = (issued + joined).sort_by { |item|
-      item.is_a?(Room) ? item.created_at : item.room.created_at
-    }.reverse
-
-    @combined = Kaminari.paginate_array(combined).page(params[:page]).per(10)
+  def respond_with_flash(notice:)
+    respond_to do |format|
+      format.turbo_stream { flash.now[:notice] = notice }
+      format.html { redirect_to mypage_rooms_path, notice: notice }
+    end
   end
 end
