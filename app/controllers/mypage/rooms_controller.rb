@@ -12,6 +12,7 @@ class Mypage::RoomsController < ApplicationController
   def create
     issuer_profile = current_user.profile
     return redirect_to mypage_root_path unless issuer_profile
+
     result = RoomCreator.call(
       issuer_profile: issuer_profile,
       room_params: room_create_params,
@@ -23,6 +24,7 @@ class Mypage::RoomsController < ApplicationController
       flash.now[:alert] = "部屋を作成できませんでした"
       return render :index, status: :unprocessable_entity
     end
+
     @room = result[:room]
     respond_to do |format|
       format.turbo_stream
@@ -35,10 +37,7 @@ class Mypage::RoomsController < ApplicationController
 
   def update
     if @room.update(room_params)
-      respond_to do |format|
-        format.turbo_stream { flash.now[:notice] = "部屋名を更新しました" }
-        format.html { redirect_to mypage_rooms_path, notice: "部屋名を更新しました" }
-      end
+      respond_with_flash(notice: "部屋名を更新しました")
     else
       respond_to do |format|
         format.turbo_stream { render :edit, status: :unprocessable_entity }
@@ -60,18 +59,12 @@ class Mypage::RoomsController < ApplicationController
     raise ActiveRecord::RecordNotFound, "ShareLink not found for room #{@room.id}" unless @share_link
 
     @share_link.regenerate!
-    respond_to do |format|
-      format.turbo_stream { flash.now[:notice] = "招待リンクを再発行しました" }
-      format.html { redirect_to mypage_rooms_path, notice: "招待リンクを再発行しました" }
-    end
+    respond_with_flash(notice: "招待リンクを再発行しました")
   end
 
   def destroy
     @room.destroy!
-    respond_to do |format|
-      format.turbo_stream { flash.now[:notice] = "部屋を削除しました" }
-      format.html { redirect_to mypage_rooms_path, notice: "部屋を削除しました" }
-    end
+    respond_with_flash(notice: "部屋を削除しました")
   end
 
   private
@@ -94,9 +87,13 @@ class Mypage::RoomsController < ApplicationController
 
   def update_lock(state, message)
     @room.update!(locked: state)
+    respond_with_flash(notice: message)
+  end
+
+  def respond_with_flash(notice:)
     respond_to do |format|
-      format.turbo_stream { flash.now[:notice] = message }
-      format.html { redirect_to mypage_rooms_path, notice: message }
+      format.turbo_stream { flash.now[:notice] = notice }
+      format.html { redirect_to mypage_rooms_path, notice: notice }
     end
   end
 end
