@@ -31,7 +31,7 @@ class MypageRoomsQuery
     @profile.room_memberships
             .joins(:room)
             .where.not(rooms: { issuer_profile_id: @profile.id })
-            .includes(room: [{ issuer_profile: :user }, :room_memberships, :share_link])
+            .includes(room: [ { issuer_profile: :user }, :room_memberships, :share_link ])
             .order("rooms.created_at DESC")
             .to_a
   end
