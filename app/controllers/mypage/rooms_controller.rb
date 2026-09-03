@@ -56,9 +56,6 @@ class Mypage::RoomsController < ApplicationController
   end
 
   def regenerate_share_link
-    @room = current_user.profile.issued_rooms
-                        .includes(:share_link, :room_memberships)
-                        .find(params[:id])
     @share_link = @room.share_link
     raise ActiveRecord::RecordNotFound, "ShareLink not found for room #{@room.id}" unless @share_link
 
@@ -80,7 +77,9 @@ class Mypage::RoomsController < ApplicationController
   private
 
   def set_room
-    @room = current_user.profile.issued_rooms.find(params[:id])
+    @room = current_user.profile.issued_rooms
+                        .includes(:share_link, :room_memberships)
+                        .find(params[:id])
   end
 
   # create 専用（locked を含む）
