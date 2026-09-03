@@ -1,6 +1,9 @@
+# 責務: マイページの部屋一覧・作成・オーナー操作（編集・公開設定・招待リンク・削除）。
 class Mypage::RoomsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_room, only: %i[edit update destroy lock unlock regenerate_share_link]
+
+  # --- 一覧・作成 ---
 
   def index
     @new_room = Room.new
@@ -32,6 +35,8 @@ class Mypage::RoomsController < ApplicationController
     end
   end
 
+  # --- 編集・更新 ---
+
   def edit
   end
 
@@ -46,6 +51,8 @@ class Mypage::RoomsController < ApplicationController
     end
   end
 
+  # --- 公開設定 ---
+
   def lock
     update_lock(true, "非公開にしました")
   end
@@ -53,6 +60,8 @@ class Mypage::RoomsController < ApplicationController
   def unlock
     update_lock(false, "公開しました")
   end
+
+  # --- 招待リンク ---
 
   def regenerate_share_link
     @share_link = @room.share_link
@@ -62,6 +71,8 @@ class Mypage::RoomsController < ApplicationController
     respond_with_flash(notice: "招待リンクを再発行しました")
   end
 
+  # --- 削除 ---
+
   def destroy
     @room.destroy!
     respond_with_flash(notice: "部屋を削除しました")
@@ -69,11 +80,15 @@ class Mypage::RoomsController < ApplicationController
 
   private
 
+  # --- セットアップ ---
+
   def set_room
     @room = current_user.profile.issued_rooms
                         .includes(:share_link, :room_memberships)
                         .find(params[:id])
   end
+
+  # --- strong parameters ---
 
   # create 専用（locked を含む）
   def room_create_params
@@ -84,6 +99,8 @@ class Mypage::RoomsController < ApplicationController
   def room_params
     params.require(:room).permit(:label, :room_type)
   end
+
+  # --- レスポンス ---
 
   def update_lock(state, message)
     @room.update!(locked: state)
