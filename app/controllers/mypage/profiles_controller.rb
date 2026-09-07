@@ -10,15 +10,11 @@ class Mypage::ProfilesController < ApplicationController
   end
 
   def create
-    @profile = current_user.build_profile(profile_params.except(:hobbies_json))
-    @profile.hobbies_json = profile_params[:hobbies_json]
+    # 保存・趣味同期・トランザクションは ProfileCreator が担う。Controller は HTTP だけ
+    result = ProfileCreator.call(user: current_user, profile_params: profile_params)
+    @profile = result[:profile]
+    return redirect_to mypage_root_path, notice: "プロフィールを作成しました" if result[:success]
 
-    ApplicationRecord.transaction do
-      @profile.save!
-      @profile.update_hobbies_from_json(@profile.hobbies_json)
-    end
-    redirect_to mypage_root_path, notice: "プロフィールを作成しました"
-  rescue ActiveRecord::RecordInvalid
     # render は new を再実行しない。戻さないとタグ入力が消える
     @hobbies_json = @profile.hobbies_json
     flash.now[:alert] = "プロフィールを作成できませんでした"
@@ -33,15 +29,11 @@ class Mypage::ProfilesController < ApplicationController
   end
 
   def update
-    @profile.hobbies_json = profile_params[:hobbies_json]
+    # 更新・趣味同期・トランザクション（空JSONならbioのみ）は ProfileUpdater が担う
+    result = ProfileUpdater.call(profile: @profile, profile_params: profile_params)
+    @profile = result[:profile]
+    return redirect_to profile_path(@profile), notice: "プロフィールを更新しました" if result[:success]
 
-    ApplicationRecord.transaction do
-      @profile.update!(profile_params.except(:hobbies_json))
-      # 空なら bio のみ更新。既存趣味は触らない
-      @profile.update_hobbies_from_json(@profile.hobbies_json) if @profile.hobbies_json.present?
-    end
-    redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
-  rescue ActiveRecord::RecordInvalid
     @hobbies_json = @profile.hobbies_json
     flash.now[:alert] = "プロフィールを更新できませんでした"
     render :edit, status: :unprocessable_entity
