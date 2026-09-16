@@ -18,6 +18,11 @@ RSpec.describe "パスワードリセット画面", type: :system do
         expect(page).not_to have_link("ユーザー登録")
       end
     end
+
+    it "カードがログイン画面と同じ位置指定である" do
+      # 親レイアウトの中央寄せを、カード側でも上書きしない
+      expect(page).to have_css("div[style*='max-width: 28rem'][style*='align-self: center']")
+    end
   end
 
   describe "パスワード変更画面" do
@@ -36,6 +41,11 @@ RSpec.describe "パスワードリセット画面", type: :system do
       within("div[style*='max-width: 28rem']") do
         expect(page).not_to have_link("ログイン")
       end
+    end
+
+    it "カードがログイン画面と同じ位置指定である" do
+      # 親レイアウトの中央寄せを、カード側でも上書きしない
+      expect(page).to have_css("div[style*='max-width: 28rem'][style*='align-self: center']")
     end
   end
 end
